@@ -9,6 +9,7 @@ import com.griot.core.data.model.SongSection
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongRepository
+import com.griot.core.data.song.WordCorrectionRepository
 import com.griot.core.phonetics.PhoneticEngines
 import com.griot.core.phonetics.PhoneticLanguage
 import com.griot.core.phonetics.paste.PastedBlock
@@ -34,8 +35,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /** The editor of the song [songId]: every change is saved at once. */
-// One function per change the editor makes.
-@Suppress("TooManyFunctions")
+// One function per change the editor makes, one dependency per kind of data it reads or writes.
+@Suppress("TooManyFunctions", "LongParameterList")
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = EditorViewModel.Factory::class)
 internal class EditorViewModel @AssistedInject constructor(
@@ -45,6 +46,7 @@ internal class EditorViewModel @AssistedInject constructor(
     private val preferences: UserPreferencesRepository,
     private val detector: SongLanguageDetector,
     private val engines: PhoneticEngines,
+    private val corrections: WordCorrectionRepository,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
     private val pasteUndo = MutableStateFlow<PasteUndo?>(null)
@@ -89,6 +91,14 @@ internal class EditorViewModel @AssistedInject constructor(
             )
         }
         .combine(preferences.showRhymes) { state, show -> state.copy(showRhymes = show) }
+        .combine(corrections.observeCorrections(SongLanguage.FRENCH)) { state, words ->
+            engines.french.setCorrections(words)
+            state
+        }
+        .combine(corrections.observeCorrections(SongLanguage.ENGLISH)) { state, words ->
+            engines.english.setCorrections(words)
+            state
+        }
         .combine(preferences.defaultSongLanguage) { state, default -> state.withSounds(default) }
         // The phonetics read their dictionaries and count every verse: never on the main thread.
         .flowOn(Dispatchers.Default)
@@ -224,6 +234,24 @@ internal class EditorViewModel @AssistedInject constructor(
             },
         )
     }
+
+    /**
+     * The verse [verseId] has [syllables] for the user: the first word of the verse missing from the dictionaries
+     * gets the syllables that make this count, and keeps them in every song.
+     */
+    fun onCorrectCount(verseId: String, syllables: Int) {
+        val state = uiState.value
+        val sound = state.sections.firstNotNullOfOrNull { it.sounds.verses[verseId] } ?: return
+        val word = sound.count.guessedWords.firstOrNull() ?: return
+        val now = engineOf(state.soundLanguage).countSyllables(word).syllables
+        val corrected = (now + syllables - sound.count.syllables).coerceAtLeast(1)
+        viewModelScope.launch {
+            corrections.correct(language = state.soundLanguage, word = word, syllables = corrected)
+        }
+    }
+
+    private fun engineOf(language: SongLanguage) =
+        engines.of(if (language == SongLanguage.ENGLISH) PhoneticLanguage.ENGLISH else PhoneticLanguage.FRENCH)
 
     // The first section showing the verse: the source of a repeat, or the repeat, hold the same verses.
     private fun sectionOf(verseId: String): SongSection? =

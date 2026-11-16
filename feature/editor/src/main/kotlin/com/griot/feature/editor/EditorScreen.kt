@@ -72,6 +72,7 @@ internal fun EditorScreen(
     LaunchedEffect(uiState.missing) { if (uiState.missing) onBack() }
     var sheet by rememberSaveable { mutableStateOf<EditorSheet?>(null) }
     var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
+    var countFor by rememberSaveable { mutableStateOf<String?>(null) }
     EditorContent(
         uiState = uiState,
         onBack = onBack,
@@ -81,6 +82,7 @@ internal fun EditorScreen(
             onLines = viewModel::onVerseLines,
             onBackspaceAtStart = viewModel::onVerseBackspaceAtStart,
             onFocusHandled = viewModel::onFocusHandled,
+            onCountLongPress = { countFor = it },
         ),
         onSectionActions = { actionsFor = it },
         onAddSection = { sheet = EditorSheet.ADD_SECTION },
@@ -96,6 +98,8 @@ internal fun EditorScreen(
         onSheetClosed = { sheet = null },
         actionsFor = actionsFor,
         onActionsClosed = { actionsFor = null },
+        countFor = countFor,
+        onCountClosed = { countFor = null },
     )
 }
 
@@ -109,7 +113,10 @@ private fun EditorSheets(
     onSheetClosed: () -> Unit,
     actionsFor: String?,
     onActionsClosed: () -> Unit,
+    countFor: String?,
+    onCountClosed: () -> Unit,
 ) {
+    CountCorrection(uiState = uiState, viewModel = viewModel, verseId = countFor, onClosed = onCountClosed)
     PasteUndoOverlay(
         undo = uiState.pasteUndo,
         onUndo = viewModel::onUndoPaste,
@@ -162,6 +169,27 @@ private fun EditorSheets(
             onDismiss = close,
         )
     }
+}
+
+// The count of the verse [verseId] to correct, when it holds a word the dictionaries do not know.
+@Composable
+private fun CountCorrection(
+    uiState: EditorUiState,
+    viewModel: EditorViewModel,
+    verseId: String?,
+    onClosed: () -> Unit,
+) {
+    val counted = uiState.sections.firstNotNullOfOrNull { it.sounds.verses[verseId] } ?: return
+    val word = counted.count.guessedWords.firstOrNull() ?: return
+    CountCorrectionSheet(
+        word = word,
+        count = counted.count.syllables,
+        onSave = { syllables ->
+            verseId?.let { viewModel.onCorrectCount(verseId = it, syllables = syllables) }
+            onClosed()
+        },
+        onDismiss = onClosed,
+    )
 }
 
 @Suppress("LongParameterList") // One callback per change the editor makes.
@@ -311,7 +339,8 @@ private fun EditorScreenPreview() {
                 onBack = {},
                 onTitleChange = {},
                 verseInput = VerseInput(onChange = { _, _ ->
-                }, onLines = { _, _, _ -> }, onBackspaceAtStart = { _, _ -> }, onFocusHandled = {}),
+                }, onLines = { _, _, _ ->
+                }, onBackspaceAtStart = { _, _ -> }, onFocusHandled = {}, onCountLongPress = {}),
                 onSectionActions = {},
                 onAddSection = {},
                 onFontSize = {},

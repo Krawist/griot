@@ -2,6 +2,11 @@
 <resources>
     <string name="editor_add_section">Add a section</string>
     <string name="editor_back">Back to the songs</string>
+    <string name="editor_count_body">“%1$s” is not in the dictionary. Give the syllables of this verse: Griot will remember them for this word.</string>
+    <string name="editor_count_less">One syllable less</string>
+    <string name="editor_count_more">One syllable more</string>
+    <string name="editor_count_save">Save</string>
+    <string name="editor_count_title">How many syllables?</string>
     <string name="editor_delete">Delete</string>
     <string name="editor_delete_repeat">Only this repeat is deleted, not the lyrics it repeats.</string>
     <string name="editor_delete_title">Delete “%1$s”?</string>

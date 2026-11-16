@@ -20,4 +20,10 @@ interface PhoneticEngine {
 
     /** The rhyme of [verse]; `null` for a verse without a word. */
     fun rhyme(verse: String): Rhyme?
+
+    /**
+     * Replaces the syllables the user gave to words of this language, by word in lower case: they win over the
+     * dictionary and the grapheme rules, and the words are no longer guessed.
+     */
+    fun setCorrections(corrections: Map<String, Int>)
 }

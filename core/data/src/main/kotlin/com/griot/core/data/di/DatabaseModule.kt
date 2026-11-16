@@ -9,6 +9,7 @@ import com.griot.core.data.database.dao.SongDao
 import com.griot.core.data.database.dao.SyncStateDao
 import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.dao.VersionDao
+import com.griot.core.data.database.dao.WordCorrectionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,4 +42,7 @@ internal object DatabaseModule {
 
     @Provides
     fun provideSyncStateDao(database: GriotDatabase): SyncStateDao = database.syncStateDao()
+
+    @Provides
+    fun provideWordCorrectionDao(database: GriotDatabase): WordCorrectionDao = database.wordCorrectionDao()
 }

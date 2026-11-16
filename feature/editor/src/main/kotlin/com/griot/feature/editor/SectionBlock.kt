@@ -2,6 +2,7 @@ package com.griot.feature.editor
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -137,6 +138,7 @@ private fun VerseRow(
         )
         VerseCount(
             sound = sound.takeIf { verse.text.isNotBlank() },
+            onLongPress = { input.onCountLongPress(verse.id) },
             style = marginStyle,
             modifier = Modifier.width(MarginWidth).padding(top = marginTop),
         )
@@ -180,17 +182,26 @@ private fun VerseLetter(sound: VerseSound?, showRhymes: Boolean, style: TextStyl
     )
 }
 
-// The syllables in the margin, rolling to their new count, lighter when a word was guessed.
+// The syllables in the margin, rolling to their new count, lighter when a word was guessed: a long press then offers
+// to correct it.
 @Composable
-private fun VerseCount(sound: VerseSound?, style: TextStyle, modifier: Modifier) {
+private fun VerseCount(sound: VerseSound?, onLongPress: () -> Unit, style: TextStyle, modifier: Modifier) {
     val palette = GriotTheme.palette
-    Box(modifier = modifier, contentAlignment = Alignment.TopEnd) {
+    val guessed = sound?.count?.guessedWords.orEmpty().isNotEmpty()
+    val press = if (guessed) Modifier.combinedClickable(onClick = {}, onLongClick = onLongPress) else Modifier
+    Box(modifier = modifier.then(press), contentAlignment = Alignment.TopEnd) {
         if (sound != null) {
             RollingNumber(value = sound.count.syllables) { syllables ->
                 Text(
                     text = syllables.toString(),
                     style = style.copy(fontWeight = FontWeight.Medium),
-                    color = if (sound.count.guessed) palette.muted.copy(alpha = GUESSED_ALPHA) else palette.muted,
+                    color = if (sound.count.guessedWords.isNotEmpty()) {
+                        palette.muted.copy(
+                            alpha = GUESSED_ALPHA,
+                        )
+                    } else {
+                        palette.muted
+                    },
                 )
             }
         }

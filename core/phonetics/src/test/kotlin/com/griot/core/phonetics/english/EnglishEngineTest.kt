@@ -21,7 +21,7 @@ internal class EnglishEngineTest {
             val count = engine.countSyllables(verse)
 
             // then
-            count shouldBe SyllableCount(syllables = syllables, guessed = false)
+            count shouldBe SyllableCount(syllables = syllables)
         }
 
         @Test
@@ -30,7 +30,7 @@ internal class EnglishEngineTest {
             val count = engine.countSyllables("we dance in Bonaberi")
 
             // then
-            count.guessed shouldBe true
+            count.guessedWords shouldBe listOf("Bonaberi")
         }
     }
 

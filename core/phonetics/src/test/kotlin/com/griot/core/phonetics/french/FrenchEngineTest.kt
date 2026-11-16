@@ -39,7 +39,7 @@ internal class FrenchEngineTest {
             val count = engine.countSyllables(verse)
 
             // then
-            count shouldBe SyllableCount(syllables = syllables, guessed = false)
+            count shouldBe SyllableCount(syllables = syllables)
         }
 
         @Test
@@ -48,7 +48,32 @@ internal class FrenchEngineTest {
             val count = engine.countSyllables("un soir à Bonabéri")
 
             // then
-            count shouldBe SyllableCount(syllables = 7, guessed = true)
+            count shouldBe SyllableCount(syllables = 7, guessedWords = listOf("Bonabéri"))
+        }
+
+        @Test
+        fun `should count an English word with the English engine`() {
+            // when
+            // « danse » is elided before the vowel of « all ».
+            val count = engine.countSyllables("je danse all night")
+
+            // then
+            count shouldBe SyllableCount(syllables = 4)
+        }
+    }
+
+    @Nested
+    inner class SetCorrections {
+        @Test
+        fun `should count a corrected word as the user said, no longer guessed`() {
+            // given
+            val engine = PhoneticEngines().french
+
+            // when
+            engine.setCorrections(mapOf("bonabéri" to 3))
+
+            // then
+            engine.countSyllables("un soir à Bonabéri") shouldBe SyllableCount(syllables = 6)
         }
     }
 

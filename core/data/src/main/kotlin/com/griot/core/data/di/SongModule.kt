@@ -4,6 +4,8 @@ import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongEditorRepositoryImpl
 import com.griot.core.data.song.SongRepository
 import com.griot.core.data.song.SongRepositoryImpl
+import com.griot.core.data.song.WordCorrectionRepository
+import com.griot.core.data.song.WordCorrectionRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,4 +19,7 @@ internal interface SongModule {
 
     @Binds
     fun bindSongEditorRepository(impl: SongEditorRepositoryImpl): SongEditorRepository
+
+    @Binds
+    fun bindWordCorrectionRepository(impl: WordCorrectionRepositoryImpl): WordCorrectionRepository
 }

@@ -16,6 +16,8 @@ import com.griot.core.data.preferences.UserPreferencesRepository
  * @property sections Sections in order, with their labels.
  * @property focus The verse to focus next, until its field took the focus; `null` otherwise.
  * @property fontSize Size of the lyrics, in sp, before the system font scale.
+ * @property soundLanguage The language the syllables and rhymes are read in: [writingLanguage], else the language of
+ * new songs, else French.
  * @property showRhymes Whether the rhymes are coloured.
  * @property pasteUndo The last paste split into sections, while its undo bar shows; `null` otherwise.
  */
@@ -29,6 +31,7 @@ internal data class EditorUiState(
     val sections: List<EditorSection> = emptyList(),
     val focus: VerseFocus? = null,
     val fontSize: Int = UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE,
+    val soundLanguage: SongLanguage = SongLanguage.FRENCH,
     val showRhymes: Boolean = true,
     val pasteUndo: PasteUndo? = null,
 )

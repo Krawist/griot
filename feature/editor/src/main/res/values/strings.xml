@@ -2,6 +2,11 @@
 <resources>
     <string name="editor_add_section">Ajouter une section</string>
     <string name="editor_back">Retour aux chansons</string>
+    <string name="editor_count_body">« %1$s » n\'est pas dans le dictionnaire. Donne le nombre de syllabes de ce vers : Griot s\'en souviendra pour ce mot.</string>
+    <string name="editor_count_less">Une syllabe de moins</string>
+    <string name="editor_count_more">Une syllabe de plus</string>
+    <string name="editor_count_save">Enregistrer</string>
+    <string name="editor_count_title">Combien de syllabes ?</string>
     <string name="editor_delete">Supprimer</string>
     <string name="editor_delete_repeat">Seule cette reprise est supprimée, pas le texte qu\'elle répète.</string>
     <string name="editor_delete_title">Supprimer « %1$s » ?</string>

@@ -43,7 +43,7 @@ internal class SongSoundsTest {
 
             // then
             sounds.verses["my-verse-id-1"] shouldBe VerseSound(
-                count = SyllableCount(syllables = 7, guessed = false),
+                count = SyllableCount(syllables = 7),
                 letter = 0,
                 rhymes = true,
                 ending = 24 until 28,
@@ -79,7 +79,7 @@ internal class SongSoundsTest {
 
             // then
             sounds.verses["my-verse-id-2"] shouldBe VerseSound(
-                count = SyllableCount(syllables = 0, guessed = false),
+                count = SyllableCount(syllables = 0),
                 letter = null,
                 rhymes = false,
                 ending = null,

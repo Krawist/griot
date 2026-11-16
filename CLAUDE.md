@@ -201,7 +201,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   letters by order of appearance per section, the scheme in the header, the rhyming ending highlighted (only when
   another verse of the section rhymes), counts rolling and lighter when guessed, glass toolbar with « Section » and
   « Rimes » (`showRhymes` preference). Licences still to show in the settings (GRI-29).
-- [ ] **Next tickets:** GRI-23 (mixed texts, count correction), then GRI-11 (import) (GRI-10 waits for GRI-27).
+- [x] **GRI-23** — each engine reads the other language's words (`PhoneticEngines` wires them; an English word
+  ending a French verse rhymes by the English engine). `SyllableCount.guessedWords` lists the words in no dictionary;
+  a long press on a lighter count opens `CountCorrectionSheet`: the first unknown word gets the syllables that make
+  the count given, kept in `word_corrections` (Room, database version 2, auto-migration) and applied by
+  `PhoneticEngine.setCorrections` in every song.
+- [ ] **Next tickets:** GRI-11 (import), then GRI-24 (history), GRI-25 (export) (GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

@@ -18,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @param other The French engine, for French words of an English song.
  */
+// One function per way of reading a word: dictionary, elision, compound, other language, guess.
+@Suppress("TooManyFunctions")
 class EnglishEngine internal constructor(
     private val dictionary: PhoneticDictionary,
     private val other: () -> PhoneticEngine?,
@@ -43,6 +45,9 @@ class EnglishEngine internal constructor(
 
     private val cache = ConcurrentHashMap<String, Analysis>()
 
+    @Volatile
+    private var corrections: Map<String, Int> = emptyMap()
+
     override val language = PhoneticLanguage.ENGLISH
 
     override fun lookup(word: String): Transcription? = dictionary[word.lowercase(Locale.ENGLISH)]?.let { phonemes ->
@@ -56,8 +61,16 @@ class EnglishEngine internal constructor(
 
     override fun countSyllables(verse: String): SyllableCount {
         val words = wordsOf(verse).map { analyse(it.text) }
-        return SyllableCount(syllables = words.sumOf { it.syllables }, guessed = words.any { !it.known })
+        return SyllableCount(syllables = words.sumOf { it.syllables }, guessedWords = guessedWords(verse))
     }
+
+    override fun setCorrections(corrections: Map<String, Int>) {
+        if (corrections == this.corrections) return
+        this.corrections = corrections
+        cache.clear()
+    }
+
+    private fun guessedWords(verse: String): List<String> = wordsOf(verse).map { it.text }.filter { !analyse(it).known }
 
     override fun rhyme(verse: String): Rhyme? {
         val last = wordsOf(verse).lastOrNull() ?: return null
@@ -76,10 +89,12 @@ class EnglishEngine internal constructor(
 
     private fun analyse(word: String): Analysis = cache.getOrPut(word.lowercase(Locale.ENGLISH)) {
         val lower = word.lowercase(Locale.ENGLISH)
-        dictionary[lower]?.let { known(lower, it.split(' ')) }
+        val analysis = dictionary[lower]?.let { known(lower, it.split(' ')) }
             ?: compound(lower)
             ?: foreign(lower)
             ?: guess(lower)
+        // The user's count wins, and the word is no longer a guess.
+        corrections[lower]?.let { syllables -> analysis.copy(syllables = syllables, known = true) } ?: analysis
     }
 
     private fun known(word: String, phonemes: List<String>): Analysis {

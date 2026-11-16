@@ -7,10 +7,12 @@ package com.griot.feature.editor
  * @property onLines A line break was typed or pasted: the lines, and where the cursor is in the last one.
  * @property onBackspaceAtStart Backspace with the cursor at the start: the verse's text.
  * @property onFocusHandled The verse asked to take the focus has it.
+ * @property onCountLongPress Long press on the verse's count, to correct it.
  */
 internal data class VerseInput(
     val onChange: (String, String) -> Unit,
     val onLines: (String, List<String>, Int) -> Unit,
     val onBackspaceAtStart: (String, String) -> Unit,
     val onFocusHandled: () -> Unit,
+    val onCountLongPress: (String) -> Unit,
 )
