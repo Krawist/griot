@@ -14,6 +14,7 @@ android {
 dependencies {
     api(libs.androidx.datastore.preferences)
     implementation(libs.androidx.appcompat)
+    implementation(libs.mlkit.language.id)
     implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.kotlinx.coroutines.test)

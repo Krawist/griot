@@ -74,8 +74,7 @@ internal fun EditorScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     // A song deleted meanwhile, on this phone or another one, closes the editor.
     LaunchedEffect(uiState.missing) { if (uiState.missing) onBack() }
-    var addingSection by rememberSaveable { mutableStateOf(false) }
-    var resizing by rememberSaveable { mutableStateOf(false) }
+    var sheet by rememberSaveable { mutableStateOf<EditorSheet?>(null) }
     var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
     EditorContent(
         uiState = uiState,
@@ -88,33 +87,29 @@ internal fun EditorScreen(
             onFocusHandled = viewModel::onFocusHandled,
         ),
         onSectionActions = { actionsFor = it },
-        onAddSection = { addingSection = true },
-        onFontSize = { resizing = true },
+        onAddSection = { sheet = EditorSheet.ADD_SECTION },
+        onFontSize = { sheet = EditorSheet.FONT_SIZE },
         onFontSizeChange = viewModel::onFontSizeChange,
+        onLanguage = { sheet = EditorSheet.LANGUAGE },
     )
     EditorSheets(
         uiState = uiState,
         viewModel = viewModel,
-        resizing = resizing,
-        onResized = { resizing = false },
-        addingSection = addingSection,
-        onSectionAdded = { addingSection = false },
+        sheet = sheet,
+        onSheetClosed = { sheet = null },
         actionsFor = actionsFor,
         onActionsClosed = { actionsFor = null },
     )
 }
 
-// What the editor shows over its content: the undo bar of a paste, and the sheets of the text size, a new section and
-// the actions of a section.
-@Suppress("LongParameterList") // Which sheet is open, and how each one closes.
+// What the editor shows over its content: the undo bar of a paste, the [sheet] open, and the actions of a section.
+@Suppress("LongParameterList") // Which sheets are open, and how each one closes.
 @Composable
 private fun EditorSheets(
     uiState: EditorUiState,
     viewModel: EditorViewModel,
-    resizing: Boolean,
-    onResized: () -> Unit,
-    addingSection: Boolean,
-    onSectionAdded: () -> Unit,
+    sheet: EditorSheet?,
+    onSheetClosed: () -> Unit,
     actionsFor: String?,
     onActionsClosed: () -> Unit,
 ) {
@@ -123,21 +118,28 @@ private fun EditorSheets(
         onUndo = viewModel::onUndoPaste,
         onDismissed = viewModel::onPasteUndoDismissed,
     )
-    if (resizing) {
-        FontSizeSheet(
+    when (sheet) {
+        EditorSheet.FONT_SIZE -> FontSizeSheet(
             size = uiState.fontSize,
             onSizeChange = viewModel::onFontSizeChange,
-            onDismiss = onResized,
+            onDismiss = onSheetClosed,
         )
-    }
-    if (addingSection) {
-        AddSectionSheet(
+        EditorSheet.ADD_SECTION -> AddSectionSheet(
             onAdd = { kind ->
                 viewModel.onAddSection(kind)
-                onSectionAdded()
+                onSheetClosed()
             },
-            onDismiss = onSectionAdded,
+            onDismiss = onSheetClosed,
         )
+        EditorSheet.LANGUAGE -> LanguageSheet(
+            language = uiState.language,
+            onSelect = { language ->
+                viewModel.onLanguageSelected(language)
+                onSheetClosed()
+            },
+            onDismiss = onSheetClosed,
+        )
+        null -> Unit
     }
     uiState.sections.firstOrNull { it.section.id == actionsFor }?.let { section ->
         val close = onActionsClosed
@@ -176,14 +178,17 @@ private fun EditorContent(
     onAddSection: () -> Unit,
     onFontSize: () -> Unit,
     onFontSizeChange: (Int) -> Unit,
+    onLanguage: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().imePadding()) {
         EditorTopBar(
             title = uiState.title,
             language = uiState.language,
+            detectedLanguage = uiState.detectedLanguage,
             onBack = onBack,
             onTitleChange = onTitleChange,
             onFontSize = onFontSize,
+            onLanguage = onLanguage,
         )
         if (!uiState.loading) {
             LazyColumn(
@@ -371,6 +376,7 @@ private fun EditorScreenPreview() {
                 onAddSection = {},
                 onFontSize = {},
                 onFontSizeChange = {},
+                onLanguage = {},
             )
         }
     }

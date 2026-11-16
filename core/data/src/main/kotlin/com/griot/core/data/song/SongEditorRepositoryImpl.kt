@@ -12,6 +12,7 @@ import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongDocument
+import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.SongVerse
 import java.time.Clock
@@ -56,6 +57,10 @@ internal class SongEditorRepositoryImpl @Inject constructor(
                 },
             )
         }
+    }
+
+    override suspend fun setLanguage(songId: String, language: SongLanguage) = write { now ->
+        songDao.setLanguage(id = songId, language = language, at = now)
     }
 
     override suspend fun addSection(songId: String, kind: SectionKind): String = write { now ->

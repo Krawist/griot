@@ -7,6 +7,7 @@ import androidx.room.Update
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
+import com.griot.core.data.model.SongLanguage
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
@@ -68,6 +69,10 @@ internal interface SongDao {
     /** Renames the song at [at]. */
     @Query("UPDATE songs SET title = :title, updatedAt = :at WHERE id = :id")
     suspend fun rename(id: String, title: String, at: Instant)
+
+    /** Sets the writing language of the song at [at]. */
+    @Query("UPDATE songs SET language = :language, updatedAt = :at WHERE id = :id")
+    suspend fun setLanguage(id: String, language: SongLanguage, at: Instant)
 
     /** Takes the song out of the trash at [at]. */
     @Query("UPDATE songs SET deleted = 0, updatedAt = :at WHERE id = :id")

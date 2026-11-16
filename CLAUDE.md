@@ -189,7 +189,11 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   becomes a chorus), a lone label repeats the last section of its kind. In the editor a multi-line paste of several
   blocks fills the current section and adds the others after it (`pasteSections`), with an undo bar that puts the
   text back into one section (`undoPaste`). A real paste is not checked on the phone yet (no adb clipboard).
-- [ ] **Next tickets:** GRI-11 (import), GRI-18 (GRI-10 waits for GRI-27).
+- [x] **GRI-18** — the language chip opens `LanguageSheet` (Français, English, Automatique) and reads « Auto · FR »
+  once detected. `SongLanguageDetector` (`:core:data`, ML Kit language-id with its model on board) runs on the whole
+  song 1 s after the last change; `EditorUiState.writingLanguage` is the chosen or detected language, for the
+  phonetic engines. The editor's sheets are one `EditorSheet` state.
+- [ ] **Next tickets:** GRI-19 to GRI-23 (phonetics), then GRI-11 (import) (GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

@@ -2,7 +2,9 @@ package com.griot.feature.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.griot.core.data.language.SongLanguageDetector
 import com.griot.core.data.model.SectionKind
+import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepository
@@ -13,26 +15,43 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /** The editor of the song [songId]: every change is saved at once. */
 // One function per change the editor makes.
 @Suppress("TooManyFunctions")
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = EditorViewModel.Factory::class)
 internal class EditorViewModel @AssistedInject constructor(
     @Assisted private val songId: String,
     private val editor: SongEditorRepository,
     private val songs: SongRepository,
     private val preferences: UserPreferencesRepository,
+    private val detector: SongLanguageDetector,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
     private val pasteUndo = MutableStateFlow<PasteUndo?>(null)
+
+    // The whole song, detected again 1 s after the last change: a few English words do not switch a French song.
+    private val detectedLanguage = editor.observeDocument(songId)
+        .map { document -> document?.sections.orEmpty().filter { it.repeatOf == null }.flatMap { it.verses } }
+        .map { verses -> verses.joinToString(separator = "\n") { it.text } }
+        .distinctUntilChanged()
+        .debounce(DETECTION_DELAY_MILLIS)
+        .mapLatest { lyrics -> detector.detect(lyrics) }
+        .onStart { emit(null) }
 
     val uiState: StateFlow<EditorUiState> = editor.observeDocument(songId)
         .map { document ->
@@ -58,7 +77,17 @@ internal class EditorViewModel @AssistedInject constructor(
         .combine(focus) { state, focus -> state.copy(focus = focus) }
         .combine(preferences.editorFontSize) { state, size -> state.copy(fontSize = size) }
         .combine(pasteUndo) { state, undo -> state.copy(pasteUndo = undo) }
+        .combine(detectedLanguage) { state, detected ->
+            state.copy(
+                detectedLanguage = detected,
+                writingLanguage = if (state.language == SongLanguage.AUTOMATIC) detected else state.language,
+            )
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), EditorUiState())
+
+    fun onLanguageSelected(language: SongLanguage) {
+        viewModelScope.launch { editor.setLanguage(songId = songId, language = language) }
+    }
 
     fun onTitleChange(title: String) {
         viewModelScope.launch { songs.renameSong(id = songId, title = title.singleLine()) }
@@ -182,5 +211,6 @@ internal class EditorViewModel @AssistedInject constructor(
         const val MAX_FONT_SIZE = 28
 
         private const val STOP_TIMEOUT_MILLIS = 5_000L
+        private const val DETECTION_DELAY_MILLIS = 1_000L
     }
 }

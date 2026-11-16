@@ -17,10 +17,16 @@
     <string name="editor_kind_outro">Outro</string>
     <string name="editor_kind_verse">Couplet</string>
     <string name="editor_label_numbered">%1$s %2$d</string>
+    <string name="editor_language_auto_detected">Auto · %1$s</string>
     <string name="editor_language_automatic">Auto</string>
+    <string name="editor_language_automatic_hint">En automatique, Griot repère la langue dominante de toute la chanson pour compter les syllabes et trouver les rimes.</string>
+    <string name="editor_language_automatic_name">Automatique</string>
     <string name="editor_language_english" translatable="false">EN</string>
+    <string name="editor_language_english_name" translatable="false">English</string>
     <string name="editor_language_french" translatable="false">FR</string>
+    <string name="editor_language_french_name" translatable="false">Français</string>
     <string name="editor_language_label">Langue de la chanson : %1$s</string>
+    <string name="editor_language_title">Langue de la chanson</string>
     <string name="editor_move_down">Descendre</string>
     <string name="editor_move_up">Monter</string>
     <string name="editor_rename">Renommer</string>

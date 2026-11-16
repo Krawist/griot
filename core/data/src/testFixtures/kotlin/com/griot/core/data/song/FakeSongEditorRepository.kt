@@ -4,6 +4,7 @@ import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongDocument
+import com.griot.core.data.model.SongLanguage
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -16,6 +17,10 @@ class FakeSongEditorRepository(document: SongDocument? = null) : SongEditorRepos
     val calls = mutableListOf<String>()
 
     override fun observeDocument(songId: String) = document
+
+    override suspend fun setLanguage(songId: String, language: SongLanguage) {
+        calls += "language $songId $language"
+    }
 
     override suspend fun addSection(songId: String, kind: SectionKind): String {
         calls += "add $songId $kind"

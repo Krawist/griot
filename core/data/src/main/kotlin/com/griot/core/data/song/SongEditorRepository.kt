@@ -4,6 +4,7 @@ import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongDocument
+import com.griot.core.data.model.SongLanguage
 import kotlinx.coroutines.flow.Flow
 
 /** The content of one song, as the editor changes it. Every change is saved at once and dates the song. */
@@ -12,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 interface SongEditorRepository {
     /** The song [songId] with its sections and verses; `null` when it does not exist or is in the trash. */
     fun observeDocument(songId: String): Flow<SongDocument?>
+
+    /** Sets the writing [language] of the song [songId]: French, English, or automatic. */
+    suspend fun setLanguage(songId: String, language: SongLanguage)
 
     /** Adds a section of [kind] at the end of the song [songId], holding one empty verse, and returns its id. */
     suspend fun addSection(songId: String, kind: SectionKind): String

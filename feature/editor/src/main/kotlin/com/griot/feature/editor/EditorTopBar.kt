@@ -36,13 +36,16 @@ import com.griot.core.design.theme.GriotTheme
 private val ChipHeight = 32.dp
 
 /** The editor's top bar: back, the song's title edited in place, the « Aa » menu and the song's language. */
+@Suppress("LongParameterList") // The title, the languages and one callback per button.
 @Composable
 internal fun EditorTopBar(
     title: String,
     language: SongLanguage,
+    detectedLanguage: SongLanguage?,
     onBack: () -> Unit,
     onTitleChange: (String) -> Unit,
     onFontSize: () -> Unit,
+    onLanguage: () -> Unit,
 ) {
     val palette = GriotTheme.palette
     Row(
@@ -65,7 +68,7 @@ internal fun EditorTopBar(
             modifier = Modifier.weight(1f),
         )
         FontSizeButton(onClick = onFontSize)
-        LanguageChip(language = language)
+        LanguageChip(language = language, detectedLanguage = detectedLanguage, onClick = onLanguage)
     }
 }
 
@@ -89,21 +92,23 @@ private fun FontSizeButton(onClick: () -> Unit) {
     }
 }
 
+// « FR », « EN », or « Auto · FR » once the language of an automatic song is detected.
 @Composable
-private fun LanguageChip(language: SongLanguage) {
+private fun LanguageChip(language: SongLanguage, detectedLanguage: SongLanguage?, onClick: () -> Unit) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(GriotRadius.control)
-    val code = stringResource(
-        when (language) {
-            SongLanguage.FRENCH -> R.string.editor_language_french
-            SongLanguage.ENGLISH -> R.string.editor_language_english
-            SongLanguage.AUTOMATIC -> R.string.editor_language_automatic
-        },
-    )
-    val description = stringResource(R.string.editor_language_label, code)
+    val code = stringResource(language.codeRes())
+    val text = if (language == SongLanguage.AUTOMATIC && detectedLanguage != null) {
+        stringResource(R.string.editor_language_auto_detected, stringResource(detectedLanguage.codeRes()))
+    } else {
+        code
+    }
+    val description = stringResource(R.string.editor_language_label, text)
     Box(
         modifier = Modifier
             .height(ChipHeight)
+            .clip(shape)
+            .clickable(role = Role.Button, onClick = onClick)
             .background(palette.glass, shape)
             .border(1.dp, palette.line, shape)
             .padding(horizontal = 10.dp)
@@ -111,9 +116,16 @@ private fun LanguageChip(language: SongLanguage) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = code,
+            text = text,
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, fontWeight = FontWeight.SemiBold),
             color = palette.ink,
         )
     }
+}
+
+/** The short code of a language: « FR », « EN », « Auto ». */
+internal fun SongLanguage.codeRes(): Int = when (this) {
+    SongLanguage.FRENCH -> R.string.editor_language_french
+    SongLanguage.ENGLISH -> R.string.editor_language_english
+    SongLanguage.AUTOMATIC -> R.string.editor_language_automatic
 }

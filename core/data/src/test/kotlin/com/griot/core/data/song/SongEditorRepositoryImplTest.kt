@@ -781,4 +781,29 @@ internal class SongEditorRepositoryImplTest {
             )
         }
     }
+
+    @Nested
+    inner class SetLanguage {
+        @Test
+        fun `should set the language and date the song`() = runTest {
+            // given
+            database.songDao().insert(
+                SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.AUTOMATIC,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+            )
+
+            // when
+            repository.setLanguage(songId = "my-song-id", language = SongLanguage.ENGLISH)
+
+            // then
+            database.songDao().getById("my-song-id")?.let { it.language to it.updatedAt } shouldBe
+                (SongLanguage.ENGLISH to Instant.parse("2026-11-16T10:00:00Z"))
+        }
+    }
 }

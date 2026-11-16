@@ -9,7 +9,10 @@ import com.griot.core.data.preferences.UserPreferencesRepository
  * @property loading Whether the song is still being read.
  * @property missing Whether the song no longer exists or went to the trash: the editor closes.
  * @property title The song's title; empty for a song not named yet.
- * @property language Writing language, shown in the top bar.
+ * @property language Writing language chosen for the song: French, English or automatic.
+ * @property detectedLanguage Dominant language of the lyrics, French or English; `null` while unknown.
+ * @property writingLanguage The language the song is written in: the one chosen, or the one detected in automatic
+ * mode; `null` while unknown. It picks the phonetic engine.
  * @property sections Sections in order, with their labels.
  * @property focus The verse to focus next, until its field took the focus; `null` otherwise.
  * @property fontSize Size of the lyrics, in sp, before the system font scale.
@@ -20,6 +23,8 @@ internal data class EditorUiState(
     val missing: Boolean = false,
     val title: String = "",
     val language: SongLanguage = SongLanguage.AUTOMATIC,
+    val detectedLanguage: SongLanguage? = null,
+    val writingLanguage: SongLanguage? = null,
     val sections: List<EditorSection> = emptyList(),
     val focus: VerseFocus? = null,
     val fontSize: Int = UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE,
