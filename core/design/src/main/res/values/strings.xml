@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="time_hours_ago">il y a %1$d h</string>
+    <string name="time_just_now">à l\'instant</string>
+    <string name="time_minutes_ago">il y a %1$d min</string>
+    <string name="time_yesterday">hier</string>
+</resources>

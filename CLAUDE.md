@@ -157,7 +157,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
 - [x] **GRI-09** — `LanguageScreen` (step 2/4): French or English, preselected from the phone; « Continuer » saves
   `defaultSongLanguage` (preferences), moves on, then applies the interface language (in that order, as Android
   redraws the screens). The language step goes on to the library until GRI-10 and GRI-11.
-- [ ] **Next tickets:** GRI-12, GRI-13, GRI-14 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
+- [x] **GRI-12** — `LibraryScreen`: greeting, search (accents, case and apostrophes ignored, on titles and verses),
+  filters (automatic-language songs only under « Toutes » and « Brouillons »), song cards last changed first,
+  « Nouvelle chanson » (`SongRepository.createSong`: draft, one verse section, one empty verse) opening
+  `EditorRoute(songId)`. `SongDao.observeLibrary` reads each card in one query. `RelativeTime` in `:core:design`.
+  Still to add: the rhyme dots (GRI-21) and the sync pill (GRI-27). The editor must touch the song's `updatedAt`
+  on every change, as the library sorts on it.
+- [ ] **Next tickets:** GRI-13, GRI-14 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
 
 Update this section at the end of each ticket.
 

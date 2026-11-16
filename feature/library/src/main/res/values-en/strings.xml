@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="library_title">Your songs</string>
-    <string name="library_subtitle">Screen coming soon</string>
+    <string name="library_draft">Draft</string>
+    <string name="library_empty_body">Tap “New song” to write your first song.</string>
+    <string name="library_empty_title">No songs yet</string>
+    <string name="library_filter_all">All</string>
+    <string name="library_filter_drafts">Drafts</string>
+    <string name="library_filter_english">English</string>
+    <string name="library_filter_french">Français</string>
+    <string name="library_greeting">Hi %1$s</string>
+    <string name="library_language_automatic">Auto</string>
     <string name="library_new_song">New song</string>
+    <string name="library_no_result_body">Try another word or another filter.</string>
+    <string name="library_no_result_title">No song matches</string>
+    <string name="library_no_text">No lyrics yet</string>
+    <string name="library_search">Search a title, a verse…</string>
+    <string name="library_title">Your songs</string>
+    <string name="library_untitled">Untitled</string>
+    <plurals name="library_sections">
+        <item quantity="one">%1$d section</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
 </resources>

@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="library_title">Tes chansons</string>
-    <string name="library_subtitle">Écran à venir</string>
+    <string name="library_draft">Brouillon</string>
+    <string name="library_empty_body">Touche « Nouvelle chanson » pour écrire ta première chanson.</string>
+    <string name="library_empty_title">Pas encore de chanson</string>
+    <string name="library_filter_all">Toutes</string>
+    <string name="library_filter_drafts">Brouillons</string>
+    <string name="library_filter_english">English</string>
+    <string name="library_filter_french">Français</string>
+    <string name="library_greeting">Salut %1$s</string>
+    <string name="library_language_automatic">Auto</string>
+    <string name="library_language_english" translatable="false">EN</string>
+    <string name="library_language_french" translatable="false">FR</string>
     <string name="library_new_song">Nouvelle chanson</string>
+    <string name="library_no_result_body">Essaie un autre mot ou un autre filtre.</string>
+    <string name="library_no_result_title">Aucune chanson ne correspond</string>
+    <string name="library_no_text">Pas encore de texte</string>
+    <string name="library_search">Chercher un titre, un vers…</string>
+    <string name="library_title">Tes chansons</string>
+    <string name="library_untitled">Sans titre</string>
+    <plurals name="library_sections">
+        <item quantity="one">%1$d section</item>
+        <item quantity="many">%1$d sections</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
 </resources>

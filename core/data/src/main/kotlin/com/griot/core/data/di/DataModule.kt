@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.time.Clock
 import javax.inject.Singleton
 
 @Module
@@ -19,4 +20,8 @@ internal object DataModule {
     @Singleton
     fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create { context.preferencesDataStoreFile("user_preferences") }
+
+    /** The phone's clock and time zone, replaced by a fixed clock in tests. */
+    @Provides
+    fun provideClock(): Clock = Clock.systemDefaultZone()
 }

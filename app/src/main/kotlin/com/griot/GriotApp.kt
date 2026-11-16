@@ -109,7 +109,7 @@ private fun GriotNavHost(
                 // The restore from Google Drive comes with GRI-30.
                 onRestore = null,
             )
-            libraryGraph(onNewSong = { navController.navigateToEditor() })
+            libraryGraph(onOpenSong = { songId -> navController.navigateToEditor(songId) })
             ideasGraph()
             settingsGraph()
             editorGraph(onBack = { navController.popBackStack() })
