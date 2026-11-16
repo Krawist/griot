@@ -138,7 +138,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   screen, tab, bar, sheet and item transitions, `colorChange()` for rhyme colours; everything snaps with « Supprimer
   les animations ». `AnimatedPresence` and `RollingNumber` (syllable counts) in `:core:design`. Screens slide, tabs
   fade, the bar rises and goes down, the launch screen fades into the first screen.
-- [ ] **Next ticket:** GRI-05, then GRI-06.
+- [x] **GRI-05** — `GriotDatabase` (version 1, schema in `core/data/schemas/`): songs, sections, verses, versions,
+  ideas and `sync_state`. Every content row has a UUID, `updatedAt` and a `deleted` flag (deletes are `markDeleted`).
+  A repeat section points to its source (`repeatOfSectionId`) and holds no verses; `VerseDao.observeBySection`
+  resolves it. A row has changes to push when its `updatedAt` is after its `sync_state.syncedUpdatedAt`. Entities
+  and DAOs are internal; enums (`SongLanguage`, `SectionKind`…) are public in `core.data.model`.
+- [ ] **Next ticket:** GRI-06, then GRI-07.
 
 Update this section at the end of each ticket.
 
