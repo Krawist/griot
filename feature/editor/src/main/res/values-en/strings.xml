@@ -5,6 +5,9 @@
     <string name="editor_delete">Delete</string>
     <string name="editor_delete_repeat">Only this repeat is deleted, not the lyrics it repeats.</string>
     <string name="editor_delete_title">Delete “%1$s”?</string>
+    <string name="editor_font_size">Text size</string>
+    <string name="editor_font_size_sample">I walk alone through the city</string>
+    <string name="editor_font_size_value">%1$d sp</string>
     <string name="editor_kind_bridge">Bridge</string>
     <string name="editor_kind_chorus">Chorus</string>
     <string name="editor_kind_intro">Intro</string>

@@ -99,4 +99,25 @@ internal class UserPreferencesRepositoryImplTest {
             repository.defaultSongLanguage.first() shouldBe SongLanguage.ENGLISH
         }
     }
+
+    @Nested
+    inner class EditorFontSize {
+        @Test
+        fun `should show the lyrics at 18 sp on a new install`() = runTest {
+            // when
+            val size = repository.editorFontSize.first()
+
+            // then
+            size shouldBe 18
+        }
+
+        @Test
+        fun `should keep the size saved`() = runTest {
+            // when
+            repository.setEditorFontSize(24)
+
+            // then
+            repository.editorFontSize.first() shouldBe 24
+        }
+    }
 }

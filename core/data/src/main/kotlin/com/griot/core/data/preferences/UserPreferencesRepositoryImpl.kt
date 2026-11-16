@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.griot.core.data.model.SongLanguage
 import javax.inject.Inject
@@ -24,6 +25,9 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         SongLanguage.entries.firstOrNull { it.name == preferences[DefaultSongLanguage] } ?: SongLanguage.AUTOMATIC
     }
 
+    override val editorFontSize: Flow<Int> =
+        dataStore.data.map { it[EditorFontSize] ?: UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE }
+
     override suspend fun setOnboardingCompleted() {
         dataStore.edit { it[OnboardingCompleted] = true }
     }
@@ -36,9 +40,14 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         dataStore.edit { it[DefaultSongLanguage] = language.name }
     }
 
+    override suspend fun setEditorFontSize(size: Int) {
+        dataStore.edit { it[EditorFontSize] = size }
+    }
+
     private companion object {
         val OnboardingCompleted = booleanPreferencesKey("onboarding_completed")
         val AuthorName = stringPreferencesKey("author_name")
         val DefaultSongLanguage = stringPreferencesKey("default_song_language")
+        val EditorFontSize = intPreferencesKey("editor_font_size")
     }
 }

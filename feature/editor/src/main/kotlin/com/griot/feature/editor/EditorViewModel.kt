@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongSection
+import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongRepository
 import dagger.assisted.Assisted
@@ -26,6 +27,7 @@ internal class EditorViewModel @AssistedInject constructor(
     @Assisted private val songId: String,
     private val editor: SongEditorRepository,
     private val songs: SongRepository,
+    private val preferences: UserPreferencesRepository,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
 
@@ -51,6 +53,7 @@ internal class EditorViewModel @AssistedInject constructor(
             }
         }
         .combine(focus) { state, focus -> state.copy(focus = focus) }
+        .combine(preferences.editorFontSize) { state, size -> state.copy(fontSize = size) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), EditorUiState())
 
     fun onTitleChange(title: String) {
@@ -117,6 +120,11 @@ internal class EditorViewModel @AssistedInject constructor(
         }
     }
 
+    /** Shows the lyrics at [size] sp in every song, kept between [MIN_FONT_SIZE] and [MAX_FONT_SIZE]. */
+    fun onFontSizeChange(size: Int) {
+        viewModelScope.launch { preferences.setEditorFontSize(size.coerceIn(MIN_FONT_SIZE, MAX_FONT_SIZE)) }
+    }
+
     /** The field asked to take the focus has it. */
     fun onFocusHandled() {
         focus.value = null
@@ -133,7 +141,13 @@ internal class EditorViewModel @AssistedInject constructor(
         fun create(songId: String): EditorViewModel
     }
 
-    private companion object {
-        const val STOP_TIMEOUT_MILLIS = 5_000L
+    companion object {
+        /** Smallest size of the lyrics, in sp. */
+        const val MIN_FONT_SIZE = 14
+
+        /** Largest size of the lyrics, in sp. */
+        const val MAX_FONT_SIZE = 28
+
+        private const val STOP_TIMEOUT_MILLIS = 5_000L
     }
 }

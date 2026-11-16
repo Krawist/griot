@@ -14,6 +14,9 @@ interface UserPreferencesRepository {
     /** Writing language of new songs, chosen in the onboarding; [SongLanguage.AUTOMATIC] until then. */
     val defaultSongLanguage: Flow<SongLanguage>
 
+    /** Size of the lyrics in the editor, in sp, for every song; [DEFAULT_EDITOR_FONT_SIZE] until it is changed. */
+    val editorFontSize: Flow<Int>
+
     /** Records that the onboarding was completed: the next launches open the library. */
     suspend fun setOnboardingCompleted()
 
@@ -22,4 +25,12 @@ interface UserPreferencesRepository {
 
     /** Saves the writing [language] of new songs. */
     suspend fun setDefaultSongLanguage(language: SongLanguage)
+
+    /** Saves the [size] of the lyrics in the editor, in sp. */
+    suspend fun setEditorFontSize(size: Int)
+
+    companion object {
+        /** Size of the lyrics, in sp, before the user changes it. */
+        const val DEFAULT_EDITOR_FONT_SIZE = 18
+    }
 }

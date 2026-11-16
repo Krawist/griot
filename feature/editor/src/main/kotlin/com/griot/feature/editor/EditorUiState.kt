@@ -1,6 +1,7 @@
 package com.griot.feature.editor
 
 import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.preferences.UserPreferencesRepository
 
 /**
  * What the editor shows.
@@ -11,6 +12,7 @@ import com.griot.core.data.model.SongLanguage
  * @property language Writing language, shown in the top bar.
  * @property sections Sections in order, with their labels.
  * @property focus The verse to focus next, until its field took the focus; `null` otherwise.
+ * @property fontSize Size of the lyrics, in sp, before the system font scale.
  */
 internal data class EditorUiState(
     val loading: Boolean = true,
@@ -19,4 +21,5 @@ internal data class EditorUiState(
     val language: SongLanguage = SongLanguage.AUTOMATIC,
     val sections: List<EditorSection> = emptyList(),
     val focus: VerseFocus? = null,
+    val fontSize: Int = UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE,
 )

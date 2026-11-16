@@ -2,7 +2,6 @@ package com.griot.feature.editor
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,7 +57,6 @@ import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.core.design.theme.LyricTextStyle
 
-private val ChipHeight = 32.dp
 private val AddSectionHeight = 48.dp
 private val DashWidth = 1.5.dp
 private val SectionGap = 22.dp
@@ -78,6 +75,7 @@ internal fun EditorScreen(
     // A song deleted meanwhile, on this phone or another one, closes the editor.
     LaunchedEffect(uiState.missing) { if (uiState.missing) onBack() }
     var addingSection by rememberSaveable { mutableStateOf(false) }
+    var resizing by rememberSaveable { mutableStateOf(false) }
     var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
     EditorContent(
         uiState = uiState,
@@ -91,18 +89,52 @@ internal fun EditorScreen(
         ),
         onSectionActions = { actionsFor = it },
         onAddSection = { addingSection = true },
+        onFontSize = { resizing = true },
+        onFontSizeChange = viewModel::onFontSizeChange,
     )
+    EditorSheets(
+        uiState = uiState,
+        viewModel = viewModel,
+        resizing = resizing,
+        onResized = { resizing = false },
+        addingSection = addingSection,
+        onSectionAdded = { addingSection = false },
+        actionsFor = actionsFor,
+        onActionsClosed = { actionsFor = null },
+    )
+}
+
+// The sheets the editor opens: text size, a new section, the actions of a section.
+@Suppress("LongParameterList") // Which sheet is open, and how each one closes.
+@Composable
+private fun EditorSheets(
+    uiState: EditorUiState,
+    viewModel: EditorViewModel,
+    resizing: Boolean,
+    onResized: () -> Unit,
+    addingSection: Boolean,
+    onSectionAdded: () -> Unit,
+    actionsFor: String?,
+    onActionsClosed: () -> Unit,
+) {
+    if (resizing) {
+        FontSizeSheet(
+            size = uiState.fontSize,
+            onSizeChange = viewModel::onFontSizeChange,
+            onDismiss = onResized,
+        )
+    }
     if (addingSection) {
         AddSectionSheet(
             onAdd = { kind ->
                 viewModel.onAddSection(kind)
-                addingSection = false
+                onSectionAdded()
             },
-            onDismiss = { addingSection = false },
+            onDismiss = onSectionAdded,
         )
     }
     uiState.sections.firstOrNull { it.section.id == actionsFor }?.let { section ->
-        val close = { actionsFor = null }
+        val close = onActionsClosed
         SectionActionsSheet(
             section = section,
             label = section.label.text(),
@@ -136,12 +168,22 @@ private fun EditorContent(
     verseInput: VerseInput,
     onSectionActions: (String) -> Unit,
     onAddSection: () -> Unit,
+    onFontSize: () -> Unit,
+    onFontSizeChange: (Int) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().imePadding()) {
-        TopBar(title = uiState.title, language = uiState.language, onBack = onBack, onTitleChange = onTitleChange)
+        EditorTopBar(
+            title = uiState.title,
+            language = uiState.language,
+            onBack = onBack,
+            onTitleChange = onTitleChange,
+            onFontSize = onFontSize,
+        )
         if (!uiState.loading) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pinchToResize(size = uiState.fontSize, onSizeChange = onFontSizeChange),
                 contentPadding = PaddingValues(
                     start = GriotSpacing.l,
                     top = GriotSpacing.xl,
@@ -153,6 +195,7 @@ private fun EditorContent(
                 items(items = uiState.sections, key = { it.section.id }) { section ->
                     SectionBlock(
                         section = section,
+                        fontSize = uiState.fontSize,
                         focus = uiState.focus,
                         verseInput = verseInput,
                         onActions = { onSectionActions(section.section.id) },
@@ -166,63 +209,9 @@ private fun EditorContent(
 }
 
 @Composable
-private fun TopBar(title: String, language: SongLanguage, onBack: () -> Unit, onTitleChange: (String) -> Unit) {
-    val palette = GriotTheme.palette
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(start = GriotSpacing.s, top = GriotSpacing.xs, end = GriotSpacing.l),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(GriotSpacing.xs),
-    ) {
-        IconButton(onClick = onBack, modifier = Modifier.size(GriotSpacing.touchTarget)) {
-            Icon(
-                painter = painterResource(DesignR.drawable.ic_back),
-                contentDescription = stringResource(R.string.editor_back),
-                tint = palette.ink,
-            )
-        }
-        SyncedTextField(
-            text = title,
-            onTextChange = onTitleChange,
-            style = MaterialTheme.typography.titleLarge,
-            placeholder = stringResource(R.string.editor_title_placeholder),
-            modifier = Modifier.weight(1f),
-        )
-        LanguageChip(language = language)
-    }
-}
-
-@Composable
-private fun LanguageChip(language: SongLanguage) {
-    val palette = GriotTheme.palette
-    val shape = RoundedCornerShape(GriotRadius.control)
-    val code = stringResource(
-        when (language) {
-            SongLanguage.FRENCH -> R.string.editor_language_french
-            SongLanguage.ENGLISH -> R.string.editor_language_english
-            SongLanguage.AUTOMATIC -> R.string.editor_language_automatic
-        },
-    )
-    val description = stringResource(R.string.editor_language_label, code)
-    Box(
-        modifier = Modifier
-            .height(ChipHeight)
-            .background(palette.glass, shape)
-            .border(1.dp, palette.line, shape)
-            .padding(horizontal = 10.dp)
-            .semantics { contentDescription = description },
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = code,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, fontWeight = FontWeight.SemiBold),
-            color = palette.ink,
-        )
-    }
-}
-
-@Composable
 private fun SectionBlock(
     section: EditorSection,
+    fontSize: Int,
     focus: VerseFocus?,
     verseInput: VerseInput,
     onActions: () -> Unit,
@@ -233,7 +222,7 @@ private fun SectionBlock(
         section.section.verses.forEach { verse ->
             // A repeat shows the same verses as its source: only the source's field takes the focus.
             val ownFocus = focus?.takeIf { it.verseId == verse.id && section.section.repeatOf == null }
-            key(verse.id) { VerseField(verse = verse, focus = ownFocus, input = verseInput) }
+            key(verse.id) { VerseField(verse = verse, fontSize = fontSize, focus = ownFocus, input = verseInput) }
         }
     }
 }
@@ -271,11 +260,12 @@ private fun SectionHeader(section: EditorSection, onActions: () -> Unit) {
 }
 
 @Composable
-private fun VerseField(verse: SongVerse, focus: VerseFocus?, input: VerseInput) {
+private fun VerseField(verse: SongVerse, fontSize: Int, focus: VerseFocus?, input: VerseInput) {
     SyncedTextField(
         text = verse.text,
         onTextChange = { input.onChange(verse.id, it) },
-        style = LyricTextStyle,
+        // In sp: the system font scale still applies on top of the size chosen.
+        style = LyricTextStyle.copy(fontSize = fontSize.sp),
         placeholder = stringResource(R.string.editor_verse_placeholder),
         modifier = Modifier.fillMaxWidth().padding(horizontal = GriotSpacing.s, vertical = GriotSpacing.xs),
         onLines = { lines, cursor -> input.onLines(verse.id, lines, cursor) },
@@ -373,6 +363,8 @@ private fun EditorScreenPreview() {
                 }, onLines = { _, _, _ -> }, onBackspaceAtStart = { _, _ -> }, onFocusHandled = {}),
                 onSectionActions = {},
                 onAddSection = {},
+                onFontSize = {},
+                onFontSizeChange = {},
             )
         }
     }

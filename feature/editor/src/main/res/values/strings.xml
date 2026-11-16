@@ -5,6 +5,11 @@
     <string name="editor_delete">Supprimer</string>
     <string name="editor_delete_repeat">Seule cette reprise est supprimée, pas le texte qu\'elle répète.</string>
     <string name="editor_delete_title">Supprimer « %1$s » ?</string>
+    <string name="editor_font_size">Taille du texte</string>
+    <string name="editor_font_size_button" translatable="false">Aa</string>
+    <string name="editor_font_size_letter" translatable="false">A</string>
+    <string name="editor_font_size_sample">Je marche seul dans la ville</string>
+    <string name="editor_font_size_value">%1$d sp</string>
     <string name="editor_kind_bridge">Pont</string>
     <string name="editor_kind_chorus">Refrain</string>
     <string name="editor_kind_intro">Intro</string>

@@ -181,7 +181,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   a « Couplet » below; the ViewModel's `VerseFocus` moves the focus and the cursor. Verses wrap and stay one.
   `SongEditorRepository.splitVerse`, `mergeVerses`, `closeSection`. Backspace is a key event: to confirm with the
   Samsung keyboard in use.
-- [ ] **Next tickets:** GRI-16, GRI-17 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
+- [x] **GRI-16** — lyrics size 14–28 sp (18 by default) in `UserPreferencesRepository.editorFontSize`, for every
+  song: « Aa » sheet with a slider in the editor's top bar, and a two-finger pinch on the lyrics
+  (`pinchToResize`, one finger still scrolls). The pinch is not checked on the phone yet (adb has no multitouch).
+- [ ] **Next tickets:** GRI-17 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
 
 Update this section at the end of each ticket.
 

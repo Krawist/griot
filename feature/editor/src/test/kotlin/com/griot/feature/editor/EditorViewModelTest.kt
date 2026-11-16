@@ -5,6 +5,7 @@ import com.griot.core.data.model.SongDocument
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.SongVerse
+import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.data.song.FakeSongEditorRepository
 import com.griot.core.data.song.FakeSongRepository
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -23,6 +24,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class EditorViewModelTest {
@@ -66,6 +69,7 @@ internal class EditorViewModelTest {
                     ),
                 ),
                 songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -101,6 +105,7 @@ internal class EditorViewModelTest {
                 songId = "my-song-id",
                 editor = FakeSongEditorRepository(document = null),
                 songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -118,7 +123,13 @@ internal class EditorViewModelTest {
         fun `should rename the song`() = runTest {
             // given
             val songs = FakeSongRepository()
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = FakeSongEditorRepository(), songs = songs)
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = FakeSongEditorRepository(),
+                    songs = songs,
+                    preferences = FakeUserPreferencesRepository(),
+                )
 
             // when
             viewModel.onTitleChange("my-title")
@@ -134,7 +145,13 @@ internal class EditorViewModelTest {
         fun `should add a section of the kind picked`() = runTest {
             // given
             val editor = FakeSongEditorRepository()
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
 
             // when
             viewModel.onAddSection(SectionKind.BRIDGE)
@@ -147,7 +164,13 @@ internal class EditorViewModelTest {
         fun `should repeat, rename, move and delete the section`() = runTest {
             // given
             val editor = FakeSongEditorRepository()
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
 
             // when
             viewModel.onRepeatSection("my-section-id")
@@ -171,7 +194,13 @@ internal class EditorViewModelTest {
         fun `should save the verse on one line`() = runTest {
             // given
             val editor = FakeSongEditorRepository()
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
 
             // when
             viewModel.onVerseChange(verseId = "my-verse-id", text = "my-text\nmy-other-text")
@@ -205,7 +234,13 @@ internal class EditorViewModelTest {
                     ),
                 ),
             )
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
 
@@ -240,7 +275,13 @@ internal class EditorViewModelTest {
                     ),
                 ),
             )
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
 
@@ -275,7 +316,13 @@ internal class EditorViewModelTest {
                     ),
                 ),
             )
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
 
@@ -311,7 +358,13 @@ internal class EditorViewModelTest {
                     ),
                 ),
             )
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
 
@@ -346,7 +399,13 @@ internal class EditorViewModelTest {
                     ),
                 ),
             )
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
 
@@ -383,7 +442,13 @@ internal class EditorViewModelTest {
                     ),
                 ),
             )
-            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            val viewModel =
+                EditorViewModel(
+                    songId = "my-song-id",
+                    editor = editor,
+                    songs = FakeSongRepository(),
+                    preferences = FakeUserPreferencesRepository(),
+                )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
 
@@ -394,6 +459,46 @@ internal class EditorViewModelTest {
 
             // then
             viewModel.uiState.first { it.focus == null }.focus.shouldBeNull()
+        }
+    }
+
+    @Nested
+    inner class OnFontSizeChange {
+        @ParameterizedTest
+        @CsvSource("14, 14", "24, 24", "28, 28", "10, 14", "40, 28")
+        fun `should save the size, kept between 14 and 28 sp`(size: Int, saved: Int) = runTest {
+            // given
+            val preferences = FakeUserPreferencesRepository()
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = FakeSongEditorRepository(),
+                songs = FakeSongRepository(),
+                preferences = preferences,
+            )
+
+            // when
+            viewModel.onFontSizeChange(size)
+
+            // then
+            preferences.editorFontSize.value shouldBe saved
+        }
+
+        @Test
+        fun `should show the lyrics at the size saved`() = runTest {
+            // given
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = FakeSongEditorRepository(),
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(editorFontSize = 22),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            val state = viewModel.uiState.first { !it.loading }
+
+            // then
+            state.fontSize shouldBe 22
         }
     }
 }
