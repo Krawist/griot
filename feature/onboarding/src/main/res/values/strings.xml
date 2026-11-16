@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="onboarding_title">Bienvenue sur Griot</string>
-    <string name="onboarding_subtitle">Écris tes chansons. Garde ta voix.</string>
-    <string name="onboarding_start">Commencer</string>
+    <string name="welcome_body">Griot compte tes syllabes, colore tes rimes et t\'aide quand tu bloques. Tes textes ne se perdent plus jamais.</string>
+    <string name="welcome_headline">Écris tes chansons.\nGarde ta voix.</string>
+    <string name="welcome_restore">Restaurer depuis Google Drive</string>
+    <string name="welcome_start">Commencer</string>
+    <string name="welcome_wordmark" translatable="false">Griot</string>
 </resources>

@@ -148,7 +148,9 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   the language applies at once and survives a restart. Temporary language choice on the settings placeholder until
   GRI-29. detekt rule `HardcodedUiText` (`:detekt-rules`) rejects literal text passed to UI parameters outside
   previews. MockK is in the catalog for static platform APIs.
-- [ ] **Next ticket:** GRI-07, then GRI-08.
+- [x] **GRI-07** — `WelcomeScreen` from the mockup (logo tile, promise, « Commencer »). « Restaurer depuis Google
+  Drive » shows only when `onboardingGraph` gets an `onRestore`: `:app` passes `null` until GRI-30.
+- [ ] **Next ticket:** GRI-08, then GRI-09.
 
 Update this section at the end of each ticket.
 
