@@ -1,23 +1,46 @@
 package com.griot
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.BottomBarTab
+import com.griot.core.design.component.GriotBottomBar
+import com.griot.core.design.component.backdrop
+import com.griot.core.design.component.screenBackdropShapes
+import com.griot.core.design.glass.GlassScreen
 import com.griot.feature.editor.editorGraph
 import com.griot.feature.editor.navigateToEditor
+import com.griot.feature.ideas.IdeasGraph
 import com.griot.feature.ideas.ideasGraph
-import com.griot.feature.ideas.navigateToIdeas
 import com.griot.feature.library.LibraryGraph
 import com.griot.feature.library.libraryGraph
 import com.griot.feature.onboarding.OnboardingGraph
 import com.griot.feature.onboarding.onboardingGraph
-import com.griot.feature.settings.navigateToSettings
+import com.griot.feature.settings.SettingsGraph
 import com.griot.feature.settings.settingsGraph
 import kotlinx.coroutines.delay
 
@@ -41,31 +64,75 @@ internal fun GriotApp(uiState: MainUiState, onOnboardingCompleted: () -> Unit) {
     }
 }
 
+// The tabs of the bottom bar, in order, by the route of their graph.
+private val TabRoutes = listOf(LibraryGraph, IdeasGraph, SettingsGraph)
+
 @Composable
 private fun GriotNavHost(
     onboardingCompleted: Boolean,
     onOnboardingCompleted: () -> Unit,
     navController: NavHostController = rememberNavController(),
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = if (onboardingCompleted) LibraryGraph else OnboardingGraph,
+    // Chosen once: a new start destination would rebuild the graph under the back stack when the onboarding completes.
+    val startDestination = remember { if (onboardingCompleted) LibraryGraph else OnboardingGraph }
+    GlassScreen(
+        // Drawn once behind every screen, which are transparent: glass cards and the bar blur these shapes.
+        background = { Box(Modifier.fillMaxSize().backdrop(screenBackdropShapes())) },
+        overlay = { TabsOverlay(navController = navController) },
     ) {
-        onboardingGraph(
-            onCompleted = {
-                onOnboardingCompleted()
-                navController.navigate(LibraryGraph) {
-                    popUpTo(navController.graph.id) { inclusive = true }
-                }
-            },
+        NavHost(navController = navController, startDestination = startDestination) {
+            onboardingGraph(
+                onCompleted = {
+                    onOnboardingCompleted()
+                    navController.navigate(LibraryGraph) {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                    }
+                },
+            )
+            libraryGraph(onNewSong = { navController.navigateToEditor() })
+            ideasGraph()
+            settingsGraph()
+            editorGraph(onBack = { navController.popBackStack() })
+        }
+    }
+}
+
+// The bottom bar, only on the tabs: it goes down during the onboarding and in the editor.
+@Composable
+private fun BoxScope.TabsOverlay(navController: NavHostController) {
+    val destination = navController.currentBackStackEntryAsState().value?.destination
+    val selectedTab = TabRoutes.indexOfFirst { route ->
+        destination?.hierarchy?.any { it.hasRoute(route::class) } == true
+    }
+    // The last tab shown stays drawn while the bar goes down.
+    var shownTab by remember { mutableStateOf(0) }
+    if (selectedTab >= 0) shownTab = selectedTab
+    AnimatedVisibility(
+        visible = selectedTab >= 0,
+        enter = slideInVertically { it } + fadeIn(),
+        exit = slideOutVertically { it } + fadeOut(),
+        modifier = Modifier.align(Alignment.BottomCenter),
+    ) {
+        GriotBottomBar(
+            tabs = listOf(
+                BottomBarTab(icon = DesignR.drawable.ic_nav_songs, label = stringResource(R.string.tab_songs)),
+                BottomBarTab(icon = DesignR.drawable.ic_nav_ideas, label = stringResource(R.string.tab_ideas)),
+                BottomBarTab(icon = DesignR.drawable.ic_nav_settings, label = stringResource(R.string.tab_settings)),
+            ),
+            selectedTab = shownTab,
+            onTabSelected = { index -> navController.navigateToTab(TabRoutes[index]) },
         )
-        libraryGraph(
-            onNewSong = { navController.navigateToEditor() },
-            onOpenIdeas = { navController.navigateToIdeas() },
-            onOpenSettings = { navController.navigateToSettings() },
-        )
-        editorGraph(onBack = { navController.popBackStack() })
-        ideasGraph(onBack = { navController.popBackStack() })
-        settingsGraph(onBack = { navController.popBackStack() })
+    }
+}
+
+// « Chansons » stays at the bottom of the back stack: back from another tab returns to it, then leaves the app. Each
+// tab keeps its own state when the user switches between them. It pops up to the library's screen, not to its graph
+// entry: popping to the graph would remove the screen and leave nothing to go back to.
+private fun NavHostController.navigateToTab(route: Any) {
+    val libraryScreen = (graph.findNode<LibraryGraph>() as NavGraph).findStartDestination()
+    navigate(route) {
+        popUpTo(libraryScreen.id) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
     }
 }

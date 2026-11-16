@@ -21,7 +21,7 @@ internal class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            GriotTheme {
+            GriotTheme(glassBlur = (application as GriotApplication).glassBlur) {
                 GriotApp(uiState = uiState, onOnboardingCompleted = viewModel::onOnboardingCompleted)
             }
         }

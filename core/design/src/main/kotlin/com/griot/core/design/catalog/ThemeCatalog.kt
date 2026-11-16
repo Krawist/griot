@@ -85,6 +85,7 @@ private fun GriotPalette.tokens(): List<Pair<String, Color>> = listOf(
     "radioOff" to radioOff,
     "sheet" to sheet,
     "scrim" to scrim,
+    "shadow" to shadow,
     "inverse" to inverse,
     "onInverse" to onInverse,
     "selection" to selection,

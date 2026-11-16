@@ -130,7 +130,11 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   notification icon; `LogoTile` and the `backdrop` modifier (blurred shapes as radial gradients) in `:core:design`;
   system splash (`splash_icon`, one vector per mode) handed off to `LaunchScreen` (2 s) at the same place; frosted
   adaptive launcher icon with a monochrome layer.
-- [ ] **Next tickets:** GRI-04 and GRI-44.
+- [x] **GRI-04** — glass layer from Cauri in `core/design/glass/`: `supportsGlassBlur()` (chosen once in
+  `GriotApplication`), `GlassScreen` (background, content, overlay layers), `GlassSurface` (Haze blur or opaque
+  tint); `GriotBottomBar` with « Chansons », « Idées », « Réglages » on the tabs only; `navigateToTab` keeps
+  « Chansons » at the bottom of the back stack. Screens are transparent over the shared `screenBackdropShapes()`.
+- [ ] **Next ticket:** GRI-44, then GRI-05.
 
 Update this section at the end of each ticket.
 

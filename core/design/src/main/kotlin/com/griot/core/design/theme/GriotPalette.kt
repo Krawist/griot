@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
  * @property radioOff Ring of an unselected radio button.
  * @property sheet Fill of bottom sheets.
  * @property scrim Dimming layer behind a sheet.
+ * @property shadow Colour of the shadows under floating surfaces; opaque, as Android sets the shadow strength itself.
  * @property inverse Fill of a selected filter chip and other inverted controls.
  * @property onInverse Text drawn on [inverse].
  * @property selection Fill of the selected verse in the editor.
@@ -66,6 +67,7 @@ data class GriotPalette(
     val radioOff: Color,
     val sheet: Color,
     val scrim: Color,
+    val shadow: Color,
     val inverse: Color,
     val onInverse: Color,
     val selection: Color,
@@ -106,6 +108,7 @@ internal val LightPalette = GriotPalette(
     radioOff = Color(0xFFC9C2D3),
     sheet = Color(0xFFFFFFFF),
     scrim = Color(0x59140F1E),
+    shadow = Color(0xFF3C1446),
     inverse = Color(0xFF1E1B2E),
     onInverse = Color(0xFFFFFFFF),
     selection = Color(0x14E0287D),
@@ -146,6 +149,7 @@ internal val DarkPalette = GriotPalette(
     radioOff = Color(0xFF4A4858),
     sheet = Color(0xFF1A1B26),
     scrim = Color(0x8C000000),
+    shadow = Color(0xFF000000),
     inverse = Color(0xFFF4F1F8),
     onInverse = Color(0xFF0F1018),
     selection = Color(0x29E0287D),

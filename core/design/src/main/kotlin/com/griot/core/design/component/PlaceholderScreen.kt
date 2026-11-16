@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.theme.GriotTheme
 
@@ -24,7 +25,8 @@ fun PlaceholderScreen(
     modifier: Modifier = Modifier,
     actions: List<PlaceholderAction> = emptyList(),
 ) {
-    Surface(modifier = modifier.fillMaxSize(), color = GriotTheme.palette.background) {
+    // Transparent: the glass screen of the app draws the background and its shapes.
+    Surface(modifier = modifier.fillMaxSize(), color = Color.Transparent, contentColor = GriotTheme.palette.ink) {
         Column(
             modifier = Modifier.safeDrawingPadding().padding(horizontal = 20.dp, vertical = 28.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),

@@ -14,8 +14,8 @@ data object LibraryGraph
 @Serializable
 internal data object LibraryRoute
 
-/** Library of songs (GRI-12, GRI-13). The other features are opened through the callbacks, never directly. */
-fun NavGraphBuilder.libraryGraph(onNewSong: () -> Unit, onOpenIdeas: () -> Unit, onOpenSettings: () -> Unit) {
+/** Library of songs (GRI-12, GRI-13). The editor is opened through the callback, never directly. */
+fun NavGraphBuilder.libraryGraph(onNewSong: () -> Unit) {
     navigation<LibraryGraph>(startDestination = LibraryRoute) {
         composable<LibraryRoute> {
             PlaceholderScreen(
@@ -23,8 +23,6 @@ fun NavGraphBuilder.libraryGraph(onNewSong: () -> Unit, onOpenIdeas: () -> Unit,
                 subtitle = stringResource(R.string.library_subtitle),
                 actions = listOf(
                     PlaceholderAction(stringResource(R.string.library_new_song), onNewSong),
-                    PlaceholderAction(stringResource(R.string.library_ideas), onOpenIdeas),
-                    PlaceholderAction(stringResource(R.string.library_settings), onOpenSettings),
                 ),
             )
         }
