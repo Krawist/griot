@@ -114,7 +114,7 @@ private fun GriotNavHost(
                 onOpenSong = { songId -> navController.navigateToEditor(songId) },
                 onBack = { navController.popBackStack() },
             )
-            ideasGraph()
+            ideasGraph(onOpenSong = { songId -> navController.navigateToEditor(songId) })
             settingsGraph(onOpenTrash = { navController.navigateToTrash() })
             editorGraph(navController = navController, onBack = { navController.popBackStack() })
         }

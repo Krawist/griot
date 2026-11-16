@@ -21,9 +21,9 @@ class FakeSongRepository(library: List<LibrarySong> = emptyList(), trash: List<T
 
     override fun observeTrash() = trash
 
-    override suspend fun createSong(): String {
+    override suspend fun createSong(firstVerse: String): String {
         val id = "created-song-id-${calls.count { it.startsWith("create") } + 1}"
-        calls += "create $id"
+        calls += if (firstVerse.isEmpty()) "create $id" else "create $id $firstVerse"
         return id
     }
 

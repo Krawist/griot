@@ -222,7 +222,14 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (`:core:design`, `FileProvider` `${applicationId}.exports`) shares or saves to a folder. From the editor's new
   « ⋯ » menu and from the settings placeholder. Section labels (`SectionLabel`, `sectionLabels`, `words`) and their
   words now live in `:core:data`.
-- [ ] **Next tickets:** GRI-26 (sync repository), GRI-27 (Drive), GRI-38 (ideas) (GRI-10 waits for GRI-27).
+- [x] **GRI-38** — `IdeasScreen` (« Idées » tab): a text idea saved on « Envoyer », an image idea from the photo picker
+  (copied to `files/ideas/`), cards newest first with « Libre » or the song's title, « Rattacher » (`SongPickerSheet`)
+  or « Ouvrir »; long press: edit, link, free, new song from the idea (first verse), delete with an undo bar.
+  `IdeaRepository` (`:core:data`).
+- [x] **GRI-39** — the song's « ⋯ » menu lists its linked ideas; a tap adds one as a verse at the end of the song
+  (`SongEditorRepository.appendVerse`).
+- [ ] **Next tickets:** GRI-29 (settings), GRI-26/28 (sync interface, merge) (GRI-27 needs a Google Cloud OAuth client;
+  GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

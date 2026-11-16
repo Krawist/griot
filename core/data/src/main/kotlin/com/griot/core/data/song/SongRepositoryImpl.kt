@@ -43,7 +43,7 @@ internal class SongRepositoryImpl @Inject constructor(
         rows.map { TrashedSong(id = it.id, title = it.title, deletedAt = it.deletedAt) }
     }
 
-    override suspend fun createSong(): String {
+    override suspend fun createSong(firstVerse: String): String {
         val now = Instant.now(clock)
         val song = SongEntity(
             id = newId(),
@@ -63,7 +63,7 @@ internal class SongRepositoryImpl @Inject constructor(
         val verse = VerseEntity(
             id = newId(),
             sectionId = section.id,
-            text = "",
+            text = firstVerse,
             position = 0,
             updatedAt = now,
         )

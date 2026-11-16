@@ -14,10 +14,10 @@ interface SongRepository {
     fun observeTrash(): Flow<List<TrashedSong>>
 
     /**
-     * Creates an empty draft in the writing language of new songs, with a first verse section holding one empty
-     * verse, and returns its id.
+     * Creates a draft in the writing language of new songs, with a first verse section holding [firstVerse] (empty
+     * by default), and returns its id.
      */
-    suspend fun createSong(): String
+    suspend fun createSong(firstVerse: String = ""): String
 
     /**
      * Creates a song in progress named [title], in automatic language, holding [sections] (a repeat pointing to its

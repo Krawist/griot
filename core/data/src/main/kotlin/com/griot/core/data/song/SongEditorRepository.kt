@@ -35,6 +35,12 @@ interface SongEditorRepository {
     /** Deletes the section [sectionId] and its repeats. */
     suspend fun deleteSection(sectionId: String)
 
+    /**
+     * Adds [text] as a new verse at the end of the song [songId], in its last section with verses of its own (a new
+     * verse section when it has none).
+     */
+    suspend fun appendVerse(songId: String, text: String)
+
     /** Saves the [text] of the verse [verseId]. */
     suspend fun updateVerse(verseId: String, text: String)
 

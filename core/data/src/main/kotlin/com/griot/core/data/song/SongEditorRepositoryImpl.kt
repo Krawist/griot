@@ -120,6 +120,28 @@ internal class SongEditorRepositoryImpl @Inject constructor(
         songDao.touch(id = section.songId, at = now)
     }
 
+    override suspend fun appendVerse(songId: String, text: String) = write { now ->
+        val sections = sectionDao.getBySong(songId)
+        val target = sections.lastOrNull { it.repeatOfSectionId == null } ?: SectionEntity(
+            id = newId(),
+            songId = songId,
+            kind = SectionKind.VERSE,
+            position = sections.size,
+            updatedAt = now,
+        ).also { sectionDao.insert(it) }
+        val verses = verseDao.getBySection(target.id)
+        verseDao.insert(
+            VerseEntity(
+                id = newId(),
+                sectionId = target.id,
+                text = text,
+                position = (verses.maxOfOrNull { it.position } ?: -1) + 1,
+                updatedAt = now,
+            ),
+        )
+        songDao.touch(id = songId, at = now)
+    }
+
     override suspend fun updateVerse(verseId: String, text: String) = write { now ->
         val section = requireSection(requireVerse(verseId).sectionId)
         verseDao.updateText(id = verseId, text = text, at = now)

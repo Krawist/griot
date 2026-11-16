@@ -806,4 +806,57 @@ internal class SongEditorRepositoryImplTest {
                 (SongLanguage.ENGLISH to Instant.parse("2026-11-16T10:00:00Z"))
         }
     }
+
+    @Nested
+    inner class AppendVerse {
+        @Test
+        fun `should add the verse at the end of the last section with verses of its own`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        repeatOfSectionId = "my-section-id-1",
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-1",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            repository.appendVerse(songId = "my-song-id", text = "my-text-2")
+
+            // then
+            repository.observeDocument("my-song-id").first().shouldNotBeNull().sections[0].verses.map {
+                it.text
+            } shouldContainExactly
+                listOf("my-text-1", "my-text-2")
+        }
+    }
 }

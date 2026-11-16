@@ -44,6 +44,10 @@ class FakeSongEditorRepository(document: SongDocument? = null) : SongEditorRepos
         calls += "delete $sectionId"
     }
 
+    override suspend fun appendVerse(songId: String, text: String) {
+        calls += "append $songId $text"
+    }
+
     override suspend fun updateVerse(verseId: String, text: String) {
         calls += "verse $verseId $text"
     }

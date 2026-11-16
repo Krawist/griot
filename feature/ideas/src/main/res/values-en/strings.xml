@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ideas_delete">Delete</string>
+    <string name="ideas_deleted">Idea deleted</string>
+    <string name="ideas_edit">Edit</string>
+    <string name="ideas_edit_confirm">Save</string>
+    <string name="ideas_edit_label">Idea</string>
+    <string name="ideas_empty">A line you overheard, a title passing by: write it down here before it slips away.</string>
+    <string name="ideas_free">Free</string>
+    <string name="ideas_free_action">Unlink from the song</string>
+    <string name="ideas_image">Add an image</string>
+    <string name="ideas_link">Link</string>
+    <string name="ideas_open">Open</string>
+    <string name="ideas_pick_title">Link to a song</string>
+    <string name="ideas_placeholder">Write an idea…</string>
+    <string name="ideas_send">Save the idea</string>
+    <string name="ideas_start_song">New song from this idea</string>
+    <string name="ideas_subtitle">A line, a title, an image: write it down before it slips away.</string>
     <string name="ideas_title">Ideas box</string>
-    <string name="ideas_subtitle">Screen coming soon</string>
+    <string name="ideas_untitled_song">Untitled</string>
 </resources>

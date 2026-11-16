@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ideas_delete">Supprimer</string>
+    <string name="ideas_deleted">Idée supprimée</string>
+    <string name="ideas_edit">Modifier</string>
+    <string name="ideas_edit_confirm">Enregistrer</string>
+    <string name="ideas_edit_label">Idée</string>
+    <string name="ideas_empty">Une phrase entendue, un titre qui passe : note-le ici avant qu\'il file.</string>
+    <string name="ideas_free">Libre</string>
+    <string name="ideas_free_action">Détacher de la chanson</string>
+    <string name="ideas_image">Ajouter une image</string>
+    <string name="ideas_link">Rattacher</string>
+    <string name="ideas_open">Ouvrir</string>
+    <string name="ideas_pick_title">Rattacher à une chanson</string>
+    <string name="ideas_placeholder">Note une idée…</string>
+    <string name="ideas_send">Enregistrer l\'idée</string>
+    <string name="ideas_start_song">Nouvelle chanson avec cette idée</string>
+    <string name="ideas_subtitle">Une phrase, un titre, une image : note-la avant qu\'elle file.</string>
     <string name="ideas_title">Boîte à idées</string>
-    <string name="ideas_subtitle">Écran à venir</string>
+    <string name="ideas_untitled_song">Sans titre</string>
 </resources>
