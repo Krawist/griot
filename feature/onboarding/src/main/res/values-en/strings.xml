@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="name_body">Your first name or artist name. It will sign your exported lyrics.</string>
+    <string name="name_empty">Write your name to continue.</string>
+    <string name="name_label">Name</string>
+    <string name="name_placeholder">Your artist name</string>
+    <string name="name_title">What should we call you?</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_step">Step %1$d of %2$d</string>
     <string name="welcome_body">Griot counts your syllables, colours your rhymes and helps when you\'re stuck. Your lyrics will never get lost again.</string>
     <string name="welcome_headline">Write your songs.\nKeep your voice.</string>
     <string name="welcome_restore">Restore from Google Drive</string>

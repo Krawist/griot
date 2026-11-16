@@ -150,7 +150,11 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   previews. MockK is in the catalog for static platform APIs.
 - [x] **GRI-07** — `WelcomeScreen` from the mockup (logo tile, promise, « Commencer »). « Restaurer depuis Google
   Drive » shows only when `onboardingGraph` gets an `onRestore`: `:app` passes `null` until GRI-30.
-- [ ] **Next ticket:** GRI-08, then GRI-09.
+- [x] **GRI-08** — `NameScreen` (step 1/4) on the shared `OnboardingStep` layout (back, progress, texts, content and
+  actions slots). `GriotButton` and `GriotTextField` in `:core:design`. `UserPreferencesRepository` is now an
+  interface with `UserPreferencesRepositoryImpl` and holds `authorName`; fakes in `:core:data` test fixtures. The
+  name step goes on to the library until GRI-09 adds the next step.
+- [ ] **Next ticket:** GRI-09, then GRI-10.
 
 Update this section at the end of each ticket.
 

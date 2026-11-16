@@ -1,0 +1,80 @@
+package com.griot.core.data.preferences
+
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
+import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+
+internal class UserPreferencesRepositoryImplTest {
+    @TempDir
+    lateinit var folder: File
+
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private lateinit var repository: UserPreferencesRepositoryImpl
+
+    @BeforeEach
+    fun setUp() {
+        val dataStore = PreferenceDataStoreFactory.create(scope = scope) { File(folder, "test.preferences_pb") }
+        repository = UserPreferencesRepositoryImpl(dataStore)
+    }
+
+    @AfterEach
+    fun tearDown() {
+        scope.cancel()
+    }
+
+    @Nested
+    inner class OnboardingCompleted {
+        @Test
+        fun `should not be completed on a new install`() = runTest {
+            // when
+            val completed = repository.onboardingCompleted.first()
+
+            // then
+            completed.shouldBeFalse()
+        }
+
+        @Test
+        fun `should be completed once recorded`() = runTest {
+            // when
+            repository.setOnboardingCompleted()
+
+            // then
+            repository.onboardingCompleted.first().shouldBeTrue()
+        }
+    }
+
+    @Nested
+    inner class AuthorName {
+        @Test
+        fun `should have no name on a new install`() = runTest {
+            // when
+            val name = repository.authorName.first()
+
+            // then
+            name.shouldBeNull()
+        }
+
+        @Test
+        fun `should keep the name saved`() = runTest {
+            // when
+            repository.setAuthorName("my-name")
+
+            // then
+            repository.authorName.first() shouldBe "my-name"
+        }
+    }
+}

@@ -99,6 +99,7 @@ private fun GriotNavHost(
             popExitTransition = { if (betweenTabs()) motion.tabExit() else motion.screenPopExit() },
         ) {
             onboardingGraph(
+                navController = navController,
                 onCompleted = {
                     onOnboardingCompleted()
                     navController.navigate(LibraryGraph) {

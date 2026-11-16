@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="name_body">Ton prénom ou ton nom d\'artiste. Il signera tes textes exportés.</string>
+    <string name="name_empty">Écris ton nom pour continuer.</string>
+    <string name="name_label">Nom</string>
+    <string name="name_placeholder">Ton nom d\'artiste</string>
+    <string name="name_title">Comment on t\'appelle ?</string>
+    <string name="onboarding_back">Retour</string>
+    <string name="onboarding_continue">Continuer</string>
+    <string name="onboarding_progress" translatable="false">%1$d/%2$d</string>
+    <string name="onboarding_step">Étape %1$d sur %2$d</string>
     <string name="welcome_body">Griot compte tes syllabes, colore tes rimes et t\'aide quand tu bloques. Tes textes ne se perdent plus jamais.</string>
     <string name="welcome_headline">Écris tes chansons.\nGarde ta voix.</string>
     <string name="welcome_restore">Restaurer depuis Google Drive</string>

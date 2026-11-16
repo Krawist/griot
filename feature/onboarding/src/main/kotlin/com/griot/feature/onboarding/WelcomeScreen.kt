@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.griot.core.design.component.BackdropShape
+import com.griot.core.design.component.GriotButton
 import com.griot.core.design.component.LogoTile
 import com.griot.core.design.component.backdrop
 import com.griot.core.design.theme.GriotSpacing
@@ -38,7 +37,6 @@ import com.griot.core.design.theme.GriotTheme
 private val LogoSize = 112.dp
 private val WordmarkGap = 20.dp
 private val HeadlineGap = 24.dp
-private val ButtonHeight = 56.dp
 private val ScreenPadding = 28.dp
 private val ContentTop = 56.dp
 
@@ -136,13 +134,7 @@ private fun Promise() {
 private fun Actions(onStart: () -> Unit, onRestore: (() -> Unit)?) {
     val palette = GriotTheme.palette
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(GriotSpacing.l)) {
-        Button(
-            onClick = onStart,
-            shape = CircleShape,
-            modifier = Modifier.fillMaxWidth().height(ButtonHeight),
-        ) {
-            Text(text = stringResource(R.string.welcome_start), style = MaterialTheme.typography.labelLarge)
-        }
+        GriotButton(text = stringResource(R.string.welcome_start), onClick = onStart)
         if (onRestore != null) {
             TextButton(
                 onClick = onRestore,
