@@ -29,4 +29,19 @@ interface SongEditorRepository {
 
     /** Saves the [text] of the verse [verseId]. */
     suspend fun updateVerse(verseId: String, text: String)
+
+    /**
+     * Splits the verse [verseId] into [lines]: the verse keeps the first one, each other one becomes a new verse
+     * below it, in order. Returns the ids of the new verses.
+     */
+    suspend fun splitVerse(verseId: String, lines: List<String>): List<String>
+
+    /** Appends the text of the verse [verseId] to the verse [previousId], and deletes the verse [verseId]. */
+    suspend fun mergeVerses(previousId: String, verseId: String)
+
+    /**
+     * Closes the section of the empty verse [verseId], which is deleted, and starts a new verse section right below,
+     * holding one empty verse. Returns the id of that verse.
+     */
+    suspend fun closeSection(verseId: String): String
 }

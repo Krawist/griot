@@ -8,6 +8,8 @@ import com.griot.core.data.database.entity.VerseEntity
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
+// One query per need of the editor, the library and the duplicate.
+@Suppress("TooManyFunctions")
 @Dao
 internal interface VerseDao {
     @Insert
@@ -53,6 +55,23 @@ internal interface VerseDao {
         """,
     )
     fun observeBySong(songId: String): Flow<List<VerseEntity>>
+
+    /** The verses of the section [sectionId] that are not deleted, in order. */
+    @Query("SELECT * FROM verses WHERE sectionId = :sectionId AND deleted = 0 ORDER BY position")
+    suspend fun getBySection(sectionId: String): List<VerseEntity>
+
+    /** Inserts [verses] in one statement: all or none. */
+    @Insert
+    suspend fun insertAll(verses: List<VerseEntity>)
+
+    /** Moves down by [count] places, at [at], the verses of the section [sectionId] after [position]. */
+    @Query(
+        """
+        UPDATE verses SET position = position + :count, updatedAt = :at
+        WHERE sectionId = :sectionId AND position > :position AND deleted = 0
+        """,
+    )
+    suspend fun shiftAfter(sectionId: String, position: Int, count: Int, at: Instant)
 
     /** Saves the [text] of the verse at [at]. */
     @Query("UPDATE verses SET text = :text, updatedAt = :at WHERE id = :id")

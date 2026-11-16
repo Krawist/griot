@@ -10,6 +10,7 @@ import com.griot.core.data.model.SongLanguage
  * @property title The song's title; empty for a song not named yet.
  * @property language Writing language, shown in the top bar.
  * @property sections Sections in order, with their labels.
+ * @property focus The verse to focus next, until its field took the focus; `null` otherwise.
  */
 internal data class EditorUiState(
     val loading: Boolean = true,
@@ -17,4 +18,5 @@ internal data class EditorUiState(
     val title: String = "",
     val language: SongLanguage = SongLanguage.AUTOMATIC,
     val sections: List<EditorSection> = emptyList(),
+    val focus: VerseFocus? = null,
 )

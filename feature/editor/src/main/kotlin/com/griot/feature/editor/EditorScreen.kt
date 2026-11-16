@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -82,7 +83,12 @@ internal fun EditorScreen(
         uiState = uiState,
         onBack = onBack,
         onTitleChange = viewModel::onTitleChange,
-        onVerseChange = viewModel::onVerseChange,
+        verseInput = VerseInput(
+            onChange = viewModel::onVerseChange,
+            onLines = viewModel::onVerseLines,
+            onBackspaceAtStart = viewModel::onVerseBackspaceAtStart,
+            onFocusHandled = viewModel::onFocusHandled,
+        ),
         onSectionActions = { actionsFor = it },
         onAddSection = { addingSection = true },
     )
@@ -127,7 +133,7 @@ private fun EditorContent(
     uiState: EditorUiState,
     onBack: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onVerseChange: (String, String) -> Unit,
+    verseInput: VerseInput,
     onSectionActions: (String) -> Unit,
     onAddSection: () -> Unit,
 ) {
@@ -147,7 +153,8 @@ private fun EditorContent(
                 items(items = uiState.sections, key = { it.section.id }) { section ->
                     SectionBlock(
                         section = section,
-                        onVerseChange = onVerseChange,
+                        focus = uiState.focus,
+                        verseInput = verseInput,
                         onActions = { onSectionActions(section.section.id) },
                         modifier = Modifier.animateItem(),
                     )
@@ -216,14 +223,17 @@ private fun LanguageChip(language: SongLanguage) {
 @Composable
 private fun SectionBlock(
     section: EditorSection,
-    onVerseChange: (String, String) -> Unit,
+    focus: VerseFocus?,
+    verseInput: VerseInput,
     onActions: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(GriotSpacing.xs)) {
         SectionHeader(section = section, onActions = onActions)
         section.section.verses.forEach { verse ->
-            VerseField(verse = verse, onVerseChange = onVerseChange)
+            // A repeat shows the same verses as its source: only the source's field takes the focus.
+            val ownFocus = focus?.takeIf { it.verseId == verse.id && section.section.repeatOf == null }
+            key(verse.id) { VerseField(verse = verse, focus = ownFocus, input = verseInput) }
         }
     }
 }
@@ -261,13 +271,17 @@ private fun SectionHeader(section: EditorSection, onActions: () -> Unit) {
 }
 
 @Composable
-private fun VerseField(verse: SongVerse, onVerseChange: (String, String) -> Unit) {
+private fun VerseField(verse: SongVerse, focus: VerseFocus?, input: VerseInput) {
     SyncedTextField(
         text = verse.text,
-        onTextChange = { onVerseChange(verse.id, it) },
+        onTextChange = { input.onChange(verse.id, it) },
         style = LyricTextStyle,
         placeholder = stringResource(R.string.editor_verse_placeholder),
         modifier = Modifier.fillMaxWidth().padding(horizontal = GriotSpacing.s, vertical = GriotSpacing.xs),
+        onLines = { lines, cursor -> input.onLines(verse.id, lines, cursor) },
+        onBackspaceAtStart = { text -> input.onBackspaceAtStart(verse.id, text) },
+        focus = focus,
+        onFocusHandled = input.onFocusHandled,
     )
 }
 
@@ -355,7 +369,8 @@ private fun EditorScreenPreview() {
                 ),
                 onBack = {},
                 onTitleChange = {},
-                onVerseChange = { _, _ -> },
+                verseInput = VerseInput(onChange = { _, _ ->
+                }, onLines = { _, _, _ -> }, onBackspaceAtStart = { _, _ -> }, onFocusHandled = {}),
                 onSectionActions = {},
                 onAddSection = {},
             )

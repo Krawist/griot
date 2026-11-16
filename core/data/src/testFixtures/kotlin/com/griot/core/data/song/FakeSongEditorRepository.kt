@@ -40,4 +40,18 @@ class FakeSongEditorRepository(document: SongDocument? = null) : SongEditorRepos
     override suspend fun updateVerse(verseId: String, text: String) {
         calls += "verse $verseId $text"
     }
+
+    override suspend fun splitVerse(verseId: String, lines: List<String>): List<String> {
+        calls += "split $verseId ${lines.joinToString(separator = "|")}"
+        return lines.drop(1).indices.map { "split-verse-id-${it + 1}" }
+    }
+
+    override suspend fun mergeVerses(previousId: String, verseId: String) {
+        calls += "merge $previousId $verseId"
+    }
+
+    override suspend fun closeSection(verseId: String): String {
+        calls += "close $verseId"
+        return "closed-verse-id"
+    }
 }

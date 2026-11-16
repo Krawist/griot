@@ -32,6 +32,15 @@ internal interface SectionDao {
     @Query("UPDATE sections SET deleted = 1, updatedAt = :at WHERE id = :id")
     suspend fun markDeleted(id: String, at: Instant)
 
+    /** Moves down by one place, at [at], the sections of the song [songId] after [position]. */
+    @Query(
+        """
+        UPDATE sections SET position = position + 1, updatedAt = :at
+        WHERE songId = :songId AND position > :position AND deleted = 0
+        """,
+    )
+    suspend fun shiftAfter(songId: String, position: Int, at: Instant)
+
     /** Marks deleted at [at] the repeats of the section [id]: they show nothing without it. */
     @Query("UPDATE sections SET deleted = 1, updatedAt = :at WHERE repeatOfSectionId = :id AND deleted = 0")
     suspend fun markRepeatsDeleted(id: String, at: Instant)

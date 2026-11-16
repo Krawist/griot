@@ -176,7 +176,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   transaction per change, each dating the song) gives a `SongDocument` whose repeats show their source's verses.
   Verses are typed in `SyncedTextField` (local while focused, one line). `GriotSheet`, `SheetAction` and
   `TextInputForm` are shared in `:core:design`. Rhyme scheme, syllables and sync state come with their tickets.
-- [ ] **Next tickets:** GRI-15, GRI-16, GRI-17 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
+- [x] **GRI-15** — Enter splits a verse at the cursor (a pasted text: one verse per line, until GRI-17), Backspace
+  at the start joins the previous verse of the section, Enter on an empty last verse closes the section and starts
+  a « Couplet » below; the ViewModel's `VerseFocus` moves the focus and the cursor. Verses wrap and stay one.
+  `SongEditorRepository.splitVerse`, `mergeVerses`, `closeSection`. Backspace is a key event: to confirm with the
+  Samsung keyboard in use.
+- [ ] **Next tickets:** GRI-16, GRI-17 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
 
 Update this section at the end of each ticket.
 

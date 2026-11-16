@@ -475,4 +475,182 @@ internal class SongEditorRepositoryImplTest {
             database.songDao().getById("my-song-id")?.updatedAt shouldBe Instant.parse("2026-11-16T10:00:00Z")
         }
     }
+
+    @Nested
+    inner class SplitVerse {
+        @Test
+        fun `should keep the first line and insert the others below, before the next verses`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id-1",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-1",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-2",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-2",
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            val added = repository.splitVerse(verseId = "my-verse-id-1", lines = listOf("my-line-1", "my-line-2"))
+
+            // then
+            val verses = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections[0].verses
+            verses shouldContainExactly listOf(
+                SongVerse(id = "my-verse-id-1", text = "my-line-1"),
+                SongVerse(id = added.single(), text = "my-line-2"),
+                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+            )
+        }
+    }
+
+    @Nested
+    inner class MergeVerses {
+        @Test
+        fun `should append the verse to the previous one and delete it`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id-1",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-1",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-2",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-2",
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            repository.mergeVerses(previousId = "my-verse-id-1", verseId = "my-verse-id-2")
+
+            // then
+            val verses = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections[0].verses
+            verses shouldContainExactly listOf(SongVerse(id = "my-verse-id-1", text = "my-text-1my-text-2"))
+        }
+    }
+
+    @Nested
+    inner class CloseSection {
+        @Test
+        fun `should drop the empty verse and start a verse section right below`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id-1",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-1",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-2",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-2",
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            val verseId = repository.closeSection("my-verse-id-2")
+
+            // then
+            val sections = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections
+            sections.map { it.kind } shouldContainExactly
+                listOf(SectionKind.VERSE, SectionKind.VERSE, SectionKind.CHORUS)
+            sections[0].verses.map { it.id } shouldContainExactly listOf("my-verse-id-1")
+            sections[1].verses shouldContainExactly listOf(SongVerse(id = verseId, text = ""))
+        }
+    }
 }

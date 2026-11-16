@@ -7,7 +7,9 @@ import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.SongVerse
 import com.griot.core.data.song.FakeSongEditorRepository
 import com.griot.core.data.song.FakeSongRepository
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -176,6 +178,222 @@ internal class EditorViewModelTest {
 
             // then
             editor.calls shouldContainExactly listOf("verse my-verse-id my-text my-other-text")
+        }
+    }
+
+    @Nested
+    inner class OnVerseLines {
+        @Test
+        fun `should split the verse and focus the new one where the cursor was`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onVerseLines(verseId = "my-verse-id-1", lines = listOf("my-line-1", "my-line-2"), cursor = 0)
+
+            // then
+            viewModel.uiState.first { it.focus != null }.focus shouldBe
+                VerseFocus(verseId = "split-verse-id-1", text = "my-line-2", cursor = 0)
+            editor.calls shouldContainExactly listOf("split my-verse-id-1 my-line-1|my-line-2")
+        }
+
+        @Test
+        fun `should close the section on Enter in an empty last verse`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = ""),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onVerseLines(verseId = "my-verse-id-2", lines = listOf("", ""), cursor = 0)
+
+            // then
+            viewModel.uiState.first { it.focus != null }.focus shouldBe
+                VerseFocus(verseId = "closed-verse-id", text = "", cursor = 0)
+            editor.calls shouldContainExactly listOf("close my-verse-id-2")
+        }
+
+        @Test
+        fun `should split an empty verse that is not the last one`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onVerseLines(verseId = "my-verse-id-1", lines = listOf("", ""), cursor = 0)
+
+            // then
+            editor.calls shouldContainExactly listOf("split my-verse-id-1 |")
+        }
+    }
+
+    @Nested
+    inner class OnVerseBackspaceAtStart {
+        @Test
+        fun `should join the previous verse, the cursor where they meet`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onVerseBackspaceAtStart(verseId = "my-verse-id-2", text = "my-text-2")
+
+            // then
+            viewModel.uiState.first { it.focus != null }.focus shouldBe
+                VerseFocus(verseId = "my-verse-id-1", text = "my-text-1my-text-2", cursor = 9)
+            editor.calls shouldContainExactly listOf("merge my-verse-id-1 my-verse-id-2")
+        }
+
+        @Test
+        fun `should leave the first verse of a section as it is`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onVerseBackspaceAtStart(verseId = "my-verse-id-1", text = "my-text-1")
+
+            // then
+            viewModel.uiState.value.focus.shouldBeNull()
+            editor.calls.shouldBeEmpty()
+        }
+    }
+
+    @Nested
+    inner class OnFocusHandled {
+        @Test
+        fun `should forget the verse to focus`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(songId = "my-song-id", editor = editor, songs = FakeSongRepository())
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            viewModel.onVerseLines(verseId = "my-verse-id-1", lines = listOf("my-line-1", "my-line-2"), cursor = 0)
+
+            // when
+            viewModel.onFocusHandled()
+
+            // then
+            viewModel.uiState.first { it.focus == null }.focus.shouldBeNull()
         }
     }
 }

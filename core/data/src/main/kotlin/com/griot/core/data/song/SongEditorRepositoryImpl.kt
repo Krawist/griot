@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
 /** Default implementation for [SongEditorRepository], on the Room database, one transaction per change. */
+// One function per change the editor makes.
+@Suppress("TooManyFunctions")
 @Singleton
 internal class SongEditorRepositoryImpl @Inject constructor(
     private val database: GriotDatabase,
@@ -112,11 +114,57 @@ internal class SongEditorRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateVerse(verseId: String, text: String) = write { now ->
-        val verse = requireNotNull(verseDao.getById(verseId)) { "No verse $verseId" }
-        val section = requireSection(verse.sectionId)
+        val section = requireSection(requireVerse(verseId).sectionId)
         verseDao.updateText(id = verseId, text = text, at = now)
         songDao.touch(id = section.songId, at = now)
     }
+
+    override suspend fun splitVerse(verseId: String, lines: List<String>): List<String> = write { now ->
+        val verse = requireVerse(verseId)
+        val added = lines.drop(1).mapIndexed { index, text ->
+            VerseEntity(
+                id = newId(),
+                sectionId = verse.sectionId,
+                text = text,
+                position = verse.position + index + 1,
+                updatedAt = now,
+            )
+        }
+        verseDao.shiftAfter(sectionId = verse.sectionId, position = verse.position, count = added.size, at = now)
+        verseDao.updateText(id = verseId, text = lines.first(), at = now)
+        verseDao.insertAll(added)
+        songDao.touch(id = requireSection(verse.sectionId).songId, at = now)
+        added.map { it.id }
+    }
+
+    override suspend fun mergeVerses(previousId: String, verseId: String) = write { now ->
+        val previous = requireVerse(previousId)
+        val verse = requireVerse(verseId)
+        verseDao.updateText(id = previousId, text = previous.text + verse.text, at = now)
+        verseDao.markDeleted(id = verseId, at = now)
+        songDao.touch(id = requireSection(verse.sectionId).songId, at = now)
+    }
+
+    override suspend fun closeSection(verseId: String): String = write { now ->
+        val verse = requireVerse(verseId)
+        val section = requireSection(verse.sectionId)
+        verseDao.markDeleted(id = verseId, at = now)
+        sectionDao.shiftAfter(songId = section.songId, position = section.position, at = now)
+        val next = SectionEntity(
+            id = newId(),
+            songId = section.songId,
+            kind = SectionKind.VERSE,
+            position = section.position + 1,
+            updatedAt = now,
+        )
+        val first = VerseEntity(id = newId(), sectionId = next.id, text = "", position = 0, updatedAt = now)
+        sectionDao.insert(next)
+        verseDao.insert(first)
+        songDao.touch(id = section.songId, at = now)
+        first.id
+    }
+
+    private suspend fun requireVerse(id: String): VerseEntity = requireNotNull(verseDao.getById(id)) { "No verse $id" }
 
     private suspend fun requireSection(id: String): SectionEntity =
         requireNotNull(sectionDao.getById(id)) { "No section $id" }
