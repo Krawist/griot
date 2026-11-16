@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ideas_title">Boîte à idées</string>
+    <string name="ideas_subtitle">Écran à venir</string>
+    <string name="ideas_back">Retour</string>
+</resources>

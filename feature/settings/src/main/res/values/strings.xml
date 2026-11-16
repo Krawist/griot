@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Réglages</string>
+    <string name="settings_subtitle">Écran à venir</string>
+    <string name="settings_back">Retour</string>
+</resources>

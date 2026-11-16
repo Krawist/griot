@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_title">Welcome to Griot</string>
+    <string name="onboarding_subtitle">Write your songs. Keep your voice.</string>
+    <string name="onboarding_start">Get started</string>
+</resources>

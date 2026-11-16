@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="griot_background">#F6F3F9</color>
+    <color name="griot_tile">#F4F1F8</color>
+    <color name="griot_magenta">#E0287D</color>
+</resources>
