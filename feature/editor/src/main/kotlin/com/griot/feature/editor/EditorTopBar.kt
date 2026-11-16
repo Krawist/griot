@@ -35,7 +35,7 @@ import com.griot.core.design.theme.GriotTheme
 
 private val ChipHeight = 32.dp
 
-/** The editor's top bar: back, the song's title edited in place, the « Aa » menu and the song's language. */
+/** The editor's top bar: back, the song's title edited in place, the « Aa » menu, the song's language and « ⋯ ». */
 @Suppress("LongParameterList") // The title, the languages and one callback per button.
 @Composable
 internal fun EditorTopBar(
@@ -46,6 +46,7 @@ internal fun EditorTopBar(
     onTitleChange: (String) -> Unit,
     onFontSize: () -> Unit,
     onLanguage: () -> Unit,
+    onMenu: () -> Unit,
 ) {
     val palette = GriotTheme.palette
     Row(
@@ -69,6 +70,13 @@ internal fun EditorTopBar(
         )
         FontSizeButton(onClick = onFontSize)
         LanguageChip(language = language, detectedLanguage = detectedLanguage, onClick = onLanguage)
+        IconButton(onClick = onMenu, modifier = Modifier.size(GriotSpacing.touchTarget)) {
+            Icon(
+                painter = painterResource(DesignR.drawable.ic_more),
+                contentDescription = stringResource(R.string.editor_menu),
+                tint = palette.ink,
+            )
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 package com.griot.feature.editor.history
 
-import com.griot.feature.editor.SectionLabel
+import com.griot.core.data.song.SectionLabel
 
 /**
  * What the history shows.

@@ -1,6 +1,7 @@
 package com.griot.feature.editor
 
 import com.griot.core.data.model.SongSection
+import com.griot.core.data.song.SectionLabel
 
 /**
  * One section of the editor.

@@ -48,7 +48,9 @@ import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.SongVerse
+import com.griot.core.data.song.SectionLabel
 import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.FileShareSheet
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
@@ -91,6 +93,7 @@ internal fun EditorScreen(
         onFontSize = { sheet = EditorSheet.FONT_SIZE },
         onFontSizeChange = viewModel::onFontSizeChange,
         onLanguage = { sheet = EditorSheet.LANGUAGE },
+        onMenu = { sheet = EditorSheet.MENU },
         onShowRhymesChange = viewModel::onShowRhymesChange,
         onOpenHistory = { onOpenHistory(uiState.editedVerse) },
     )
@@ -125,29 +128,7 @@ private fun EditorSheets(
         onUndo = viewModel::onUndoPaste,
         onDismissed = viewModel::onPasteUndoDismissed,
     )
-    when (sheet) {
-        EditorSheet.FONT_SIZE -> FontSizeSheet(
-            size = uiState.fontSize,
-            onSizeChange = viewModel::onFontSizeChange,
-            onDismiss = onSheetClosed,
-        )
-        EditorSheet.ADD_SECTION -> AddSectionSheet(
-            onAdd = { kind ->
-                viewModel.onAddSection(kind)
-                onSheetClosed()
-            },
-            onDismiss = onSheetClosed,
-        )
-        EditorSheet.LANGUAGE -> LanguageSheet(
-            language = uiState.language,
-            onSelect = { language ->
-                viewModel.onLanguageSelected(language)
-                onSheetClosed()
-            },
-            onDismiss = onSheetClosed,
-        )
-        null -> Unit
-    }
+    OpenSheet(sheet = sheet, uiState = uiState, viewModel = viewModel, onClosed = onSheetClosed)
     uiState.sections.firstOrNull { it.section.id == actionsFor }?.let { section ->
         val close = onActionsClosed
         SectionActionsSheet(
@@ -170,6 +151,50 @@ private fun EditorSheets(
                 close()
             },
             onDismiss = close,
+        )
+    }
+}
+
+// The sheet [sheet] of the editor, with its export's share sheet.
+@Composable
+private fun OpenSheet(sheet: EditorSheet?, uiState: EditorUiState, viewModel: EditorViewModel, onClosed: () -> Unit) {
+    when (sheet) {
+        EditorSheet.FONT_SIZE -> FontSizeSheet(
+            size = uiState.fontSize,
+            onSizeChange = viewModel::onFontSizeChange,
+            onDismiss = onClosed,
+        )
+        EditorSheet.ADD_SECTION -> AddSectionSheet(
+            onAdd = { kind ->
+                viewModel.onAddSection(kind)
+                onClosed()
+            },
+            onDismiss = onClosed,
+        )
+        EditorSheet.LANGUAGE -> LanguageSheet(
+            language = uiState.language,
+            onSelect = { language ->
+                viewModel.onLanguageSelected(language)
+                onClosed()
+            },
+            onDismiss = onClosed,
+        )
+        EditorSheet.MENU -> EditorMenuSheet(
+            onExport = {
+                viewModel.onExport()
+                onClosed()
+            },
+            onDismiss = onClosed,
+        )
+        null -> Unit
+    }
+    uiState.export?.let { file ->
+        FileShareSheet(
+            name = file.name,
+            path = file.path,
+            mimeType = file.mimeType,
+            onSave = viewModel::onSaveExport,
+            onDismiss = viewModel::onExportClosed,
         )
     }
 }
@@ -207,6 +232,7 @@ private fun EditorContent(
     onFontSize: () -> Unit,
     onFontSizeChange: (Int) -> Unit,
     onLanguage: () -> Unit,
+    onMenu: () -> Unit,
     onShowRhymesChange: (Boolean) -> Unit,
     onOpenHistory: () -> Unit,
 ) {
@@ -220,6 +246,7 @@ private fun EditorContent(
                 onTitleChange = onTitleChange,
                 onFontSize = onFontSize,
                 onLanguage = onLanguage,
+                onMenu = onMenu,
             )
             if (!uiState.loading) {
                 LazyColumn(
@@ -351,6 +378,7 @@ private fun EditorScreenPreview() {
                 onFontSize = {},
                 onFontSizeChange = {},
                 onLanguage = {},
+                onMenu = {},
                 onShowRhymesChange = {},
                 onOpenHistory = {},
             )

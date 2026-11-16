@@ -1,4 +1,4 @@
-package com.griot.feature.editor
+package com.griot.core.data.song
 
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongSection

@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.griot.core.data.model.SectionKind
+import com.griot.core.data.song.nameRes
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.GriotSheet
 import com.griot.core.design.component.SheetAction

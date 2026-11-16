@@ -10,18 +10,12 @@
     <string name="editor_delete">Supprimer</string>
     <string name="editor_delete_repeat">Seule cette reprise est supprimée, pas le texte qu\'elle répète.</string>
     <string name="editor_delete_title">Supprimer « %1$s » ?</string>
+    <string name="editor_export">Exporter en Markdown</string>
     <string name="editor_font_size">Taille du texte</string>
     <string name="editor_font_size_button" translatable="false">Aa</string>
     <string name="editor_font_size_letter" translatable="false">A</string>
     <string name="editor_font_size_sample">Je marche seul dans la ville</string>
     <string name="editor_font_size_value">%1$d sp</string>
-    <string name="editor_kind_bridge">Pont</string>
-    <string name="editor_kind_chorus">Refrain</string>
-    <string name="editor_kind_intro">Intro</string>
-    <string name="editor_kind_other">Section</string>
-    <string name="editor_kind_outro">Outro</string>
-    <string name="editor_kind_verse">Couplet</string>
-    <string name="editor_label_numbered">%1$s %2$d</string>
     <string name="editor_language_auto_detected">Auto · %1$s</string>
     <string name="editor_language_automatic">Auto</string>
     <string name="editor_language_automatic_hint">En automatique, Griot repère la langue dominante de toute la chanson pour compter les syllabes et trouver les rimes.</string>
@@ -32,6 +26,7 @@
     <string name="editor_language_french_name" translatable="false">Français</string>
     <string name="editor_language_label">Langue de la chanson : %1$s</string>
     <string name="editor_language_title">Langue de la chanson</string>
+    <string name="editor_menu">Plus d\'options</string>
     <string name="editor_move_down">Descendre</string>
     <string name="editor_move_up">Monter</string>
     <string name="editor_rename">Renommer</string>

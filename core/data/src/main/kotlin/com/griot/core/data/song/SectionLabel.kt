@@ -1,4 +1,4 @@
-package com.griot.feature.editor
+package com.griot.core.data.song
 
 import com.griot.core.data.model.SectionKind
 
@@ -9,4 +9,4 @@ import com.griot.core.data.model.SectionKind
  * @property number Rank among the sections of its kind; `null` when the kind is not numbered.
  * @property name Name given by the author, shown instead; `null` for the automatic label.
  */
-internal data class SectionLabel(val kind: SectionKind, val number: Int?, val name: String?)
+data class SectionLabel(val kind: SectionKind, val number: Int?, val name: String?)

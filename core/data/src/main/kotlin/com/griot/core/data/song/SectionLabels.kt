@@ -1,4 +1,4 @@
-package com.griot.feature.editor
+package com.griot.core.data.song
 
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongSection
@@ -8,7 +8,7 @@ import com.griot.core.data.model.SongSection
  * only when the song has several of them. A repeat takes the label of the section it repeats; a name given by the
  * author replaces the automatic label but keeps its rank.
  */
-internal fun sectionLabels(sections: List<SongSection>): List<SectionLabel> {
+fun sectionLabels(sections: List<SongSection>): List<SectionLabel> {
     val originals = sections.filter { it.repeatOf == null }
     val counts = originals.groupingBy { it.kind }.eachCount()
     val ranks = mutableMapOf<SectionKind, Int>()

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="export_save">Enregistrer dans un dossier</string>
+    <string name="export_saved">Fichier enregistré</string>
+    <string name="export_share">Partager</string>
+    <string name="export_title">Exporter en Markdown</string>
     <string name="time_hours_ago">il y a %1$d h</string>
     <string name="time_just_now">à l\'instant</string>
     <string name="time_minutes_ago">il y a %1$d min</string>

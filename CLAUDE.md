@@ -217,7 +217,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   add a « Restaurée » version; `thin()` at launch keeps one version per day after 7 days. `HistoryScreen`
   (`HistoryRoute`, « Versions » in the editor toolbar): « Ce vers » / « Toute la chanson », changed words or lines
   highlighted (`changedWords`), « Restaurer » and « Copier ». The editor's saves run in order (a `Mutex`).
-- [ ] **Next tickets:** GRI-25 (export), GRI-26 (sync repository) (GRI-10 waits for GRI-27).
+- [x] **GRI-25** — `MarkdownExporter` (`:core:data`): a song as `# Title`, `*Author*`, `## Label` and its verses
+  (repeats written out), or every song in `Griot-<date>.zip`, in the cache's `exports/`; `FileShareSheet`
+  (`:core:design`, `FileProvider` `${applicationId}.exports`) shares or saves to a folder. From the editor's new
+  « ⋯ » menu and from the settings placeholder. Section labels (`SectionLabel`, `sectionLabels`, `words`) and their
+  words now live in `:core:data`.
+- [ ] **Next tickets:** GRI-26 (sync repository), GRI-27 (Drive), GRI-38 (ideas) (GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

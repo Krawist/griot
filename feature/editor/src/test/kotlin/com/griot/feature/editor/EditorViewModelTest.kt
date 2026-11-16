@@ -1,5 +1,6 @@
 package com.griot.feature.editor
 
+import com.griot.core.data.export.FakeMarkdownExporter
 import com.griot.core.data.language.FakeSongLanguageDetector
 import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
@@ -12,6 +13,7 @@ import com.griot.core.data.song.FakeSongEditorRepository
 import com.griot.core.data.song.FakeSongRepository
 import com.griot.core.data.song.FakeVersionRepository
 import com.griot.core.data.song.FakeWordCorrectionRepository
+import com.griot.core.data.song.SectionLabel
 import com.griot.core.phonetics.PhoneticEngines
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
@@ -82,6 +84,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -124,6 +127,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -151,6 +155,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
 
             // when
@@ -177,6 +182,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
 
             // when
@@ -200,6 +206,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
 
             // when
@@ -234,6 +241,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
 
             // when
@@ -278,6 +286,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -323,6 +332,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -368,6 +378,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -414,6 +425,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -459,6 +471,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -506,6 +519,7 @@ internal class EditorViewModelTest {
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
+                    exporter = FakeMarkdownExporter(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -536,6 +550,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
 
             // when
@@ -557,6 +572,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -598,6 +614,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -643,6 +660,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -691,6 +709,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -715,6 +734,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
 
             // when
@@ -757,6 +777,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -798,6 +819,7 @@ internal class EditorViewModelTest {
                 engines = PhoneticEngines(),
                 corrections = corrections,
                 versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -826,6 +848,7 @@ internal class EditorViewModelTest {
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
                 versions = versions,
+                exporter = FakeMarkdownExporter(),
             )
 
             // when
@@ -841,6 +864,34 @@ internal class EditorViewModelTest {
                 "record verse my-verse-id AUTHOR",
                 "record song my-song-id",
             )
+        }
+    }
+
+    @Nested
+    inner class OnExport {
+        @Test
+        fun `should export the song and show its file`() = runTest {
+            // given
+            val exporter = FakeMarkdownExporter()
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = FakeSongEditorRepository(),
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = exporter,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            viewModel.onExport()
+
+            // then
+            viewModel.uiState.first { it.export != null }.export shouldBe exporter.file
+            exporter.calls shouldContainExactly listOf("song my-song-id")
         }
     }
 }

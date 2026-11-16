@@ -2,7 +2,9 @@ package com.griot.feature.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.language.SongLanguageDetector
+import com.griot.core.data.model.ExportFile
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
@@ -11,6 +13,7 @@ import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongRepository
 import com.griot.core.data.song.VersionRepository
 import com.griot.core.data.song.WordCorrectionRepository
+import com.griot.core.data.song.sectionLabels
 import com.griot.core.data.song.toNewSections
 import com.griot.core.phonetics.PhoneticEngines
 import com.griot.core.phonetics.PhoneticLanguage
@@ -54,9 +57,12 @@ internal class EditorViewModel @AssistedInject constructor(
     private val engines: PhoneticEngines,
     private val corrections: WordCorrectionRepository,
     private val versions: VersionRepository,
+    private val exporter: MarkdownExporter,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
     private val pasteUndo = MutableStateFlow<PasteUndo?>(null)
+
+    private val export = MutableStateFlow<ExportFile?>(null)
 
     // The verse being edited, whose history « Versions » opens.
     private val editedVerse = MutableStateFlow<String?>(null)
@@ -101,6 +107,7 @@ internal class EditorViewModel @AssistedInject constructor(
         .combine(preferences.editorFontSize) { state, size -> state.copy(fontSize = size) }
         .combine(pasteUndo) { state, undo -> state.copy(pasteUndo = undo) }
         .combine(editedVerse) { state, verse -> state.copy(editedVerse = verse) }
+        .combine(export) { state, file -> state.copy(export = file) }
         .combine(detectedLanguage) { state, detected ->
             state.copy(
                 detectedLanguage = detected,
@@ -167,6 +174,21 @@ internal class EditorViewModel @AssistedInject constructor(
             }
         }
         recordWhenPaused(verseId)
+    }
+
+    /** Exports the song as Markdown, then shows what to do with the file. */
+    fun onExport() {
+        viewModelScope.launch { export.value = exporter.exportSong(songId) }
+    }
+
+    /** Saves the exported file in the document [uri] the user picked. */
+    fun onSaveExport(uri: String) {
+        val file = export.value ?: return
+        viewModelScope.launch { exporter.save(file = file, uri = uri) }
+    }
+
+    fun onExportClosed() {
+        export.value = null
     }
 
     /** The verse [verseId] took the focus, or no verse has it when `null`. */

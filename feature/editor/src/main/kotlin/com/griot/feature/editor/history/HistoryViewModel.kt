@@ -9,8 +9,8 @@ import com.griot.core.data.model.SongVerse
 import com.griot.core.data.model.VersionSource
 import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.VersionRepository
+import com.griot.core.data.song.sectionLabels
 import com.griot.core.design.format.relativeTime
-import com.griot.feature.editor.sectionLabels
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

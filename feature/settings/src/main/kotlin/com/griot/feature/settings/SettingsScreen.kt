@@ -6,10 +6,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.data.model.AppLanguage
+import com.griot.core.design.component.FileShareSheet
 import com.griot.core.design.component.PlaceholderAction
 import com.griot.core.design.component.PlaceholderScreen
 
-/** Settings, a placeholder until GRI-29: for now, the language of the interface and the trash. */
+/** Settings, a placeholder until GRI-29: for now, the language of the interface, the export and the trash. */
 @Composable
 internal fun SettingsScreen(onOpenTrash: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -18,8 +19,20 @@ internal fun SettingsScreen(onOpenTrash: () -> Unit, viewModel: SettingsViewMode
         subtitle = stringResource(R.string.settings_language_current, stringResource(uiState.language.labelRes())),
         actions = AppLanguage.entries.map { language ->
             PlaceholderAction(stringResource(language.labelRes())) { viewModel.onLanguageSelected(language) }
-        } + PlaceholderAction(stringResource(R.string.settings_trash), onOpenTrash),
+        } + listOf(
+            PlaceholderAction(stringResource(R.string.settings_export_all), viewModel::onExportAll),
+            PlaceholderAction(stringResource(R.string.settings_trash), onOpenTrash),
+        ),
     )
+    uiState.export?.let { file ->
+        FileShareSheet(
+            name = file.name,
+            path = file.path,
+            mimeType = file.mimeType,
+            onSave = viewModel::onSaveExport,
+            onDismiss = viewModel::onExportClosed,
+        )
+    }
 }
 
 private fun AppLanguage.labelRes(): Int = when (this) {
