@@ -1,11 +1,9 @@
 package com.griot.feature.editor
 
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.griot.core.design.component.PlaceholderAction
-import com.griot.core.design.component.PlaceholderScreen
+import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 
 /**
@@ -20,13 +18,5 @@ fun NavController.navigateToEditor(songId: String) = navigate(EditorRoute(songId
 
 /** Structured editor, verses, font size and paste splitting (GRI-14 to GRI-18). */
 fun NavGraphBuilder.editorGraph(onBack: () -> Unit) {
-    composable<EditorRoute> {
-        PlaceholderScreen(
-            title = stringResource(R.string.editor_title),
-            subtitle = stringResource(R.string.editor_subtitle),
-            actions = listOf(
-                PlaceholderAction(stringResource(R.string.editor_back), onBack),
-            ),
-        )
-    }
+    composable<EditorRoute> { entry -> EditorScreen(songId = entry.toRoute<EditorRoute>().songId, onBack = onBack) }
 }

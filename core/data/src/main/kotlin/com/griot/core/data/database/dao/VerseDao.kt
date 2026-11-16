@@ -44,6 +44,20 @@ internal interface VerseDao {
     )
     suspend fun getBySong(songId: String): List<VerseEntity>
 
+    /** The verses of the song [songId] that are not deleted, in sections that are not deleted, in order. */
+    @Query(
+        """
+        SELECT v.* FROM verses v JOIN sections c ON v.sectionId = c.id
+        WHERE c.songId = :songId AND c.deleted = 0 AND v.deleted = 0
+        ORDER BY c.position, v.position
+        """,
+    )
+    fun observeBySong(songId: String): Flow<List<VerseEntity>>
+
+    /** Saves the [text] of the verse at [at]. */
+    @Query("UPDATE verses SET text = :text, updatedAt = :at WHERE id = :id")
+    suspend fun updateText(id: String, text: String, at: Instant)
+
     /** Marks the verse deleted at [at]; the row stays so that the delete travels to other devices. */
     @Query("UPDATE verses SET deleted = 1, updatedAt = :at WHERE id = :id")
     suspend fun markDeleted(id: String, at: Instant)

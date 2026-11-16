@@ -1,5 +1,7 @@
 package com.griot.core.data.di
 
+import com.griot.core.data.song.SongEditorRepository
+import com.griot.core.data.song.SongEditorRepositoryImpl
 import com.griot.core.data.song.SongRepository
 import com.griot.core.data.song.SongRepositoryImpl
 import dagger.Binds
@@ -12,4 +14,7 @@ import dagger.hilt.components.SingletonComponent
 internal interface SongModule {
     @Binds
     fun bindSongRepository(impl: SongRepositoryImpl): SongRepository
+
+    @Binds
+    fun bindSongEditorRepository(impl: SongEditorRepositoryImpl): SongEditorRepository
 }

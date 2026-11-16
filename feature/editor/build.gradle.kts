@@ -5,3 +5,10 @@ plugins {
 android {
     namespace = "com.griot.feature.editor"
 }
+
+dependencies {
+    implementation(projects.core.data)
+
+    testImplementation(testFixtures(projects.core.data))
+    testImplementation(libs.mockk)
+}

@@ -28,6 +28,14 @@ internal interface SongDao {
     @Query("SELECT * FROM songs WHERE id = :id")
     suspend fun getById(id: String): SongEntity?
 
+    /** The song [id], in the trash or not; `null` when there is none. */
+    @Query("SELECT * FROM songs WHERE id = :id")
+    fun observeById(id: String): Flow<SongEntity?>
+
+    /** Records a change of the song or of its content at [at], for the library's order and sync. */
+    @Query("UPDATE songs SET updatedAt = :at WHERE id = :id")
+    suspend fun touch(id: String, at: Instant)
+
     /** The songs out of the trash, last changed first. */
     @Query("SELECT * FROM songs WHERE deleted = 0 ORDER BY updatedAt DESC")
     fun observeAll(): Flow<List<SongEntity>>

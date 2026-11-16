@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="editor_title">Nouvelle chanson</string>
-    <string name="editor_subtitle">Éditeur à venir</string>
-    <string name="editor_back">Retour</string>
+    <string name="editor_add_section">Ajouter une section</string>
+    <string name="editor_back">Retour aux chansons</string>
+    <string name="editor_delete">Supprimer</string>
+    <string name="editor_delete_repeat">Seule cette reprise est supprimée, pas le texte qu\'elle répète.</string>
+    <string name="editor_delete_title">Supprimer « %1$s » ?</string>
+    <string name="editor_kind_bridge">Pont</string>
+    <string name="editor_kind_chorus">Refrain</string>
+    <string name="editor_kind_intro">Intro</string>
+    <string name="editor_kind_other">Section</string>
+    <string name="editor_kind_outro">Outro</string>
+    <string name="editor_kind_verse">Couplet</string>
+    <string name="editor_label_numbered">%1$s %2$d</string>
+    <string name="editor_language_automatic">Auto</string>
+    <string name="editor_language_english" translatable="false">EN</string>
+    <string name="editor_language_french" translatable="false">FR</string>
+    <string name="editor_language_label">Langue de la chanson : %1$s</string>
+    <string name="editor_move_down">Descendre</string>
+    <string name="editor_move_up">Monter</string>
+    <string name="editor_rename">Renommer</string>
+    <string name="editor_rename_label">Nom de la section</string>
+    <string name="editor_repeat">Répéter plus loin</string>
+    <string name="editor_repeat_tag">Reprise</string>
+    <string name="editor_section_actions">Options de %1$s</string>
+    <string name="editor_title_placeholder">Sans titre</string>
+    <string name="editor_verse_placeholder">Écris un vers…</string>
+    <plurals name="editor_delete_verses">
+        <item quantity="one">Son vers sera supprimé, avec ses reprises.</item>
+        <item quantity="many">Ses %1$d vers seront supprimés, avec ses reprises.</item>
+        <item quantity="other">Ses %1$d vers seront supprimés, avec ses reprises.</item>
+    </plurals>
 </resources>

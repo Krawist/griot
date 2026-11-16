@@ -1,0 +1,32 @@
+package com.griot.core.data.song
+
+import com.griot.core.data.model.SectionKind
+import com.griot.core.data.model.SongDocument
+import kotlinx.coroutines.flow.Flow
+
+/** The content of one song, as the editor changes it. Every change is saved at once and dates the song. */
+interface SongEditorRepository {
+    /** The song [songId] with its sections and verses; `null` when it does not exist or is in the trash. */
+    fun observeDocument(songId: String): Flow<SongDocument?>
+
+    /** Adds a section of [kind] at the end of the song [songId], holding one empty verse, and returns its id. */
+    suspend fun addSection(songId: String, kind: SectionKind): String
+
+    /**
+     * Adds at the end of the song a repeat of the section [sectionId] (of its source, for a repeat), which shows
+     * the same verses without copying them, and returns its id.
+     */
+    suspend fun repeatSection(sectionId: String): String
+
+    /** Names the section [sectionId]; a blank or `null` [name] gives it back its automatic label. */
+    suspend fun renameSection(sectionId: String, name: String?)
+
+    /** Moves the section [sectionId] by [offset] places (-1 up, 1 down), within the song. */
+    suspend fun moveSection(sectionId: String, offset: Int)
+
+    /** Deletes the section [sectionId] and its repeats. */
+    suspend fun deleteSection(sectionId: String)
+
+    /** Saves the [text] of the verse [verseId]. */
+    suspend fun updateVerse(verseId: String, text: String)
+}

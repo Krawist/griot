@@ -169,7 +169,14 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   the songs in the trash for more than `SongRepository.TRASH_DAYS` (30) at each launch. A duplicate copies sections
   and verses, repeats pointing to the copied sections. `GriotTextField` puts the cursor at the end of a value set
   from outside; the library's root is focusable so a closing sheet does not focus the search field.
-- [ ] **Next tickets:** GRI-14 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
+- [x] **GRI-14** — `EditorScreen` on `EditorRoute(songId)` (assisted `EditorViewModel`): editable title, language
+  chip (read-only until GRI-18), sections with their labels (`sectionLabels`: verses always numbered, other kinds
+  when there are several, a repeat takes its source's label), « ⋯ » sheet (rename, repeat further on, move up or
+  down, delete with its repeats after a confirmation), « Ajouter une section ». `SongEditorRepository` (one
+  transaction per change, each dating the song) gives a `SongDocument` whose repeats show their source's verses.
+  Verses are typed in `SyncedTextField` (local while focused, one line). `GriotSheet`, `SheetAction` and
+  `TextInputForm` are shared in `:core:design`. Rhyme scheme, syllables and sync state come with their tickets.
+- [ ] **Next tickets:** GRI-15, GRI-16, GRI-17 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
 
 Update this section at the end of each ticket.
 
