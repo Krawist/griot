@@ -11,9 +11,13 @@ data object SettingsGraph
 @Serializable
 internal data object SettingsRoute
 
-/** Settings: profile, sync, AI, texts (GRI-29); for now, the language of the interface. */
-fun NavGraphBuilder.settingsGraph() {
+/**
+ * Settings: profile, sync, AI, texts (GRI-29); for now, the language of the interface and the trash.
+ *
+ * @param onOpenTrash Opens the trash of the library.
+ */
+fun NavGraphBuilder.settingsGraph(onOpenTrash: () -> Unit) {
     navigation<SettingsGraph>(startDestination = SettingsRoute) {
-        composable<SettingsRoute> { SettingsScreen() }
+        composable<SettingsRoute> { SettingsScreen(onOpenTrash = onOpenTrash) }
     }
 }

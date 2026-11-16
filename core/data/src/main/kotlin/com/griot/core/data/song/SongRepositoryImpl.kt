@@ -1,15 +1,20 @@
 package com.griot.core.data.song
 
 import com.griot.core.data.database.dao.LibrarySongRow
+import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
+import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongStatus
+import com.griot.core.data.model.TrashedSong
 import com.griot.core.data.preferences.UserPreferencesRepository
+import com.griot.core.data.song.SongRepository.Companion.TRASH_DAYS
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
@@ -22,16 +27,22 @@ import kotlinx.coroutines.flow.map
 @Singleton
 internal class SongRepositoryImpl @Inject constructor(
     private val songDao: SongDao,
+    private val sectionDao: SectionDao,
+    private val verseDao: VerseDao,
     private val preferences: UserPreferencesRepository,
     private val clock: Clock,
 ) : SongRepository {
     override fun observeLibrary(): Flow<List<LibrarySong>> =
         songDao.observeLibrary().map { rows -> rows.map { it.toLibrarySong() } }
 
+    override fun observeTrash(): Flow<List<TrashedSong>> = songDao.observeTrash().map { rows ->
+        rows.map { TrashedSong(id = it.id, title = it.title, deletedAt = it.deletedAt) }
+    }
+
     override suspend fun createSong(): String {
         val now = Instant.now(clock)
         val song = SongEntity(
-            id = UUID.randomUUID().toString(),
+            id = newId(),
             title = "",
             language = preferences.defaultSongLanguage.first(),
             status = SongStatus.DRAFT,
@@ -39,14 +50,14 @@ internal class SongRepositoryImpl @Inject constructor(
             updatedAt = now,
         )
         val section = SectionEntity(
-            id = UUID.randomUUID().toString(),
+            id = newId(),
             songId = song.id,
             kind = SectionKind.VERSE,
             position = 0,
             updatedAt = now,
         )
         val verse = VerseEntity(
-            id = UUID.randomUUID().toString(),
+            id = newId(),
             sectionId = section.id,
             text = "",
             position = 0,
@@ -55,6 +66,48 @@ internal class SongRepositoryImpl @Inject constructor(
         songDao.insertWithContent(song = song, sections = listOf(section), verses = listOf(verse))
         return song.id
     }
+
+    override suspend fun renameSong(id: String, title: String) {
+        songDao.rename(id = id, title = title, at = Instant.now(clock))
+    }
+
+    override suspend fun duplicateSong(id: String, title: String): String {
+        val original = requireNotNull(songDao.getById(id)) { "No song $id to duplicate" }
+        val now = Instant.now(clock)
+        val copy = original.copy(id = newId(), title = title, createdAt = now, updatedAt = now, deleted = false)
+        val sections = sectionDao.getBySong(id)
+        val sectionIds = sections.associate { it.id to newId() }
+        val copiedSections = sections
+            // A repeat is inserted after the section it repeats, which must exist first.
+            .sortedBy { it.repeatOfSectionId != null }
+            .map { section ->
+                section.copy(
+                    id = sectionIds.getValue(section.id),
+                    songId = copy.id,
+                    repeatOfSectionId = section.repeatOfSectionId?.let(sectionIds::get),
+                    updatedAt = now,
+                )
+            }
+        val copiedVerses = verseDao.getBySong(id).map { verse ->
+            verse.copy(id = newId(), sectionId = sectionIds.getValue(verse.sectionId), updatedAt = now)
+        }
+        songDao.insertWithContent(song = copy, sections = copiedSections, verses = copiedVerses)
+        return copy.id
+    }
+
+    override suspend fun deleteSong(id: String) {
+        songDao.markDeleted(id = id, at = Instant.now(clock))
+    }
+
+    override suspend fun restoreSong(id: String) {
+        songDao.restore(id = id, at = Instant.now(clock))
+    }
+
+    override suspend fun purgeTrash() {
+        songDao.purgeDeletedBefore(Instant.now(clock).minus(Duration.ofDays(TRASH_DAYS)))
+    }
+
+    private fun newId() = UUID.randomUUID().toString()
 
     private fun LibrarySongRow.toLibrarySong() = LibrarySong(
         id = id,

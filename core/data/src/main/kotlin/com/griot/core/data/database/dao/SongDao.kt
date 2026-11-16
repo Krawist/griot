@@ -10,6 +10,8 @@ import com.griot.core.data.database.entity.VerseEntity
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
+// One query per need of the library, the trash and the editor.
+@Suppress("TooManyFunctions")
 @Dao
 internal interface SongDao {
     @Insert
@@ -50,6 +52,22 @@ internal interface SongDao {
         """,
     )
     fun observeLibrary(): Flow<List<LibrarySongRow>>
+
+    /** The songs in the trash, last deleted first. */
+    @Query("SELECT id, title, updatedAt AS deletedAt FROM songs WHERE deleted = 1 ORDER BY updatedAt DESC")
+    fun observeTrash(): Flow<List<TrashedSongRow>>
+
+    /** Renames the song at [at]. */
+    @Query("UPDATE songs SET title = :title, updatedAt = :at WHERE id = :id")
+    suspend fun rename(id: String, title: String, at: Instant)
+
+    /** Takes the song out of the trash at [at]. */
+    @Query("UPDATE songs SET deleted = 0, updatedAt = :at WHERE id = :id")
+    suspend fun restore(id: String, at: Instant)
+
+    /** Removes for good the songs deleted before [before], with their sections, verses and versions. */
+    @Query("DELETE FROM songs WHERE deleted = 1 AND updatedAt < :before")
+    suspend fun purgeDeletedBefore(before: Instant)
 
     /** Moves the song to the trash at [at]; the row stays so that the delete travels to other devices. */
     @Query("UPDATE songs SET deleted = 1, updatedAt = :at WHERE id = :id")

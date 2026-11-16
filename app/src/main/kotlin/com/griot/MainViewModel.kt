@@ -3,6 +3,7 @@ package com.griot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.data.preferences.UserPreferencesRepository
+import com.griot.core.data.song.SongRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,10 +13,18 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-internal class MainViewModel @Inject constructor(private val preferences: UserPreferencesRepository) : ViewModel() {
+internal class MainViewModel @Inject constructor(
+    private val preferences: UserPreferencesRepository,
+    songs: SongRepository,
+) : ViewModel() {
     val uiState: StateFlow<MainUiState> = preferences.onboardingCompleted
         .map { MainUiState.Ready(onboardingCompleted = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), MainUiState.Loading)
+
+    init {
+        // Once per launch: the songs in the trash for more than 30 days are removed for good.
+        viewModelScope.launch { songs.purgeTrash() }
+    }
 
     fun onOnboardingCompleted() {
         viewModelScope.launch { preferences.setOnboardingCompleted() }

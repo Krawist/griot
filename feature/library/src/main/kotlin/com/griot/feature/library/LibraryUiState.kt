@@ -9,6 +9,7 @@ package com.griot.feature.library
  * @property items Songs matching the search and the filter, last changed first.
  * @property hasSongs Whether the library holds any song at all, to tell an empty library from an empty search.
  * @property loading Whether the songs are still being read, so that no empty state flashes at start.
+ * @property deleted The song just moved to the trash, while the undo bar shows; `null` otherwise.
  */
 internal data class LibraryUiState(
     val authorName: String? = null,
@@ -17,4 +18,5 @@ internal data class LibraryUiState(
     val items: List<LibraryItem> = emptyList(),
     val hasSongs: Boolean = false,
     val loading: Boolean = true,
+    val deleted: DeletedSong? = null,
 )

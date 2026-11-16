@@ -1,9 +1,11 @@
 package com.griot.feature.library
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +50,8 @@ import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
 import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.AnimatedPresence
+import com.griot.core.design.component.UndoBar
 import com.griot.core.design.format.RelativeTime
 import com.griot.core.design.format.text
 import com.griot.core.design.theme.GriotRadius
@@ -64,24 +71,56 @@ private val ListBottom = 184.dp
 @Composable
 internal fun LibraryScreen(onOpenSong: (String) -> Unit, viewModel: LibraryViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    // The song whose actions show after a long press.
+    var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
     LibraryContent(
         uiState = uiState,
         onQueryChange = viewModel::onQueryChange,
         onFilterSelected = viewModel::onFilterSelected,
         onOpenSong = onOpenSong,
+        onSongActions = { actionsFor = it },
         onNewSong = { viewModel.onNewSong(onCreated = onOpenSong) },
+        onUndoDelete = viewModel::onUndoDelete,
+        onUndoDismissed = viewModel::onUndoDismissed,
     )
+    uiState.items.firstOrNull { it.song.id == actionsFor }?.song?.let { song ->
+        val displayTitle = song.title.ifBlank { stringResource(R.string.library_untitled) }
+        val copyTitle = stringResource(R.string.library_copy_title, displayTitle)
+        SongActionsSheet(
+            title = song.title,
+            displayTitle = displayTitle,
+            onRename = { title ->
+                viewModel.onRename(id = song.id, title = title)
+                actionsFor = null
+            },
+            onDuplicate = {
+                viewModel.onDuplicate(id = song.id, title = copyTitle)
+                actionsFor = null
+            },
+            onDelete = {
+                viewModel.onDelete(id = song.id, title = displayTitle)
+                actionsFor = null
+            },
+            onDismiss = { actionsFor = null },
+        )
+    }
 }
 
+@Suppress("LongParameterList") // One callback per action of the library.
 @Composable
 private fun LibraryContent(
     uiState: LibraryUiState,
     onQueryChange: (String) -> Unit,
     onFilterSelected: (LibraryFilter) -> Unit,
     onOpenSong: (String) -> Unit,
+    onSongActions: (String) -> Unit,
     onNewSong: () -> Unit,
+    onUndoDelete: () -> Unit,
+    onUndoDismissed: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    val motion = GriotTheme.motion
+    // Focusable, so that the focus given back when a sheet closes lands here, not in the search field.
+    Box(modifier = Modifier.fillMaxSize().focusable()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -102,16 +141,34 @@ private fun LibraryContent(
                     title = stringResource(R.string.library_no_result_title),
                     body = stringResource(R.string.library_no_result_body),
                 )
-                else -> SongList(items = uiState.items, onOpenSong = onOpenSong)
+                else -> SongList(items = uiState.items, onOpenSong = onOpenSong, onSongActions = onSongActions)
             }
         }
-        NewSongButton(
-            onClick = onNewSong,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(end = GriotSpacing.xl, bottom = NewSongBottom),
-        )
+        val floating = Modifier
+            .align(Alignment.BottomEnd)
+            .navigationBarsPadding()
+            .padding(start = GriotSpacing.l, end = GriotSpacing.xl, bottom = NewSongBottom)
+        // The undo bar takes the place of « Nouvelle chanson » while it shows.
+        AnimatedPresence(
+            value = uiState.deleted,
+            enter = motion.barEnter(),
+            exit = motion.barExit(),
+            modifier = floating,
+        ) { deleted ->
+            UndoBar(
+                message = stringResource(R.string.library_deleted, deleted.title),
+                onUndo = onUndoDelete,
+                onDismissed = onUndoDismissed,
+            )
+        }
+        AnimatedVisibility(
+            visible = uiState.deleted == null,
+            enter = motion.barEnter(),
+            exit = motion.barExit(),
+            modifier = floating,
+        ) {
+            NewSongButton(onClick = onNewSong)
+        }
     }
 }
 
@@ -176,7 +233,7 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
 }
 
 @Composable
-private fun SongList(items: List<LibraryItem>, onOpenSong: (String) -> Unit) {
+private fun SongList(items: List<LibraryItem>, onOpenSong: (String) -> Unit, onSongActions: (String) -> Unit) {
     val motion = GriotTheme.motion
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -187,6 +244,7 @@ private fun SongList(items: List<LibraryItem>, onOpenSong: (String) -> Unit) {
             SongCard(
                 item = item,
                 onClick = { onOpenSong(item.song.id) },
+                onLongClick = { onSongActions(item.song.id) },
                 modifier = Modifier.animateItem(
                     fadeInSpec = motion.tween(),
                     placementSpec = motion.tween(),
@@ -279,7 +337,10 @@ private fun LibraryScreenPreview() {
                 onQueryChange = {},
                 onFilterSelected = {},
                 onOpenSong = {},
+                onSongActions = {},
                 onNewSong = {},
+                onUndoDelete = {},
+                onUndoDismissed = {},
             )
         }
     }

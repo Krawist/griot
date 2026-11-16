@@ -163,7 +163,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `EditorRoute(songId)`. `SongDao.observeLibrary` reads each card in one query. `RelativeTime` in `:core:design`.
   Still to add: the rhyme dots (GRI-21) and the sync pill (GRI-27). The editor must touch the song's `updatedAt`
   on every change, as the library sorts on it.
-- [ ] **Next tickets:** GRI-13, GRI-14 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
+- [x] **GRI-13** — long press on a song: `SongActionsSheet` (rename, duplicate as « … (copie) », delete). Delete
+  moves to the trash (`deleted` flag) with an `UndoBar` (`:core:design`, 5 s) in place of « Nouvelle chanson ».
+  `TrashScreen` (library feature, `navigateToTrash()`, opened from the settings) restores; `MainViewModel` purges
+  the songs in the trash for more than `SongRepository.TRASH_DAYS` (30) at each launch. A duplicate copies sections
+  and verses, repeats pointing to the copied sections. `GriotTextField` puts the cursor at the end of a value set
+  from outside; the library's root is focusable so a closing sheet does not focus the search field.
+- [ ] **Next tickets:** GRI-14 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
 
 Update this section at the end of each ticket.
 

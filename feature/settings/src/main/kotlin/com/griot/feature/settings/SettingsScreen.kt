@@ -9,16 +9,16 @@ import com.griot.core.data.model.AppLanguage
 import com.griot.core.design.component.PlaceholderAction
 import com.griot.core.design.component.PlaceholderScreen
 
-/** Settings, a placeholder until GRI-29: for now, the language of the interface only. */
+/** Settings, a placeholder until GRI-29: for now, the language of the interface and the trash. */
 @Composable
-internal fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
+internal fun SettingsScreen(onOpenTrash: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     PlaceholderScreen(
         title = stringResource(R.string.settings_title),
         subtitle = stringResource(R.string.settings_language_current, stringResource(uiState.language.labelRes())),
         actions = AppLanguage.entries.map { language ->
             PlaceholderAction(stringResource(language.labelRes())) { viewModel.onLanguageSelected(language) }
-        },
+        } + PlaceholderAction(stringResource(R.string.settings_trash), onOpenTrash),
     )
 }
 

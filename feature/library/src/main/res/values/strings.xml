@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="library_copy_title">%1$s (copie)</string>
+    <string name="library_delete">Supprimer</string>
+    <string name="library_deleted">« %1$s » est dans la corbeille</string>
     <string name="library_draft">Brouillon</string>
-    <string name="library_empty_body">Touche « Nouvelle chanson » pour écrire ta première chanson.</string>
+    <string name="library_duplicate">Dupliquer</string>
+    <string name="library_empty_body">Touche « Nouvelle chanson » pour écrire ta première chanson.</string>
     <string name="library_empty_title">Pas encore de chanson</string>
     <string name="library_filter_all">Toutes</string>
     <string name="library_filter_drafts">Brouillons</string>
@@ -15,12 +19,25 @@
     <string name="library_no_result_body">Essaie un autre mot ou un autre filtre.</string>
     <string name="library_no_result_title">Aucune chanson ne correspond</string>
     <string name="library_no_text">Pas encore de texte</string>
+    <string name="library_rename">Renommer</string>
+    <string name="library_rename_label">Titre</string>
     <string name="library_search">Chercher un titre, un vers…</string>
     <string name="library_title">Tes chansons</string>
     <string name="library_untitled">Sans titre</string>
+    <string name="trash_back">Retour</string>
+    <string name="trash_body">Les chansons supprimées restent ici 30 jours, puis sont effacées partout.</string>
+    <string name="trash_empty">La corbeille est vide.</string>
+    <string name="trash_meta">Supprimée %1$s · %2$s</string>
+    <string name="trash_restore">Restaurer</string>
+    <string name="trash_title">Corbeille</string>
     <plurals name="library_sections">
         <item quantity="one">%1$d section</item>
         <item quantity="many">%1$d sections</item>
         <item quantity="other">%1$d sections</item>
+    </plurals>
+    <plurals name="trash_days_left">
+        <item quantity="one">encore %1$d jour</item>
+        <item quantity="many">encore %1$d jours</item>
+        <item quantity="other">encore %1$d jours</item>
     </plurals>
 </resources>

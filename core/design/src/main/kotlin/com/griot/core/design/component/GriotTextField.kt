@@ -30,7 +30,9 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.griot.core.design.theme.GriotRadius
@@ -64,6 +66,9 @@ fun GriotTextField(
     val motion = GriotTheme.motion
     val shape = RoundedCornerShape(GriotRadius.field)
     val textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, color = palette.ink)
+    // The cursor goes at the end of a value set from outside, such as a title to rename.
+    var field by remember { mutableStateOf(TextFieldValue(value, TextRange(value.length))) }
+    if (field.text != value) field = TextFieldValue(value, TextRange(value.length))
     var focused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     if (autoFocus) LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -79,8 +84,11 @@ fun GriotTextField(
             color = palette.ink,
         )
         BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = field,
+            onValueChange = {
+                field = it
+                if (it.text != value) onValueChange(it.text)
+            },
             singleLine = true,
             textStyle = textStyle,
             cursorBrush = SolidColor(palette.accent),

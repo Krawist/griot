@@ -1,7 +1,7 @@
 package com.griot.feature.library
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,13 +29,13 @@ import com.griot.core.design.theme.GriotTheme
 
 /** One song of the library: its title, language, first verse, and how far it is. */
 @Composable
-internal fun SongCard(item: LibraryItem, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun SongCard(item: LibraryItem, onClick: () -> Unit, onLongClick: () -> Unit, modifier: Modifier = Modifier) {
     val palette = GriotTheme.palette
     val song = item.song
     GlassSurface(
         shape = RoundedCornerShape(GriotRadius.card),
         modifier = modifier.fillMaxWidth(),
-        interaction = Modifier.clickable(onClick = onClick),
+        interaction = Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = GriotSpacing.l, vertical = GriotSpacing.m + 2.dp),

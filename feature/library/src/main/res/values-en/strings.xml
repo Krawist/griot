@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="library_copy_title">%1$s (copy)</string>
+    <string name="library_delete">Delete</string>
+    <string name="library_deleted">“%1$s” is in the trash</string>
     <string name="library_draft">Draft</string>
+    <string name="library_duplicate">Duplicate</string>
     <string name="library_empty_body">Tap “New song” to write your first song.</string>
     <string name="library_empty_title">No songs yet</string>
     <string name="library_filter_all">All</string>
@@ -13,11 +17,23 @@
     <string name="library_no_result_body">Try another word or another filter.</string>
     <string name="library_no_result_title">No song matches</string>
     <string name="library_no_text">No lyrics yet</string>
+    <string name="library_rename">Rename</string>
+    <string name="library_rename_label">Title</string>
     <string name="library_search">Search a title, a verse…</string>
     <string name="library_title">Your songs</string>
     <string name="library_untitled">Untitled</string>
+    <string name="trash_back">Back</string>
+    <string name="trash_body">Deleted songs stay here for 30 days, then are erased everywhere.</string>
+    <string name="trash_empty">The trash is empty.</string>
+    <string name="trash_meta">Deleted %1$s · %2$s</string>
+    <string name="trash_restore">Restore</string>
+    <string name="trash_title">Trash</string>
     <plurals name="library_sections">
         <item quantity="one">%1$d section</item>
         <item quantity="other">%1$d sections</item>
+    </plurals>
+    <plurals name="trash_days_left">
+        <item quantity="one">%1$d day left</item>
+        <item quantity="other">%1$d days left</item>
     </plurals>
 </resources>

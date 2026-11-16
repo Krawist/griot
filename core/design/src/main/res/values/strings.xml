@@ -4,4 +4,5 @@
     <string name="time_just_now">à l\'instant</string>
     <string name="time_minutes_ago">il y a %1$d min</string>
     <string name="time_yesterday">hier</string>
+    <string name="undo">Annuler</string>
 </resources>

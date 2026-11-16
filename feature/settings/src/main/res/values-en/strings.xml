@@ -4,5 +4,6 @@
     <string name="settings_language_english">English</string>
     <string name="settings_language_french">Français</string>
     <string name="settings_language_system">Phone language</string>
+    <string name="settings_trash">Trash</string>
     <string name="settings_title">Settings</string>
 </resources>

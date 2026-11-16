@@ -40,6 +40,7 @@ import com.griot.feature.ideas.IdeasGraph
 import com.griot.feature.ideas.ideasGraph
 import com.griot.feature.library.LibraryGraph
 import com.griot.feature.library.libraryGraph
+import com.griot.feature.library.navigateToTrash
 import com.griot.feature.onboarding.OnboardingGraph
 import com.griot.feature.onboarding.onboardingGraph
 import com.griot.feature.settings.SettingsGraph
@@ -109,9 +110,12 @@ private fun GriotNavHost(
                 // The restore from Google Drive comes with GRI-30.
                 onRestore = null,
             )
-            libraryGraph(onOpenSong = { songId -> navController.navigateToEditor(songId) })
+            libraryGraph(
+                onOpenSong = { songId -> navController.navigateToEditor(songId) },
+                onBack = { navController.popBackStack() },
+            )
             ideasGraph()
-            settingsGraph()
+            settingsGraph(onOpenTrash = { navController.navigateToTrash() })
             editorGraph(onBack = { navController.popBackStack() })
         }
     }

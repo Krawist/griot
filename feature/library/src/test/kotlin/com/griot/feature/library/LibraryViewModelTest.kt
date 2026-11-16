@@ -176,7 +176,100 @@ internal class LibraryViewModelTest {
 
             // then
             opened shouldBe "created-song-id-1"
-            songs.created shouldContainExactly listOf("created-song-id-1")
+            songs.calls shouldContainExactly listOf("create created-song-id-1")
+        }
+    }
+
+    @Nested
+    inner class OnRename {
+        @Test
+        fun `should rename the song without the spaces around the title`() = runTest {
+            // given
+            val songs = FakeSongRepository()
+            val viewModel =
+                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+
+            // when
+            viewModel.onRename(id = "my-song-id", title = " my-title ")
+
+            // then
+            songs.calls shouldContainExactly listOf("rename my-song-id my-title")
+        }
+    }
+
+    @Nested
+    inner class OnDuplicate {
+        @Test
+        fun `should copy the song under the title given`() = runTest {
+            // given
+            val songs = FakeSongRepository()
+            val viewModel =
+                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+
+            // when
+            viewModel.onDuplicate(id = "my-song-id", title = "my-title")
+
+            // then
+            songs.calls shouldContainExactly listOf("duplicate my-song-id my-title")
+        }
+    }
+
+    @Nested
+    inner class OnDelete {
+        @Test
+        fun `should move the song to the trash and offer to undo`() = runTest {
+            // given
+            val songs = FakeSongRepository()
+            val viewModel =
+                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            viewModel.onDelete(id = "my-song-id", title = "my-title")
+
+            // then
+            viewModel.uiState.first { !it.loading }.deleted shouldBe DeletedSong(id = "my-song-id", title = "my-title")
+            songs.calls shouldContainExactly listOf("delete my-song-id")
+        }
+    }
+
+    @Nested
+    inner class OnUndoDelete {
+        @Test
+        fun `should take the song just deleted out of the trash`() = runTest {
+            // given
+            val songs = FakeSongRepository()
+            val viewModel =
+                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onDelete(id = "my-song-id", title = "my-title")
+
+            // when
+            viewModel.onUndoDelete()
+
+            // then
+            viewModel.uiState.first { !it.loading }.deleted.shouldBeNull()
+            songs.calls shouldContainExactly listOf("delete my-song-id", "restore my-song-id")
+        }
+    }
+
+    @Nested
+    inner class OnUndoDismissed {
+        @Test
+        fun `should hide the undo bar and keep the song in the trash`() = runTest {
+            // given
+            val songs = FakeSongRepository()
+            val viewModel =
+                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onDelete(id = "my-song-id", title = "my-title")
+
+            // when
+            viewModel.onUndoDismissed()
+
+            // then
+            viewModel.uiState.first { !it.loading }.deleted.shouldBeNull()
+            songs.calls shouldContainExactly listOf("delete my-song-id")
         }
     }
 }
