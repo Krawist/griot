@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="import_body">Importe-les maintenant pour tout retrouver au même endroit, avec syllabes et rimes.</string>
+    <string name="import_done">Commencer à écrire</string>
+    <string name="import_failed">« %1$s » est vide ou illisible : rien n\'a été créé.</string>
+    <string name="import_files_hint">Fichiers .txt ou .md</string>
+    <string name="import_files_title">Depuis tes fichiers</string>
+    <string name="import_later">Tu pourras aussi importer plus tard depuis les réglages.</string>
+    <string name="import_paste_confirm">Importer</string>
+    <string name="import_paste_hint">Un texte copié depuis une autre app</string>
+    <string name="import_paste_option">Coller un texte</string>
+    <string name="import_paste_placeholder">Colle ici les paroles d\'une chanson…</string>
+    <string name="import_paste_title">Coller un texte</string>
+    <string name="import_pick_files">Choisir les fichiers .txt</string>
+    <string name="import_samsung_help_step_1">Dans Samsung Notes, appuie longuement sur une note pour la sélectionner, puis coche toutes celles à importer.</string>
+    <string name="import_samsung_help_step_2">Touche « Partager » ou « Plus » (⋮), puis « Enregistrer en tant que fichier ».</string>
+    <string name="import_samsung_help_step_3">Choisis le format « Fichier texte (.txt) » et enregistre-les dans Mes fichiers.</string>
+    <string name="import_samsung_help_step_4">Reviens ici et choisis ces fichiers : chaque note devient une chanson.</string>
+    <string name="import_samsung_help_title">Exporter tes notes Samsung</string>
+    <string name="import_samsung_hint">Exporte tes notes en .txt, puis choisis-les</string>
+    <string name="import_samsung_title">Depuis Samsung Notes</string>
+    <string name="import_summary">%1$s · %2$s</string>
+    <string name="import_title">Tu as déjà des textes ?</string>
     <string name="language_body">Ce sera la langue de l\'app et celle de tes nouvelles chansons. Tu pourras la changer pour chaque chanson.</string>
     <string name="language_english_code" translatable="false">EN</string>
     <string name="language_english_hint" translatable="false">Interface and songs in English</string>
@@ -24,4 +45,14 @@
     <string name="welcome_restore">Restaurer depuis Google Drive</string>
     <string name="welcome_start">Commencer</string>
     <string name="welcome_wordmark" translatable="false">Griot</string>
+    <plurals name="import_sections">
+        <item quantity="one">%1$d section</item>
+        <item quantity="many">%1$d sections</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
+    <plurals name="import_songs">
+        <item quantity="one">%1$d chanson importée</item>
+        <item quantity="many">%1$d chansons importées</item>
+        <item quantity="other">%1$d chansons importées</item>
+    </plurals>
 </resources>

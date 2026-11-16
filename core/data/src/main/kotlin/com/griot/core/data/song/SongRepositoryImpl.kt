@@ -8,7 +8,9 @@ import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.model.LibrarySong
+import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.SectionKind
+import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
 import com.griot.core.data.model.TrashedSong
 import com.griot.core.data.preferences.UserPreferencesRepository
@@ -24,6 +26,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /** Default implementation for [SongRepository], on the Room database. */
+// One function per change of the library: create, import, rename, duplicate, delete, restore, purge.
+@Suppress("TooManyFunctions")
 @Singleton
 internal class SongRepositoryImpl @Inject constructor(
     private val songDao: SongDao,
@@ -64,6 +68,48 @@ internal class SongRepositoryImpl @Inject constructor(
             updatedAt = now,
         )
         songDao.insertWithContent(song = song, sections = listOf(section), verses = listOf(verse))
+        return song.id
+    }
+
+    override suspend fun importSong(title: String, sections: List<NewSection>): String {
+        val now = Instant.now(clock)
+        val song = SongEntity(
+            id = newId(),
+            title = title,
+            language = SongLanguage.AUTOMATIC,
+            status = SongStatus.IN_PROGRESS,
+            createdAt = now,
+            updatedAt = now,
+        )
+        val sectionIds = sections.map { newId() }
+        val entities = sections.mapIndexed { position, section ->
+            SectionEntity(
+                id = sectionIds[position],
+                songId = song.id,
+                kind = section.kind,
+                name = section.name,
+                position = position,
+                repeatOfSectionId = section.repeatOf?.let(sectionIds::get),
+                updatedAt = now,
+            )
+        }
+        val verses = sections.flatMapIndexed { index, section ->
+            if (section.repeatOf != null) {
+                emptyList()
+            } else {
+                section.lines.mapIndexed { position, text ->
+                    VerseEntity(
+                        id = newId(),
+                        sectionId = sectionIds[index],
+                        text = text,
+                        position = position,
+                        updatedAt = now,
+                    )
+                }
+            }
+        }
+        // A repeat always points to a section before it: inserted in order, its source already exists.
+        songDao.insertWithContent(song = song, sections = entities, verses = verses)
         return song.id
     }
 

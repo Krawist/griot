@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="import_body">Import them now to find everything in one place, with syllables and rhymes.</string>
+    <string name="import_done">Start writing</string>
+    <string name="import_failed">“%1$s” is empty or unreadable: nothing was created.</string>
+    <string name="import_files_hint">.txt or .md files</string>
+    <string name="import_files_title">From your files</string>
+    <string name="import_later">You can also import later from the settings.</string>
+    <string name="import_paste_confirm">Import</string>
+    <string name="import_paste_hint">A text copied from another app</string>
+    <string name="import_paste_option">Paste a text</string>
+    <string name="import_paste_placeholder">Paste the lyrics of a song here…</string>
+    <string name="import_paste_title">Paste a text</string>
+    <string name="import_pick_files">Choose the .txt files</string>
+    <string name="import_samsung_help_step_1">In Samsung Notes, long press a note to select it, then tick every note to import.</string>
+    <string name="import_samsung_help_step_2">Tap “Share” or “More” (⋮), then “Save as file”.</string>
+    <string name="import_samsung_help_step_3">Choose “Text file (.txt)” and save them in My Files.</string>
+    <string name="import_samsung_help_step_4">Come back here and choose those files: each note becomes a song.</string>
+    <string name="import_samsung_help_title">Export your Samsung notes</string>
+    <string name="import_samsung_hint">Export your notes as .txt, then choose them</string>
+    <string name="import_samsung_title">From Samsung Notes</string>
+    <string name="import_summary">%1$s · %2$s</string>
+    <string name="import_title">Already have lyrics?</string>
     <string name="language_body">It will be the language of the app and of your new songs. You can change it for each song.</string>
     <string name="language_group">Preferred language</string>
     <string name="language_mixed">Mixing both? Griot spots the dominant language of each song to count its syllables and find its rhymes.</string>
@@ -16,4 +37,12 @@
     <string name="welcome_headline">Write your songs.\nKeep your voice.</string>
     <string name="welcome_restore">Restore from Google Drive</string>
     <string name="welcome_start">Get started</string>
+    <plurals name="import_sections">
+        <item quantity="one">%1$d section</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
+    <plurals name="import_songs">
+        <item quantity="one">%1$d song imported</item>
+        <item quantity="other">%1$d songs imported</item>
+    </plurals>
 </resources>

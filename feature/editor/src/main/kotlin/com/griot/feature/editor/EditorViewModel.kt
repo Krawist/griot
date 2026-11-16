@@ -10,6 +10,7 @@ import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongRepository
 import com.griot.core.data.song.WordCorrectionRepository
+import com.griot.core.data.song.toNewSections
 import com.griot.core.phonetics.PhoneticEngines
 import com.griot.core.phonetics.PhoneticLanguage
 import com.griot.core.phonetics.paste.PastedBlock

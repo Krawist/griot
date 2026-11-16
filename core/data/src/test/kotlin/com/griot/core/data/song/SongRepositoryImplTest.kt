@@ -10,6 +10,7 @@ import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.database.inMemoryDatabase
 import com.griot.core.data.model.LibrarySong
+import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
@@ -347,6 +348,49 @@ internal class SongRepositoryImplTest {
             database.verseDao().observeBySection(sections[1].id).first().map { it.text } shouldContainExactly
                 listOf("my-text")
             database.verseDao().getBySong("my-song-id").single().id shouldBe "my-verse-id"
+        }
+    }
+
+    // On an in-memory database: the song is checked as it is read back.
+    @Nested
+    inner class ImportSong {
+        private val database = inMemoryDatabase()
+        private val repository = SongRepositoryImpl(
+            songDao = database.songDao(),
+            sectionDao = database.sectionDao(),
+            verseDao = database.verseDao(),
+            preferences = preferences,
+            clock = clock,
+        )
+
+        @AfterEach
+        fun tearDown() {
+            database.close()
+        }
+
+        @Test
+        fun `should create a song in progress, in automatic language, with its sections and repeats`() = runTest {
+            // when
+            val id = repository.importSong(
+                title = "my-title",
+                sections = listOf(
+                    NewSection(kind = SectionKind.CHORUS, name = null, lines = listOf("a", "b"), repeatOf = null),
+                    NewSection(kind = SectionKind.OTHER, name = "my-name", lines = listOf("c"), repeatOf = null),
+                    NewSection(kind = SectionKind.CHORUS, name = null, lines = emptyList(), repeatOf = 0),
+                ),
+            )
+
+            // then
+            database.songDao().getById(id)?.let { Triple(it.title, it.status, it.language) } shouldBe
+                Triple("my-title", SongStatus.IN_PROGRESS, SongLanguage.AUTOMATIC)
+            val sections = database.sectionDao().getBySong(id)
+            sections.map { it.kind to it.name } shouldContainExactly listOf(
+                SectionKind.CHORUS to null,
+                SectionKind.OTHER to "my-name",
+                SectionKind.CHORUS to null,
+            )
+            sections[2].repeatOfSectionId shouldBe sections[0].id
+            database.verseDao().getBySong(id).map { it.text } shouldContainExactly listOf("a", "b", "c")
         }
     }
 }

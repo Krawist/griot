@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.griot.feature.onboarding.importing.ImportScreen
 import com.griot.feature.onboarding.language.LanguageScreen
 import com.griot.feature.onboarding.name.NameScreen
 import kotlinx.serialization.Serializable
@@ -20,6 +21,9 @@ internal data object NameRoute
 @Serializable
 internal data object LanguageRoute
 
+@Serializable
+internal data object ImportRoute
+
 /**
  * Welcome, name, language, sync and import (GRI-07 to GRI-11).
  *
@@ -33,7 +37,10 @@ fun NavGraphBuilder.onboardingGraph(navController: NavController, onCompleted: (
         composable<NameRoute> {
             NameScreen(onBack = { navController.popBackStack() }, onNext = { navController.navigate(LanguageRoute) })
         }
-        // The next steps come with GRI-10 and GRI-11.
-        composable<LanguageRoute> { LanguageScreen(onBack = { navController.popBackStack() }, onNext = onCompleted) }
+        // The sync step (GRI-10) comes between the language and the import.
+        composable<LanguageRoute> {
+            LanguageScreen(onBack = { navController.popBackStack() }, onNext = { navController.navigate(ImportRoute) })
+        }
+        composable<ImportRoute> { ImportScreen(onBack = { navController.popBackStack() }, onDone = onCompleted) }
     }
 }

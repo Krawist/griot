@@ -1,6 +1,7 @@
 package com.griot.core.data.song
 
 import com.griot.core.data.model.LibrarySong
+import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.TrashedSong
 import kotlinx.coroutines.flow.Flow
 
@@ -17,6 +18,12 @@ interface SongRepository {
      * verse, and returns its id.
      */
     suspend fun createSong(): String
+
+    /**
+     * Creates a song in progress named [title], in automatic language, holding [sections] (a repeat pointing to its
+     * source by index), and returns its id.
+     */
+    suspend fun importSong(title: String, sections: List<NewSection>): String
 
     /** Gives the song [id] the [title]. */
     suspend fun renameSong(id: String, title: String)

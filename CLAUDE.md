@@ -206,7 +206,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   a long press on a lighter count opens `CountCorrectionSheet`: the first unknown word gets the syllables that make
   the count given, kept in `word_corrections` (Room, database version 2, auto-migration) and applied by
   `PhoneticEngine.setCorrections` in every song.
-- [ ] **Next tickets:** GRI-11 (import), then GRI-24 (history), GRI-25 (export) (GRI-10 waits for GRI-27).
+- [x] **GRI-11** — `ImportScreen` (onboarding step 4/4; the sync step GRI-10 is not built yet): Samsung Notes (help
+  sheet, then the picker), files (.txt, .md, several at once, through the system picker) or a pasted text.
+  `TextImporter` (`:core:data`) makes one song per text (in progress, automatic language, named after the file,
+  the note's title line left out) split by `splitPastedText`; empty or unreadable files are reported by name.
+  `DocumentReader` reads the picked files. `toNewSections` moved to `:core:data`. The Samsung Notes steps are not
+  checked on a real Samsung Notes yet.
+- [ ] **Next tickets:** GRI-24 (history), GRI-25 (export), GRI-26 (sync repository) (GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

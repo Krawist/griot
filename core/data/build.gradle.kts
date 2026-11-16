@@ -13,6 +13,7 @@ android {
 
 dependencies {
     api(libs.androidx.datastore.preferences)
+    implementation(projects.core.phonetics)
     implementation(libs.androidx.appcompat)
     implementation(libs.mlkit.language.id)
     implementation(libs.kotlinx.coroutines.core)

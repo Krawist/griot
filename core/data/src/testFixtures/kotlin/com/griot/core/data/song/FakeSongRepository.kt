@@ -1,6 +1,7 @@
 package com.griot.core.data.song
 
 import com.griot.core.data.model.LibrarySong
+import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.TrashedSong
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -24,6 +25,11 @@ class FakeSongRepository(library: List<LibrarySong> = emptyList(), trash: List<T
         val id = "created-song-id-${calls.count { it.startsWith("create") } + 1}"
         calls += "create $id"
         return id
+    }
+
+    override suspend fun importSong(title: String, sections: List<NewSection>): String {
+        calls += "import $title ${sections.size}"
+        return "imported-song-id"
     }
 
     override suspend fun renameSong(id: String, title: String) {
