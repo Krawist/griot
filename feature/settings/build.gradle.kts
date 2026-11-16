@@ -5,3 +5,9 @@ plugins {
 android {
     namespace = "com.griot.feature.settings"
 }
+
+dependencies {
+    implementation(projects.core.data)
+
+    testImplementation(testFixtures(projects.core.data))
+}

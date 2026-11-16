@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="settings_language_current">Langue de l\'app : %1$s</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_french">Français</string>
+    <string name="settings_language_system">Langue du téléphone</string>
     <string name="settings_title">Réglages</string>
-    <string name="settings_subtitle">Écran à venir</string>
 </resources>

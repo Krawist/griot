@@ -33,8 +33,14 @@ detekt {
     parallel = true
 }
 
-// detekt 1.23.x ships its own Kotlin 2.0.21 compiler: keep Gradle from aligning it with the project's version.
-configurations.matching { it.name == "detekt" }.configureEach {
+dependencies {
+    // Griot's own rules, such as HardcodedUiText.
+    detektPlugins(projects.detektRules)
+}
+
+// detekt 1.23.x ships its own Kotlin 2.0.21 compiler: keep Gradle from aligning it, or the rules it runs, with the
+// project's version.
+configurations.matching { it.name == "detekt" || it.name == "detektPlugins" }.configureEach {
     resolutionStrategy.eachDependency {
         if (requested.group == "org.jetbrains.kotlin") {
             useVersion("2.0.21")

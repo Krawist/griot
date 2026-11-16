@@ -14,3 +14,7 @@ style:
     excludes: ['**/test/**', '**/theme/**']
   UnusedPrivateMember:
     ignoreAnnotated: ['Preview']
+griot:
+  HardcodedUiText:
+    active: true
+    excludes: ['**/test/**']

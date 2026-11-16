@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Window theme only; the look is handled by GriotTheme (Compose). -->
-    <style name="Theme.Griot" parent="android:Theme.Material.Light.NoActionBar">
+    <!-- Window theme only; the look is handled by GriotTheme (Compose). AppCompat, for the per-app language. -->
+    <style name="Theme.Griot" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/griot_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>

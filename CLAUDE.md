@@ -64,7 +64,7 @@ Before implementing a screen, look at its mockup. Song titles, verses and names 
 - Pure logic (phonetic engines, paste splitter, rhyme letters, conflict merge) in Kotlin without Android
   dependencies whenever possible, covered by JVM tests.
 - User-facing texts: `strings.xml` in French (default) **and** English (`values-en`). Never hard-coded text in a
-  composable.
+  composable (detekt `HardcodedUiText` checks it).
 - Colours come from `GriotTheme.palette`, never raw values in screens. Magenta is the brand and main actions, orange
   is reserved for AI, turquoise for sync and states. Rhyme colours are their own set.
 - Motion: every screen and state change is animated with the shared motion tokens of `:core:design` (GRI-44), from
@@ -143,7 +143,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   A repeat section points to its source (`repeatOfSectionId`) and holds no verses; `VerseDao.observeBySection`
   resolves it. A row has changes to push when its `updatedAt` is after its `sync_state.syncedUpdatedAt`. Entities
   and DAOs are internal; enums (`SongLanguage`, `SectionKind`…) are public in `core.data.model`.
-- [ ] **Next ticket:** GRI-06, then GRI-07.
+- [x] **GRI-06** — `AppLanguageRepository` (`:core:data`) on the per-app language API: AppCompat below Android 13
+  (`MainActivity` is an `AppCompatActivity`, AppCompat theme, `AppLocalesMetadataHolderService`), the system above;
+  the language applies at once and survives a restart. Temporary language choice on the settings placeholder until
+  GRI-29. detekt rule `HardcodedUiText` (`:detekt-rules`) rejects literal text passed to UI parameters outside
+  previews. MockK is in the catalog for static platform APIs.
+- [ ] **Next ticket:** GRI-07, then GRI-08.
 
 Update this section at the end of each ticket.
 

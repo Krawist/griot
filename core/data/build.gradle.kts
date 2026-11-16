@@ -13,8 +13,10 @@ android {
 
 dependencies {
     api(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.appcompat)
     implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
     testImplementation(libs.sqlite.bundled.jvm)
 }
