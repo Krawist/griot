@@ -28,6 +28,11 @@ import androidx.compose.ui.graphics.Color
  * @property onInverse Text drawn on [inverse].
  * @property selection Fill of the selected verse in the editor.
  * @property blobAlpha Opacity of the blurred colour shapes drawn behind a screen, from 0 to 1.
+ * @property blobWarm Second colour of the blurred shapes of the logo and the launch screen: orange in light mode,
+ * violet in dark mode. Magenta ([accent]) and turquoise ([sync]) are the others.
+ * @property logoTile Ground of the logo tile, under its blurred shapes.
+ * @property logoVeil Frosted veil drawn over the blurred shapes of the logo tile.
+ * @property logoHighlight Hairline around the logo tile, catching the light.
  * @property accent Brand magenta: selection, active tab, icons, logo.
  * @property accentFill Magenta of filled buttons with [onAccent] text: a shade deeper than [accent] so that white
  * text reaches 4.5:1.
@@ -65,6 +70,10 @@ data class GriotPalette(
     val onInverse: Color,
     val selection: Color,
     val blobAlpha: Float,
+    val blobWarm: Color,
+    val logoTile: Color,
+    val logoVeil: Color,
+    val logoHighlight: Color,
     val accent: Color,
     val accentFill: Color,
     val onAccent: Color,
@@ -101,6 +110,10 @@ internal val LightPalette = GriotPalette(
     onInverse = Color(0xFFFFFFFF),
     selection = Color(0x14E0287D),
     blobAlpha = 0.16f,
+    blobWarm = Color(0xFFFF7A1A),
+    logoTile = Color(0xFFF4F1F8),
+    logoVeil = Color(0x73FFFFFF),
+    logoHighlight = Color(0xF2FFFFFF),
     accent = Color(0xFFE0287D),
     accentFill = Color(0xFFDB2277),
     onAccent = Color(0xFFFFFFFF),
@@ -137,6 +150,10 @@ internal val DarkPalette = GriotPalette(
     onInverse = Color(0xFF0F1018),
     selection = Color(0x29E0287D),
     blobAlpha = 0.22f,
+    blobWarm = Color(0xFF7B2FF7),
+    logoTile = Color(0xFF14151F),
+    logoVeil = Color(0x7314151F),
+    logoHighlight = Color(0x2EFFFFFF),
     accent = Color(0xFFE0287D),
     accentFill = Color(0xFFDB2277),
     onAccent = Color(0xFFFFFFFF),

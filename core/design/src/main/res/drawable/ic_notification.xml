@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notification icon: the white silhouette of the quill and wave (logo/griot-quill-silhouette.svg), 24 dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,14 C52,21 38,40 34,64 L44,66 C50,45 60,30 74,14 Z M34,64 L31,74 L44,66 Z" />
+    <path
+        android:pathData="M20,82 Q30,74 40,82 T60,82 T80,82"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeWidth="6" />
+</vector>

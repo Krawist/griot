@@ -1,11 +1,11 @@
 package com.griot
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -19,17 +19,25 @@ import com.griot.feature.onboarding.OnboardingGraph
 import com.griot.feature.onboarding.onboardingGraph
 import com.griot.feature.settings.navigateToSettings
 import com.griot.feature.settings.settingsGraph
+import kotlinx.coroutines.delay
 
-/** Root of the app: the onboarding on first launch, then the library. */
+/** Root of the app: the launch screen, then the onboarding on first launch or the library. */
 @Composable
 internal fun GriotApp(uiState: MainUiState, onOnboardingCompleted: () -> Unit) {
-    when (uiState) {
-        // Plain background while the preferences load (a few milliseconds).
-        MainUiState.Loading -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
-        is MainUiState.Ready -> GriotNavHost(
+    // Saved so that a configuration change (rotation, dark mode) does not show the launch screen again.
+    var launchShown by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(LaunchDuration)
+        launchShown = true
+    }
+    // The preferences load in a few milliseconds: the launch screen covers it.
+    if (launchShown && uiState is MainUiState.Ready) {
+        GriotNavHost(
             onboardingCompleted = uiState.onboardingCompleted,
             onOnboardingCompleted = onOnboardingCompleted,
         )
+    } else {
+        LaunchScreen()
     }
 }
 

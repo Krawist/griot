@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- System splash icon, light mode: the logo tile of the launch screen (128 dp, radius 30, core/design LogoTile)
+     centred in the 288 dp icon area, so the hand-off to the Compose launch screen does not move. One vector, as the
+     system splash does not draw the second layer of a layer-list. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <group>
+        <clip-path android:pathData="M110,80 h68 a30,30 0 0,1 30,30 v68 a30,30 0 0,1 -30,30 h-68 a30,30 0 0,1 -30,-30 v-68 a30,30 0 0,1 30,-30 Z" />
+        <path
+            android:fillColor="#F4F1F8"
+            android:pathData="M80,80 h128 v128 h-128 Z" />
+        <path android:pathData="M80,80 h128 v128 h-128 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:centerX="104"
+                    android:centerY="108"
+                    android:endColor="#00E0287D"
+                    android:gradientRadius="64"
+                    android:startColor="#73E0287D"
+                    android:type="radial" />
+            </aapt:attr>
+        </path>
+        <path android:pathData="M80,80 h128 v128 h-128 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:centerX="189"
+                    android:centerY="137"
+                    android:endColor="#00FF7A1A"
+                    android:gradientRadius="58"
+                    android:startColor="#73FF7A1A"
+                    android:type="radial" />
+            </aapt:attr>
+        </path>
+        <path android:pathData="M80,80 h128 v128 h-128 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:centerX="145"
+                    android:centerY="195"
+                    android:endColor="#0000B3A6"
+                    android:gradientRadius="66"
+                    android:startColor="#7300B3A6"
+                    android:type="radial" />
+            </aapt:attr>
+        </path>
+        <path
+            android:fillColor="#73FFFFFF"
+            android:pathData="M80,80 h128 v128 h-128 Z" />
+    </group>
+    <path
+        android:pathData="M110,80.5 h68 a29.5,29.5 0 0,1 29.5,29.5 v68 a29.5,29.5 0 0,1 -29.5,29.5 h-68 a29.5,29.5 0 0,1 -29.5,-29.5 v-68 a29.5,29.5 0 0,1 29.5,-29.5 Z"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="1" />
+    <group
+        android:scaleX="1.28"
+        android:scaleY="1.28"
+        android:translateX="80"
+        android:translateY="80">
+        <path
+            android:fillColor="#E0287D"
+            android:pathData="M74,14 C52,21 38,40 34,64 L44,66 C50,45 60,30 74,14 Z" />
+        <path
+            android:pathData="M70,20 C56,30 46,44 40,62"
+            android:strokeAlpha="0.7"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeWidth="1.4" />
+        <path
+            android:fillColor="#FFC93C"
+            android:pathData="M34,64 L31,74 L44,66 Z" />
+        <path
+            android:pathData="M20,82 Q30,74 40,82 T60,82 T80,82"
+            android:strokeColor="#FF7A1A"
+            android:strokeLineCap="round"
+            android:strokeWidth="4.5" />
+    </group>
+</vector>

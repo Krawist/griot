@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Frosted glass tile of the logo (core/design logo/griot-icon-light.svg): the blurred magenta, orange and turquoise
+     shapes under a white veil. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#F4F1F8"
+        android:pathData="M0,0 h108 v108 h-108 Z" />
+    <path android:pathData="M0,0 h108 v108 h-108 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="20"
+                android:centerY="24"
+                android:endColor="#00E0287D"
+                android:gradientRadius="54"
+                android:startColor="#73E0287D"
+                android:type="radial" />
+        </aapt:attr>
+    </path>
+    <path android:pathData="M0,0 h108 v108 h-108 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="92"
+                android:centerY="49"
+                android:endColor="#00FF7A1A"
+                android:gradientRadius="49"
+                android:startColor="#73FF7A1A"
+                android:type="radial" />
+        </aapt:attr>
+    </path>
+    <path android:pathData="M0,0 h108 v108 h-108 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="55"
+                android:centerY="97"
+                android:endColor="#0000B3A6"
+                android:gradientRadius="56"
+                android:startColor="#6600B3A6"
+                android:type="radial" />
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#73FFFFFF"
+        android:pathData="M0,0 h108 v108 h-108 Z" />
+</vector>

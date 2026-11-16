@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Griot icon, light mode: the quill and wave on a frosted glass tile. Master of the launcher icon and the launch
+     screen tile. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <defs>
+    <clipPath id="tile"><rect width="240" height="240" rx="54"/></clipPath>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect width="240" height="240" fill="#F4F1F8"/>
+    <g filter="url(#blur)">
+      <circle cx="45" cy="55" r="75" fill="#E0287D" fill-opacity="0.45"/>
+      <circle cx="205" cy="105" r="65" fill="#FF7A1A" fill-opacity="0.45"/>
+      <ellipse cx="120" cy="215" rx="80" ry="75" fill="#00B3A6" fill-opacity="0.4"/>
+    </g>
+    <rect width="240" height="240" fill="#FFFFFF" fill-opacity="0.45"/>
+  </g>
+  <g transform="scale(2.4)">
+    <path d="M74 14 C52 21 38 40 34 64 L44 66 C50 45 60 30 74 14 Z" fill="#E0287D"/>
+    <path d="M70 20 C56 30 46 44 40 62" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.7"/>
+    <path d="M34 64 L31 74 L44 66 Z" fill="#FFC93C"/>
+    <path d="M20 82 Q30 74 40 82 T60 82 T80 82" fill="none" stroke="#FF7A1A" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+</svg>

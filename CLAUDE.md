@@ -126,7 +126,11 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
 - [x] **GRI-02** — Griot theme: palette (light and dark), eight rhyme colours (`RhymeColor`,
   `GriotTheme.rhymeColor(index)`), Outfit and Inter embedded (OFL, `core/design/licenses/`), type scale and
   `LyricTextStyle`, radii and spacing, contrast test, preview catalogue (`catalog/ThemeCatalog.kt`).
-- [ ] **Next tickets:** GRI-03, GRI-04 and GRI-44.
+- [x] **GRI-03** — logo masters in `core/design/logo/` (SVG), `logo_quill` (light and night), silhouette and
+  notification icon; `LogoTile` and the `backdrop` modifier (blurred shapes as radial gradients) in `:core:design`;
+  system splash (`splash_icon`, one vector per mode) handed off to `LaunchScreen` (2 s) at the same place; frosted
+  adaptive launcher icon with a monochrome layer.
+- [ ] **Next tickets:** GRI-04 and GRI-44.
 
 Update this section at the end of each ticket.
 

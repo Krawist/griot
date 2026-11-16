@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The quill and wave in white (logo/griot-quill-silhouette.svg): themed launcher icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,14 C52,21 38,40 34,64 L44,66 C50,45 60,30 74,14 Z M34,64 L31,74 L44,66 Z" />
+    <path
+        android:pathData="M20,82 Q30,74 40,82 T60,82 T80,82"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeWidth="4.5" />
+</vector>

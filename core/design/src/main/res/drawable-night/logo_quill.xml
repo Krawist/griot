@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The quill and wave of the logo, dark mode (logo/griot-icon-dark.svg), on a 100 × 100 viewport. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#FF3D97"
+        android:pathData="M74,14 C52,21 38,40 34,64 L44,66 C50,45 60,30 74,14 Z" />
+    <path
+        android:pathData="M70,20 C56,30 46,44 40,62"
+        android:strokeAlpha="0.55"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.4" />
+    <path
+        android:fillColor="#FFC93C"
+        android:pathData="M34,64 L31,74 L44,66 Z" />
+    <path
+        android:pathData="M20,82 Q30,74 40,82 T60,82 T80,82"
+        android:strokeColor="#FF8C3A"
+        android:strokeLineCap="round"
+        android:strokeWidth="4.5" />
+</vector>
