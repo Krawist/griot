@@ -14,6 +14,7 @@
     <string name="editor_font_size">Text size</string>
     <string name="editor_font_size_sample">I walk alone through the city</string>
     <string name="editor_font_size_value">%1$d sp</string>
+    <string name="editor_ideas">IDEAS OF THIS SONG · TAP TO ADD</string>
     <string name="editor_language_auto_detected">Auto · %1$s</string>
     <string name="editor_language_automatic">Auto</string>
     <string name="editor_language_automatic_hint">In automatic mode, Griot spots the dominant language of the whole song to count its syllables and find its rhymes.</string>

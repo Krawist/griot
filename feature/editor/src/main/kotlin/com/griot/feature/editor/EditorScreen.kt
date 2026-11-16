@@ -180,8 +180,13 @@ private fun OpenSheet(sheet: EditorSheet?, uiState: EditorUiState, viewModel: Ed
             onDismiss = onClosed,
         )
         EditorSheet.MENU -> EditorMenuSheet(
+            ideas = uiState.ideas,
             onExport = {
                 viewModel.onExport()
+                onClosed()
+            },
+            onAddIdea = { text ->
+                viewModel.onAddIdea(text)
                 onClosed()
             },
             onDismiss = onClosed,

@@ -1,6 +1,7 @@
 package com.griot.feature.editor
 
 import com.griot.core.data.export.FakeMarkdownExporter
+import com.griot.core.data.idea.FakeIdeaRepository
 import com.griot.core.data.language.FakeSongLanguageDetector
 import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
@@ -85,6 +86,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -128,6 +130,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -156,6 +159,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
 
             // when
@@ -183,6 +187,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
 
             // when
@@ -207,6 +212,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
 
             // when
@@ -242,6 +248,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
 
             // when
@@ -287,6 +294,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -333,6 +341,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -379,6 +388,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -426,6 +436,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -472,6 +483,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -520,6 +532,7 @@ internal class EditorViewModelTest {
                     corrections = FakeWordCorrectionRepository(),
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
+                    ideas = FakeIdeaRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -551,6 +564,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
 
             // when
@@ -573,6 +587,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -615,6 +630,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -661,6 +677,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -710,6 +727,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -735,6 +753,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
 
             // when
@@ -778,6 +797,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -820,6 +840,7 @@ internal class EditorViewModelTest {
                 corrections = corrections,
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -849,6 +870,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
             )
 
             // when
@@ -883,6 +905,7 @@ internal class EditorViewModelTest {
                 corrections = FakeWordCorrectionRepository(),
                 versions = FakeVersionRepository(),
                 exporter = exporter,
+                ideas = FakeIdeaRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 

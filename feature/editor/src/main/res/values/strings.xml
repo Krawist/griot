@@ -16,6 +16,7 @@
     <string name="editor_font_size_letter" translatable="false">A</string>
     <string name="editor_font_size_sample">Je marche seul dans la ville</string>
     <string name="editor_font_size_value">%1$d sp</string>
+    <string name="editor_ideas">IDÉES DE CETTE CHANSON · TOUCHE POUR AJOUTER</string>
     <string name="editor_language_auto_detected">Auto · %1$s</string>
     <string name="editor_language_automatic">Auto</string>
     <string name="editor_language_automatic_hint">En automatique, Griot repère la langue dominante de toute la chanson pour compter les syllabes et trouver les rimes.</string>

@@ -3,6 +3,7 @@ package com.griot.feature.editor
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.data.export.MarkdownExporter
+import com.griot.core.data.idea.IdeaRepository
 import com.griot.core.data.language.SongLanguageDetector
 import com.griot.core.data.model.ExportFile
 import com.griot.core.data.model.SectionKind
@@ -58,6 +59,7 @@ internal class EditorViewModel @AssistedInject constructor(
     private val corrections: WordCorrectionRepository,
     private val versions: VersionRepository,
     private val exporter: MarkdownExporter,
+    ideas: IdeaRepository,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
     private val pasteUndo = MutableStateFlow<PasteUndo?>(null)
@@ -108,6 +110,7 @@ internal class EditorViewModel @AssistedInject constructor(
         .combine(pasteUndo) { state, undo -> state.copy(pasteUndo = undo) }
         .combine(editedVerse) { state, verse -> state.copy(editedVerse = verse) }
         .combine(export) { state, file -> state.copy(export = file) }
+        .combine(ideas.observeSongIdeas(songId)) { state, linked -> state.copy(ideas = linked) }
         .combine(detectedLanguage) { state, detected ->
             state.copy(
                 detectedLanguage = detected,
@@ -174,6 +177,11 @@ internal class EditorViewModel @AssistedInject constructor(
             }
         }
         recordWhenPaused(verseId)
+    }
+
+    /** Adds the text of a linked idea as a new verse at the end of the song. */
+    fun onAddIdea(text: String) {
+        viewModelScope.launch { editor.appendVerse(songId = songId, text = text) }
     }
 
     /** Exports the song as Markdown, then shows what to do with the file. */
