@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="language_body">It will be the language of the app and of your new songs. You can change it for each song.</string>
+    <string name="language_group">Preferred language</string>
+    <string name="language_mixed">Mixing both? Griot spots the dominant language of each song to count its syllables and find its rhymes.</string>
+    <string name="language_title">Which language do you write in?</string>
     <string name="name_body">Your first name or artist name. It will sign your exported lyrics.</string>
     <string name="name_empty">Write your name to continue.</string>
     <string name="name_label">Name</string>

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.griot.core.data.model.SongLanguage
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,11 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
 
     override val authorName: Flow<String?> = dataStore.data.map { it[AuthorName] }
 
+    // Stored by name; an unknown name, from a newer version, falls back to automatic.
+    override val defaultSongLanguage: Flow<SongLanguage> = dataStore.data.map { preferences ->
+        SongLanguage.entries.firstOrNull { it.name == preferences[DefaultSongLanguage] } ?: SongLanguage.AUTOMATIC
+    }
+
     override suspend fun setOnboardingCompleted() {
         dataStore.edit { it[OnboardingCompleted] = true }
     }
@@ -26,8 +32,13 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         dataStore.edit { it[AuthorName] = name }
     }
 
+    override suspend fun setDefaultSongLanguage(language: SongLanguage) {
+        dataStore.edit { it[DefaultSongLanguage] = language.name }
+    }
+
     private companion object {
         val OnboardingCompleted = booleanPreferencesKey("onboarding_completed")
         val AuthorName = stringPreferencesKey("author_name")
+        val DefaultSongLanguage = stringPreferencesKey("default_song_language")
     }
 }

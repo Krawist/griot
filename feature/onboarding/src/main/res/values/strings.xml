@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="language_body">Ce sera la langue de l\'app et celle de tes nouvelles chansons. Tu pourras la changer pour chaque chanson.</string>
+    <string name="language_english_code" translatable="false">EN</string>
+    <string name="language_english_hint" translatable="false">Interface and songs in English</string>
+    <string name="language_english_name" translatable="false">English</string>
+    <string name="language_french_code" translatable="false">FR</string>
+    <string name="language_french_hint" translatable="false">Interface et chansons en français</string>
+    <string name="language_french_name" translatable="false">Français</string>
+    <string name="language_group">Langue préférée</string>
+    <string name="language_mixed">Tu mélanges les deux ? Griot repère la langue dominante de chaque chanson pour compter les syllabes et trouver les rimes.</string>
+    <string name="language_title">Dans quelle langue écris-tu ?</string>
     <string name="name_body">Ton prénom ou ton nom d\'artiste. Il signera tes textes exportés.</string>
     <string name="name_empty">Écris ton nom pour continuer.</string>
     <string name="name_label">Nom</string>

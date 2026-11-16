@@ -1,6 +1,7 @@
 package com.griot.core.data.preferences
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import com.griot.core.data.model.SongLanguage
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.nulls.shouldBeNull
@@ -75,6 +76,27 @@ internal class UserPreferencesRepositoryImplTest {
 
             // then
             repository.authorName.first() shouldBe "my-name"
+        }
+    }
+
+    @Nested
+    inner class DefaultSongLanguage {
+        @Test
+        fun `should write new songs in the automatic language on a new install`() = runTest {
+            // when
+            val language = repository.defaultSongLanguage.first()
+
+            // then
+            language shouldBe SongLanguage.AUTOMATIC
+        }
+
+        @Test
+        fun `should keep the language saved`() = runTest {
+            // when
+            repository.setDefaultSongLanguage(SongLanguage.ENGLISH)
+
+            // then
+            repository.defaultSongLanguage.first() shouldBe SongLanguage.ENGLISH
         }
     }
 }

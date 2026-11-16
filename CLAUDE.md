@@ -154,7 +154,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   actions slots). `GriotButton` and `GriotTextField` in `:core:design`. `UserPreferencesRepository` is now an
   interface with `UserPreferencesRepositoryImpl` and holds `authorName`; fakes in `:core:data` test fixtures. The
   name step goes on to the library until GRI-09 adds the next step.
-- [ ] **Next ticket:** GRI-09, then GRI-10.
+- [x] **GRI-09** — `LanguageScreen` (step 2/4): French or English, preselected from the phone; « Continuer » saves
+  `defaultSongLanguage` (preferences), moves on, then applies the interface language (in that order, as Android
+  redraws the screens). The language step goes on to the library until GRI-10 and GRI-11.
+- [ ] **Next tickets:** GRI-12, GRI-13, GRI-14 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
 
 Update this section at the end of each ticket.
 
