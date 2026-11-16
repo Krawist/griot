@@ -30,4 +30,8 @@
         <item quantity="one">Its verse will be deleted, with its repeats.</item>
         <item quantity="other">Its %1$d verses will be deleted, with its repeats.</item>
     </plurals>
+    <plurals name="editor_paste_sections">
+        <item quantity="one">%1$d section created</item>
+        <item quantity="other">%1$d sections created</item>
+    </plurals>
 </resources>

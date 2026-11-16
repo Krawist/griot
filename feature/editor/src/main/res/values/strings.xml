@@ -35,4 +35,9 @@
         <item quantity="many">Ses %1$d vers seront supprimés, avec ses reprises.</item>
         <item quantity="other">Ses %1$d vers seront supprimés, avec ses reprises.</item>
     </plurals>
+    <plurals name="editor_paste_sections">
+        <item quantity="one">%1$d section créée</item>
+        <item quantity="many">%1$d sections créées</item>
+        <item quantity="other">%1$d sections créées</item>
+    </plurals>
 </resources>

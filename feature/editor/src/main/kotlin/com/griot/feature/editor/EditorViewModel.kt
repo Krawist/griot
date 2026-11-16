@@ -7,6 +7,8 @@ import com.griot.core.data.model.SongSection
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongRepository
+import com.griot.core.phonetics.paste.PastedBlock
+import com.griot.core.phonetics.paste.splitPastedText
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,6 +32,7 @@ internal class EditorViewModel @AssistedInject constructor(
     private val preferences: UserPreferencesRepository,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
+    private val pasteUndo = MutableStateFlow<PasteUndo?>(null)
 
     val uiState: StateFlow<EditorUiState> = editor.observeDocument(songId)
         .map { document ->
@@ -54,6 +57,7 @@ internal class EditorViewModel @AssistedInject constructor(
         }
         .combine(focus) { state, focus -> state.copy(focus = focus) }
         .combine(preferences.editorFontSize) { state, size -> state.copy(fontSize = size) }
+        .combine(pasteUndo) { state, undo -> state.copy(pasteUndo = undo) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), EditorUiState())
 
     fun onTitleChange(title: String) {
@@ -92,6 +96,11 @@ internal class EditorViewModel @AssistedInject constructor(
      */
     fun onVerseLines(verseId: String, lines: List<String>, cursor: Int) {
         val section = sectionOf(verseId) ?: return
+        val blocks = splitPastedText(lines.joinToString(separator = "\n"))
+        if (blocks.size > 1) {
+            paste(verseId = verseId, lines = lines, blocks = blocks)
+            return
+        }
         val closesSection = lines.size == 2 &&
             lines.all { it.isEmpty() } &&
             section.verses.size > 1 &&
@@ -108,6 +117,30 @@ internal class EditorViewModel @AssistedInject constructor(
                 )
             }
         }
+    }
+
+    // A text that holds several sections: they are created, and the undo bar can turn them back into one section.
+    private fun paste(verseId: String, lines: List<String>, blocks: List<PastedBlock>) {
+        viewModelScope.launch {
+            val paste = editor.pasteSections(verseId = verseId, sections = blocks.toNewSections())
+            pasteUndo.value = PasteUndo(
+                verseId = verseId,
+                lines = lines.filter { it.isNotBlank() }.ifEmpty { listOf("") },
+                paste = paste,
+                sectionCount = blocks.size,
+            )
+        }
+    }
+
+    /** Turns the last paste back into one section, one verse per line. */
+    fun onUndoPaste() {
+        val undo = pasteUndo.value ?: return
+        pasteUndo.value = null
+        viewModelScope.launch { editor.undoPaste(paste = undo.paste, verseId = undo.verseId, lines = undo.lines) }
+    }
+
+    fun onPasteUndoDismissed() {
+        pasteUndo.value = null
     }
 
     /** Backspace at the start of the verse [verseId], holding [text]: it joins the previous verse of its section. */

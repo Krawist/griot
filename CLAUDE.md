@@ -184,7 +184,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
 - [x] **GRI-16** — lyrics size 14–28 sp (18 by default) in `UserPreferencesRepository.editorFontSize`, for every
   song: « Aa » sheet with a slider in the editor's top bar, and a two-finger pinch on the lyrics
   (`pinchToResize`, one finger still scrolls). The pinch is not checked on the phone yet (adb has no multitouch).
-- [ ] **Next tickets:** GRI-17 (GRI-10 waits for GRI-27, GRI-11 for GRI-17).
+- [x] **GRI-17** — `splitPastedText` (`:core:phonetics`, pure Kotlin): blank lines start sections, label lines
+  (FR/EN, brackets, numbers, « x2 », colon) name them, identical blocks repeat the first one (a plain block sung again
+  becomes a chorus), a lone label repeats the last section of its kind. In the editor a multi-line paste of several
+  blocks fills the current section and adds the others after it (`pasteSections`), with an undo bar that puts the
+  text back into one section (`undoPaste`). A real paste is not checked on the phone yet (no adb clipboard).
+- [ ] **Next tickets:** GRI-11 (import), GRI-18 (GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

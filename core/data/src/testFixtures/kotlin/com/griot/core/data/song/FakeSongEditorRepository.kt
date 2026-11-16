@@ -1,5 +1,7 @@
 package com.griot.core.data.song
 
+import com.griot.core.data.model.NewSection
+import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongDocument
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,5 +55,14 @@ class FakeSongEditorRepository(document: SongDocument? = null) : SongEditorRepos
     override suspend fun closeSection(verseId: String): String {
         calls += "close $verseId"
         return "closed-verse-id"
+    }
+
+    override suspend fun pasteSections(verseId: String, sections: List<NewSection>): PastedSections {
+        calls += "paste $verseId ${sections.size}"
+        return PastedSections(sectionIds = listOf("pasted-section-id"), verseIds = listOf("pasted-verse-id"))
+    }
+
+    override suspend fun undoPaste(paste: PastedSections, verseId: String, lines: List<String>) {
+        calls += "undo paste $verseId ${lines.joinToString(separator = "|")}"
     }
 }

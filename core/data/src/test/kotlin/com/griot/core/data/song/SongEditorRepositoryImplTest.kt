@@ -4,6 +4,7 @@ import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.database.inMemoryDatabase
+import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongDocument
 import com.griot.core.data.model.SongLanguage
@@ -651,6 +652,133 @@ internal class SongEditorRepositoryImplTest {
                 listOf(SectionKind.VERSE, SectionKind.VERSE, SectionKind.CHORUS)
             sections[0].verses.map { it.id } shouldContainExactly listOf("my-verse-id-1")
             sections[1].verses shouldContainExactly listOf(SongVerse(id = verseId, text = ""))
+        }
+    }
+
+    @Nested
+    inner class PasteSections {
+        @Test
+        fun `should fill the section pasted into and add the others right after it`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.OUTRO,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id",
+                        sectionId = "my-section-id-1",
+                        text = "",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            repository.pasteSections(
+                verseId = "my-verse-id",
+                sections = listOf(
+                    NewSection(kind = SectionKind.VERSE, name = null, lines = listOf("a", "b"), repeatOf = null),
+                    NewSection(kind = SectionKind.CHORUS, name = null, lines = listOf("c"), repeatOf = null),
+                    NewSection(kind = SectionKind.OTHER, name = "my-name", lines = listOf("d"), repeatOf = null),
+                    NewSection(kind = SectionKind.CHORUS, name = null, lines = emptyList(), repeatOf = 1),
+                ),
+            )
+
+            // then
+            val sections = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections
+            sections.map { it.kind to it.verses.map { verse -> verse.text } } shouldContainExactly listOf(
+                SectionKind.VERSE to listOf("a", "b"),
+                SectionKind.CHORUS to listOf("c"),
+                SectionKind.OTHER to listOf("d"),
+                SectionKind.CHORUS to listOf("c"),
+                SectionKind.OUTRO to emptyList(),
+            )
+            sections[2].name shouldBe "my-name"
+            sections[3].repeatOf shouldBe sections[1].id
+        }
+    }
+
+    @Nested
+    inner class UndoPaste {
+        @Test
+        fun `should put the whole text back into the section pasted into`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.OUTRO,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id",
+                        sectionId = "my-section-id-1",
+                        text = "",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            val paste = repository.pasteSections(
+                verseId = "my-verse-id",
+                sections = listOf(
+                    NewSection(kind = SectionKind.VERSE, name = null, lines = listOf("a", "b"), repeatOf = null),
+                    NewSection(kind = SectionKind.CHORUS, name = null, lines = listOf("c"), repeatOf = null),
+                ),
+            )
+
+            // when
+            repository.undoPaste(paste = paste, verseId = "my-verse-id", lines = listOf("a", "b", "[Refrain]", "c"))
+
+            // then
+            val sections = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections
+            sections.map { it.kind to it.verses.map { verse -> verse.text } } shouldContainExactly listOf(
+                SectionKind.VERSE to listOf("a", "b", "[Refrain]", "c"),
+                SectionKind.OUTRO to emptyList(),
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.griot.feature.editor
 
+import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongDocument
 import com.griot.core.data.model.SongLanguage
@@ -499,6 +500,88 @@ internal class EditorViewModelTest {
 
             // then
             state.fontSize shouldBe 22
+        }
+    }
+
+    @Nested
+    inner class OnPaste {
+        @Test
+        fun `should create the sections of a pasted text and offer to undo`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(SongVerse(id = "my-verse-id", text = "")),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onVerseLines(verseId = "my-verse-id", lines = listOf("a", "", "[Refrain]", "b"), cursor = 1)
+
+            // then
+            viewModel.uiState.first { it.pasteUndo != null }.pasteUndo shouldBe PasteUndo(
+                verseId = "my-verse-id",
+                lines = listOf("a", "[Refrain]", "b"),
+                paste = PastedSections(sectionIds = listOf("pasted-section-id"), verseIds = listOf("pasted-verse-id")),
+                sectionCount = 2,
+            )
+            editor.calls shouldContainExactly listOf("paste my-verse-id 2")
+        }
+
+        @Test
+        fun `should put the text back into one section on undo`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(SongVerse(id = "my-verse-id", text = "")),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            viewModel.onVerseLines(verseId = "my-verse-id", lines = listOf("a", "", "b"), cursor = 1)
+
+            // when
+            viewModel.onUndoPaste()
+
+            // then
+            viewModel.uiState.first { it.pasteUndo == null }.pasteUndo.shouldBeNull()
+            editor.calls shouldContainExactly listOf("paste my-verse-id 2", "undo paste my-verse-id a|b")
         }
     }
 }

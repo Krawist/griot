@@ -1,10 +1,14 @@
 package com.griot.core.data.song
 
+import com.griot.core.data.model.NewSection
+import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongDocument
 import kotlinx.coroutines.flow.Flow
 
 /** The content of one song, as the editor changes it. Every change is saved at once and dates the song. */
+// One function per change the editor makes.
+@Suppress("TooManyFunctions")
 interface SongEditorRepository {
     /** The song [songId] with its sections and verses; `null` when it does not exist or is in the trash. */
     fun observeDocument(songId: String): Flow<SongDocument?>
@@ -44,4 +48,14 @@ interface SongEditorRepository {
      * holding one empty verse. Returns the id of that verse.
      */
     suspend fun closeSection(verseId: String): String
+
+    /**
+     * Pastes [sections] into the verse [verseId]: the first one's lines go into its section, as by [splitVerse]; the
+     * others become new sections right after it, in order, a repeat pointing to its source (index 0 being the section
+     * pasted into). Returns what was added, for [undoPaste].
+     */
+    suspend fun pasteSections(verseId: String, sections: List<NewSection>): PastedSections
+
+    /** Removes what the paste added, then puts [lines] as verses into the verse [verseId] and below it. */
+    suspend fun undoPaste(paste: PastedSections, verseId: String, lines: List<String>)
 }

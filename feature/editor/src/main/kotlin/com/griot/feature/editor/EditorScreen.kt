@@ -104,7 +104,8 @@ internal fun EditorScreen(
     )
 }
 
-// The sheets the editor opens: text size, a new section, the actions of a section.
+// What the editor shows over its content: the undo bar of a paste, and the sheets of the text size, a new section and
+// the actions of a section.
 @Suppress("LongParameterList") // Which sheet is open, and how each one closes.
 @Composable
 private fun EditorSheets(
@@ -117,6 +118,11 @@ private fun EditorSheets(
     actionsFor: String?,
     onActionsClosed: () -> Unit,
 ) {
+    PasteUndoOverlay(
+        undo = uiState.pasteUndo,
+        onUndo = viewModel::onUndoPaste,
+        onDismissed = viewModel::onPasteUndoDismissed,
+    )
     if (resizing) {
         FontSizeSheet(
             size = uiState.fontSize,

@@ -8,6 +8,8 @@ import com.griot.core.data.database.dao.SongDao
 import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.VerseEntity
+import com.griot.core.data.model.NewSection
+import com.griot.core.data.model.PastedSections
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongDocument
 import com.griot.core.data.model.SongSection
@@ -121,6 +123,58 @@ internal class SongEditorRepositoryImpl @Inject constructor(
 
     override suspend fun splitVerse(verseId: String, lines: List<String>): List<String> = write { now ->
         val verse = requireVerse(verseId)
+        songDao.touch(id = requireSection(verse.sectionId).songId, at = now)
+        split(verse = verse, lines = lines, now = now)
+    }
+
+    override suspend fun pasteSections(verseId: String, sections: List<NewSection>): PastedSections = write { now ->
+        val verse = requireVerse(verseId)
+        val section = requireSection(verse.sectionId)
+        val verseIds = split(verse = verse, lines = sections.first().lines.ifEmpty { listOf("") }, now = now)
+        val created = sections.drop(1).mapIndexed { index, new ->
+            SectionEntity(
+                id = newId(),
+                songId = section.songId,
+                kind = new.kind,
+                name = new.name,
+                position = section.position + index + 1,
+                updatedAt = now,
+            )
+        }
+        val ids = listOf(section.id) + created.map { it.id }
+        repeat(created.size) { sectionDao.shiftAfter(songId = section.songId, position = section.position, at = now) }
+        created.forEachIndexed { index, entity ->
+            val new = sections[index + 1]
+            sectionDao.insert(entity.copy(repeatOfSectionId = new.repeatOf?.let(ids::get)))
+            if (new.repeatOf == null) {
+                verseDao.insertAll(
+                    new.lines.mapIndexed { position, text ->
+                        VerseEntity(
+                            id = newId(),
+                            sectionId = entity.id,
+                            text = text,
+                            position = position,
+                            updatedAt = now,
+                        )
+                    },
+                )
+            }
+        }
+        songDao.touch(id = section.songId, at = now)
+        PastedSections(sectionIds = created.map { it.id }, verseIds = verseIds)
+    }
+
+    override suspend fun undoPaste(paste: PastedSections, verseId: String, lines: List<String>) = write { now ->
+        paste.sectionIds.forEach { sectionDao.markDeleted(id = it, at = now) }
+        paste.verseIds.forEach { verseDao.markDeleted(id = it, at = now) }
+        val verse = requireVerse(verseId)
+        songDao.touch(id = requireSection(verse.sectionId).songId, at = now)
+        split(verse = verse, lines = lines, now = now)
+        Unit
+    }
+
+    // The verse keeps the first line; each other line becomes a verse below it. Returns the ids of the new verses.
+    private suspend fun split(verse: VerseEntity, lines: List<String>, now: Instant): List<String> {
         val added = lines.drop(1).mapIndexed { index, text ->
             VerseEntity(
                 id = newId(),
@@ -131,10 +185,9 @@ internal class SongEditorRepositoryImpl @Inject constructor(
             )
         }
         verseDao.shiftAfter(sectionId = verse.sectionId, position = verse.position, count = added.size, at = now)
-        verseDao.updateText(id = verseId, text = lines.first(), at = now)
+        verseDao.updateText(id = verse.id, text = lines.first(), at = now)
         verseDao.insertAll(added)
-        songDao.touch(id = requireSection(verse.sectionId).songId, at = now)
-        added.map { it.id }
+        return added.map { it.id }
     }
 
     override suspend fun mergeVerses(previousId: String, verseId: String) = write { now ->
