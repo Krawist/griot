@@ -28,6 +28,8 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
     override val editorFontSize: Flow<Int> =
         dataStore.data.map { it[EditorFontSize] ?: UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE }
 
+    override val showRhymes: Flow<Boolean> = dataStore.data.map { it[ShowRhymes] ?: true }
+
     override suspend fun setOnboardingCompleted() {
         dataStore.edit { it[OnboardingCompleted] = true }
     }
@@ -44,10 +46,15 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         dataStore.edit { it[EditorFontSize] = size }
     }
 
+    override suspend fun setShowRhymes(show: Boolean) {
+        dataStore.edit { it[ShowRhymes] = show }
+    }
+
     private companion object {
         val OnboardingCompleted = booleanPreferencesKey("onboarding_completed")
         val AuthorName = stringPreferencesKey("author_name")
         val DefaultSongLanguage = stringPreferencesKey("default_song_language")
         val EditorFontSize = intPreferencesKey("editor_font_size")
+        val ShowRhymes = booleanPreferencesKey("show_rhymes")
     }
 }

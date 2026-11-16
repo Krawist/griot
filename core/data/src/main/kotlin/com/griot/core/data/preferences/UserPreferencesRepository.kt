@@ -17,6 +17,9 @@ interface UserPreferencesRepository {
     /** Size of the lyrics in the editor, in sp, for every song; [DEFAULT_EDITOR_FONT_SIZE] until it is changed. */
     val editorFontSize: Flow<Int>
 
+    /** Whether the editor colours the rhymes; `true` until the user hides them. */
+    val showRhymes: Flow<Boolean>
+
     /** Records that the onboarding was completed: the next launches open the library. */
     suspend fun setOnboardingCompleted()
 
@@ -28,6 +31,9 @@ interface UserPreferencesRepository {
 
     /** Saves the [size] of the lyrics in the editor, in sp. */
     suspend fun setEditorFontSize(size: Int)
+
+    /** Shows or hides the colours of the rhymes in the editor. */
+    suspend fun setShowRhymes(show: Boolean)
 
     companion object {
         /** Size of the lyrics, in sp, before the user changes it. */

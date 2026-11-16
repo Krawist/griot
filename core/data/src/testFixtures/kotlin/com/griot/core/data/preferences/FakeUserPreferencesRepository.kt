@@ -9,6 +9,7 @@ class FakeUserPreferencesRepository(
     authorName: String? = null,
     defaultSongLanguage: SongLanguage = SongLanguage.AUTOMATIC,
     editorFontSize: Int = UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE,
+    showRhymes: Boolean = true,
 ) : UserPreferencesRepository {
     override val onboardingCompleted = MutableStateFlow(onboardingCompleted)
 
@@ -17,6 +18,8 @@ class FakeUserPreferencesRepository(
     override val defaultSongLanguage = MutableStateFlow(defaultSongLanguage)
 
     override val editorFontSize = MutableStateFlow(editorFontSize)
+
+    override val showRhymes = MutableStateFlow(showRhymes)
 
     override suspend fun setOnboardingCompleted() {
         onboardingCompleted.value = true
@@ -32,5 +35,9 @@ class FakeUserPreferencesRepository(
 
     override suspend fun setEditorFontSize(size: Int) {
         editorFontSize.value = size
+    }
+
+    override suspend fun setShowRhymes(show: Boolean) {
+        showRhymes.value = show
     }
 }

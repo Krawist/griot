@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,8 +42,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.data.model.SectionKind
@@ -55,7 +52,6 @@ import com.griot.core.design.R as DesignR
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
-import com.griot.core.design.theme.LyricTextStyle
 
 private val AddSectionHeight = 48.dp
 private val DashWidth = 1.5.dp
@@ -91,6 +87,7 @@ internal fun EditorScreen(
         onFontSize = { sheet = EditorSheet.FONT_SIZE },
         onFontSizeChange = viewModel::onFontSizeChange,
         onLanguage = { sheet = EditorSheet.LANGUAGE },
+        onShowRhymesChange = viewModel::onShowRhymesChange,
     )
     EditorSheets(
         uiState = uiState,
@@ -179,111 +176,54 @@ private fun EditorContent(
     onFontSize: () -> Unit,
     onFontSizeChange: (Int) -> Unit,
     onLanguage: () -> Unit,
+    onShowRhymesChange: (Boolean) -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().imePadding()) {
-        EditorTopBar(
-            title = uiState.title,
-            language = uiState.language,
-            detectedLanguage = uiState.detectedLanguage,
-            onBack = onBack,
-            onTitleChange = onTitleChange,
-            onFontSize = onFontSize,
-            onLanguage = onLanguage,
-        )
-        if (!uiState.loading) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pinchToResize(size = uiState.fontSize, onSizeChange = onFontSizeChange),
-                contentPadding = PaddingValues(
-                    start = GriotSpacing.l,
-                    top = GriotSpacing.xl,
-                    end = GriotSpacing.l,
-                    bottom = GriotSpacing.xxl,
-                ),
-                verticalArrangement = Arrangement.spacedBy(SectionGap),
-            ) {
-                items(items = uiState.sections, key = { it.section.id }) { section ->
-                    SectionBlock(
-                        section = section,
-                        fontSize = uiState.fontSize,
-                        focus = uiState.focus,
-                        verseInput = verseInput,
-                        onActions = { onSectionActions(section.section.id) },
-                        modifier = Modifier.animateItem(),
-                    )
+    Box(modifier = Modifier.fillMaxSize().safeDrawingPadding().imePadding()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            EditorTopBar(
+                title = uiState.title,
+                language = uiState.language,
+                detectedLanguage = uiState.detectedLanguage,
+                onBack = onBack,
+                onTitleChange = onTitleChange,
+                onFontSize = onFontSize,
+                onLanguage = onLanguage,
+            )
+            if (!uiState.loading) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pinchToResize(size = uiState.fontSize, onSizeChange = onFontSizeChange),
+                    contentPadding = PaddingValues(
+                        start = GriotSpacing.l,
+                        top = GriotSpacing.xl,
+                        end = GriotSpacing.l,
+                        bottom = GriotSpacing.xxl + EditorToolbarHeight + GriotSpacing.xl,
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(SectionGap),
+                ) {
+                    items(items = uiState.sections, key = { it.section.id }) { section ->
+                        SectionBlock(
+                            section = section,
+                            fontSize = uiState.fontSize,
+                            showRhymes = uiState.showRhymes,
+                            focus = uiState.focus,
+                            verseInput = verseInput,
+                            onActions = { onSectionActions(section.section.id) },
+                            modifier = Modifier.animateItem(),
+                        )
+                    }
+                    item(key = "add") { AddSectionButton(onClick = onAddSection, modifier = Modifier.animateItem()) }
                 }
-                item(key = "add") { AddSectionButton(onClick = onAddSection, modifier = Modifier.animateItem()) }
             }
         }
-    }
-}
-
-@Composable
-private fun SectionBlock(
-    section: EditorSection,
-    fontSize: Int,
-    focus: VerseFocus?,
-    verseInput: VerseInput,
-    onActions: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(GriotSpacing.xs)) {
-        SectionHeader(section = section, onActions = onActions)
-        section.section.verses.forEach { verse ->
-            // A repeat shows the same verses as its source: only the source's field takes the focus.
-            val ownFocus = focus?.takeIf { it.verseId == verse.id && section.section.repeatOf == null }
-            key(verse.id) { VerseField(verse = verse, fontSize = fontSize, focus = ownFocus, input = verseInput) }
-        }
-    }
-}
-
-@Composable
-private fun SectionHeader(section: EditorSection, onActions: () -> Unit) {
-    val palette = GriotTheme.palette
-    val label = section.label.text()
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(start = GriotSpacing.s),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(GriotSpacing.s),
-    ) {
-        Text(
-            text = label.uppercase(),
-            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.04.em),
-            color = palette.accentText,
+        EditorToolbar(
+            showRhymes = uiState.showRhymes,
+            onAddSection = onAddSection,
+            onShowRhymesChange = onShowRhymesChange,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(GriotSpacing.l),
         )
-        if (section.section.repeatOf != null) {
-            Text(
-                text = stringResource(R.string.editor_repeat_tag),
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                color = palette.muted,
-            )
-        }
-        Box(Modifier.weight(1f).height(1.dp).background(palette.line))
-        IconButton(onClick = onActions, modifier = Modifier.size(GriotSpacing.touchTarget)) {
-            Icon(
-                painter = painterResource(DesignR.drawable.ic_more),
-                contentDescription = stringResource(R.string.editor_section_actions, label),
-                tint = palette.muted,
-            )
-        }
     }
-}
-
-@Composable
-private fun VerseField(verse: SongVerse, fontSize: Int, focus: VerseFocus?, input: VerseInput) {
-    SyncedTextField(
-        text = verse.text,
-        onTextChange = { input.onChange(verse.id, it) },
-        // In sp: the system font scale still applies on top of the size chosen.
-        style = LyricTextStyle.copy(fontSize = fontSize.sp),
-        placeholder = stringResource(R.string.editor_verse_placeholder),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = GriotSpacing.s, vertical = GriotSpacing.xs),
-        onLines = { lines, cursor -> input.onLines(verse.id, lines, cursor) },
-        onBackspaceAtStart = { text -> input.onBackspaceAtStart(verse.id, text) },
-        focus = focus,
-        onFocusHandled = input.onFocusHandled,
-    )
 }
 
 @Composable
@@ -377,6 +317,7 @@ private fun EditorScreenPreview() {
                 onFontSize = {},
                 onFontSizeChange = {},
                 onLanguage = {},
+                onShowRhymesChange = {},
             )
         }
     }

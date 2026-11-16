@@ -9,10 +9,12 @@ import com.griot.core.data.model.SongSection
  * @property label Its label, before it is put in words.
  * @property first Whether it is the first section: it cannot move up.
  * @property last Whether it is the last section: it cannot move down.
+ * @property sounds How its verses sound: syllables, rhyme letters and scheme.
  */
 internal data class EditorSection(
     val section: SongSection,
     val label: SectionLabel,
     val first: Boolean,
     val last: Boolean,
+    val sounds: SectionSounds = SectionSounds(),
 )

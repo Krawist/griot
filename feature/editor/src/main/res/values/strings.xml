@@ -35,6 +35,8 @@
     <string name="editor_repeat_tag">Reprise</string>
     <string name="editor_section_actions">Options de %1$s</string>
     <string name="editor_title_placeholder">Sans titre</string>
+    <string name="editor_tool_rhymes">Rimes</string>
+    <string name="editor_tool_section">Section</string>
     <string name="editor_verse_placeholder">Écris un vers…</string>
     <plurals name="editor_delete_verses">
         <item quantity="one">Son vers sera supprimé, avec ses reprises.</item>

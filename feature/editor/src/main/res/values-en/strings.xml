@@ -29,6 +29,8 @@
     <string name="editor_repeat_tag">Repeat</string>
     <string name="editor_section_actions">%1$s options</string>
     <string name="editor_title_placeholder">Untitled</string>
+    <string name="editor_tool_rhymes">Rhymes</string>
+    <string name="editor_tool_section">Section</string>
     <string name="editor_verse_placeholder">Write a verse…</string>
     <plurals name="editor_delete_verses">
         <item quantity="one">Its verse will be deleted, with its repeats.</item>

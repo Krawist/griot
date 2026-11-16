@@ -193,7 +193,15 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   once detected. `SongLanguageDetector` (`:core:data`, ML Kit language-id with its model on board) runs on the whole
   song 1 s after the last change; `EditorUiState.writingLanguage` is the chosen or detected language, for the
   phonetic engines. The editor's sheets are one `EditorSheet` state.
-- [ ] **Next tickets:** GRI-19 to GRI-23 (phonetics), then GRI-11 (import) (GRI-10 waits for GRI-27).
+- [x] **GRI-19 to GRI-22** — `:core:phonetics`: `PhoneticEngine` (transcription, syllables, rhyme key and range),
+  `PhoneticEngines` (one per app, from `:app`'s `PhoneticsModule`), `FrenchEngine` on Lexique 3.83 (CC BY-SA 4.0)
+  and `EnglishEngine` on the CMU dictionary (BSD), as gzipped `word<TAB>phonemes` tables built by
+  `tools/phonetics/build_tables.py`; grapheme guesses for unknown words. Spoken syllables (synérèse), mute e
+  rules of French songs. Reference sets of 50 French and 40 English verses (≥ 95 % exact). In the editor: rhyme
+  letters by order of appearance per section, the scheme in the header, the rhyming ending highlighted (only when
+  another verse of the section rhymes), counts rolling and lighter when guessed, glass toolbar with « Section » and
+  « Rimes » (`showRhymes` preference). Licences still to show in the settings (GRI-29).
+- [ ] **Next tickets:** GRI-23 (mixed texts, count correction), then GRI-11 (import) (GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

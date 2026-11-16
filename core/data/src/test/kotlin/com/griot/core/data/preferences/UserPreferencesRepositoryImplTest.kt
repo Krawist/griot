@@ -120,4 +120,25 @@ internal class UserPreferencesRepositoryImplTest {
             repository.editorFontSize.first() shouldBe 24
         }
     }
+
+    @Nested
+    inner class ShowRhymes {
+        @Test
+        fun `should colour the rhymes on a new install`() = runTest {
+            // when
+            val show = repository.showRhymes.first()
+
+            // then
+            show.shouldBeTrue()
+        }
+
+        @Test
+        fun `should keep the rhymes hidden once hidden`() = runTest {
+            // when
+            repository.setShowRhymes(false)
+
+            // then
+            repository.showRhymes.first().shouldBeFalse()
+        }
+    }
 }

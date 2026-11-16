@@ -9,12 +9,15 @@ import com.griot.core.data.model.SongSection
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongRepository
+import com.griot.core.phonetics.PhoneticEngines
+import com.griot.core.phonetics.PhoneticLanguage
 import com.griot.core.phonetics.paste.PastedBlock
 import com.griot.core.phonetics.paste.splitPastedText
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
@@ -40,6 +44,7 @@ internal class EditorViewModel @AssistedInject constructor(
     private val songs: SongRepository,
     private val preferences: UserPreferencesRepository,
     private val detector: SongLanguageDetector,
+    private val engines: PhoneticEngines,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
     private val pasteUndo = MutableStateFlow<PasteUndo?>(null)
@@ -83,10 +88,18 @@ internal class EditorViewModel @AssistedInject constructor(
                 writingLanguage = if (state.language == SongLanguage.AUTOMATIC) detected else state.language,
             )
         }
+        .combine(preferences.showRhymes) { state, show -> state.copy(showRhymes = show) }
+        .combine(preferences.defaultSongLanguage) { state, default -> state.withSounds(default) }
+        // The phonetics read their dictionaries and count every verse: never on the main thread.
+        .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), EditorUiState())
 
     fun onLanguageSelected(language: SongLanguage) {
         viewModelScope.launch { editor.setLanguage(songId = songId, language = language) }
+    }
+
+    fun onShowRhymesChange(show: Boolean) {
+        viewModelScope.launch { preferences.setShowRhymes(show) }
     }
 
     fun onTitleChange(title: String) {
@@ -190,6 +203,26 @@ internal class EditorViewModel @AssistedInject constructor(
     /** The field asked to take the focus has it. */
     fun onFocusHandled() {
         focus.value = null
+    }
+
+    // The syllables and rhymes of every section, in the song's language; an automatic song not detected yet is read
+    // in the language of new songs, French when that is automatic too.
+    private fun EditorUiState.withSounds(default: SongLanguage): EditorUiState {
+        val language = writingLanguage ?: default.takeUnless { it == SongLanguage.AUTOMATIC } ?: SongLanguage.FRENCH
+        val engine = engines.of(
+            if (language ==
+                SongLanguage.ENGLISH
+            ) {
+                PhoneticLanguage.ENGLISH
+            } else {
+                PhoneticLanguage.FRENCH
+            },
+        )
+        return copy(
+            sections = sections.map {
+                it.copy(sounds = sectionSounds(verses = it.section.verses, engine = engine))
+            },
+        )
     }
 
     // The first section showing the verse: the source of a repeat, or the repeat, hold the same verses.
