@@ -10,7 +10,7 @@ internal class ReferenceCountsTest {
     private val engines = PhoneticEngines()
 
     @ParameterizedTest
-    @CsvSource("FRENCH, /reference/fr-verses.tsv")
+    @CsvSource("FRENCH, /reference/fr-verses.tsv", "ENGLISH, /reference/en-verses.tsv")
     fun `should count at least 95 % of the reference verses exactly`(language: PhoneticLanguage, resource: String) {
         // given
         val verses = requireNotNull(javaClass.getResourceAsStream(resource)).bufferedReader().readLines()
