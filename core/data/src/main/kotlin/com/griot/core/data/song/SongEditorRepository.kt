@@ -60,6 +60,9 @@ interface SongEditorRepository {
      */
     suspend fun pasteSections(verseId: String, sections: List<NewSection>): PastedSections
 
+    /** Replaces the whole content of the song [songId] by [sections]: its sections before are deleted. */
+    suspend fun replaceContent(songId: String, sections: List<NewSection>)
+
     /** Removes what the paste added, then puts [lines] as verses into the verse [verseId] and below it. */
     suspend fun undoPaste(paste: PastedSections, verseId: String, lines: List<String>)
 }

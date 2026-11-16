@@ -19,6 +19,7 @@ import com.griot.core.data.preferences.UserPreferencesRepository
  * @property soundLanguage The language the syllables and rhymes are read in: [writingLanguage], else the language of
  * new songs, else French.
  * @property showRhymes Whether the rhymes are coloured.
+ * @property editedVerse The verse being edited, whose history « Versions » opens; `null` when none is.
  * @property pasteUndo The last paste split into sections, while its undo bar shows; `null` otherwise.
  */
 internal data class EditorUiState(
@@ -34,4 +35,5 @@ internal data class EditorUiState(
     val soundLanguage: SongLanguage = SongLanguage.FRENCH,
     val showRhymes: Boolean = true,
     val pasteUndo: PasteUndo? = null,
+    val editedVerse: String? = null,
 )

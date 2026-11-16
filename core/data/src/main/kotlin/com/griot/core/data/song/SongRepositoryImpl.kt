@@ -81,33 +81,7 @@ internal class SongRepositoryImpl @Inject constructor(
             createdAt = now,
             updatedAt = now,
         )
-        val sectionIds = sections.map { newId() }
-        val entities = sections.mapIndexed { position, section ->
-            SectionEntity(
-                id = sectionIds[position],
-                songId = song.id,
-                kind = section.kind,
-                name = section.name,
-                position = position,
-                repeatOfSectionId = section.repeatOf?.let(sectionIds::get),
-                updatedAt = now,
-            )
-        }
-        val verses = sections.flatMapIndexed { index, section ->
-            if (section.repeatOf != null) {
-                emptyList()
-            } else {
-                section.lines.mapIndexed { position, text ->
-                    VerseEntity(
-                        id = newId(),
-                        sectionId = sectionIds[index],
-                        text = text,
-                        position = position,
-                        updatedAt = now,
-                    )
-                }
-            }
-        }
+        val (entities, verses) = newSectionRows(songId = song.id, sections = sections, now = now)
         // A repeat always points to a section before it: inserted in order, its source already exists.
         songDao.insertWithContent(song = song, sections = entities, verses = verses)
         return song.id

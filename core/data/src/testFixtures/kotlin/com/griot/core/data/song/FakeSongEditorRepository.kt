@@ -67,6 +67,10 @@ class FakeSongEditorRepository(document: SongDocument? = null) : SongEditorRepos
         return PastedSections(sectionIds = listOf("pasted-section-id"), verseIds = listOf("pasted-verse-id"))
     }
 
+    override suspend fun replaceContent(songId: String, sections: List<NewSection>) {
+        calls += "replace $songId ${sections.size}"
+    }
+
     override suspend fun undoPaste(paste: PastedSections, verseId: String, lines: List<String>) {
         calls += "undo paste $verseId ${lines.joinToString(separator = "|")}"
     }

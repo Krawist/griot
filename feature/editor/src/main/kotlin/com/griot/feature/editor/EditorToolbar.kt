@@ -41,12 +41,13 @@ internal val EditorToolbarHeight = 64.dp
 private val ToolbarElevation = 12.dp
 private val ItemRadius = 18.dp
 
-/** The floating glass toolbar of the editor: a new section, and the rhymes shown or hidden. */
+/** The floating glass toolbar of the editor: a new section, the rhymes shown or hidden, and the versions. */
 @Composable
 internal fun EditorToolbar(
     showRhymes: Boolean,
     onAddSection: () -> Unit,
     onShowRhymesChange: (Boolean) -> Unit,
+    onOpenHistory: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     GlassSurface(
@@ -72,6 +73,12 @@ internal fun EditorToolbar(
                 modifier = Modifier
                     .weight(1f)
                     .toggleable(value = showRhymes, role = Role.Switch, onValueChange = onShowRhymesChange),
+            )
+            ToolbarItem(
+                icon = DesignR.drawable.ic_history,
+                label = stringResource(R.string.editor_tool_versions),
+                selected = false,
+                modifier = Modifier.weight(1f).clickable(role = Role.Button, onClick = onOpenHistory),
             )
         }
     }

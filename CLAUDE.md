@@ -212,7 +212,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   the note's title line left out) split by `splitPastedText`; empty or unreadable files are reported by name.
   `DocumentReader` reads the picked files. `toNewSections` moved to `:core:data`. The Samsung Notes steps are not
   checked on a real Samsung Notes yet.
-- [ ] **Next tickets:** GRI-24 (history), GRI-25 (export), GRI-26 (sync repository) (GRI-10 waits for GRI-27).
+- [x] **GRI-24** — `VersionRepository` (`:core:data`): a verse version before the first change of a burst and 2 s
+  after the last one, a song version (JSON `SongSnapshot`) at most every 5 min; restores keep the text before and
+  add a « Restaurée » version; `thin()` at launch keeps one version per day after 7 days. `HistoryScreen`
+  (`HistoryRoute`, « Versions » in the editor toolbar): « Ce vers » / « Toute la chanson », changed words or lines
+  highlighted (`changedWords`), « Restaurer » and « Copier ». The editor's saves run in order (a `Mutex`).
+- [ ] **Next tickets:** GRI-25 (export), GRI-26 (sync repository) (GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

@@ -116,7 +116,7 @@ private fun GriotNavHost(
             )
             ideasGraph()
             settingsGraph(onOpenTrash = { navController.navigateToTrash() })
-            editorGraph(onBack = { navController.popBackStack() })
+            editorGraph(navController = navController, onBack = { navController.popBackStack() })
         }
     }
 }

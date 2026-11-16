@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.griot.android.library)
     alias(libs.plugins.griot.android.hilt)
     alias(libs.plugins.griot.android.room)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -17,6 +18,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.mlkit.language.id)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)

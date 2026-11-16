@@ -62,6 +62,7 @@ private val SectionGap = 22.dp
 internal fun EditorScreen(
     songId: String,
     onBack: () -> Unit,
+    onOpenHistory: (String?) -> Unit,
     viewModel: EditorViewModel = hiltViewModel<EditorViewModel, EditorViewModel.Factory>(
         key = songId,
         creationCallback = { factory -> factory.create(songId) },
@@ -83,6 +84,7 @@ internal fun EditorScreen(
             onBackspaceAtStart = viewModel::onVerseBackspaceAtStart,
             onFocusHandled = viewModel::onFocusHandled,
             onCountLongPress = { countFor = it },
+            onFocused = viewModel::onVerseFocused,
         ),
         onSectionActions = { actionsFor = it },
         onAddSection = { sheet = EditorSheet.ADD_SECTION },
@@ -90,6 +92,7 @@ internal fun EditorScreen(
         onFontSizeChange = viewModel::onFontSizeChange,
         onLanguage = { sheet = EditorSheet.LANGUAGE },
         onShowRhymesChange = viewModel::onShowRhymesChange,
+        onOpenHistory = { onOpenHistory(uiState.editedVerse) },
     )
     EditorSheets(
         uiState = uiState,
@@ -205,6 +208,7 @@ private fun EditorContent(
     onFontSizeChange: (Int) -> Unit,
     onLanguage: () -> Unit,
     onShowRhymesChange: (Boolean) -> Unit,
+    onOpenHistory: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize().safeDrawingPadding().imePadding()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -249,6 +253,7 @@ private fun EditorContent(
             showRhymes = uiState.showRhymes,
             onAddSection = onAddSection,
             onShowRhymesChange = onShowRhymesChange,
+            onOpenHistory = onOpenHistory,
             modifier = Modifier.align(Alignment.BottomCenter).padding(GriotSpacing.l),
         )
     }
@@ -340,13 +345,14 @@ private fun EditorScreenPreview() {
                 onTitleChange = {},
                 verseInput = VerseInput(onChange = { _, _ ->
                 }, onLines = { _, _, _ ->
-                }, onBackspaceAtStart = { _, _ -> }, onFocusHandled = {}, onCountLongPress = {}),
+                }, onBackspaceAtStart = { _, _ -> }, onFocusHandled = {}, onCountLongPress = {}, onFocused = {}),
                 onSectionActions = {},
                 onAddSection = {},
                 onFontSize = {},
                 onFontSizeChange = {},
                 onLanguage = {},
                 onShowRhymesChange = {},
+                onOpenHistory = {},
             )
         }
     }

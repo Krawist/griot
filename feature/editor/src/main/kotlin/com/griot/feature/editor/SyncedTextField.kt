@@ -44,6 +44,7 @@ import com.griot.core.design.theme.GriotTheme
  * cursor is in the last one; `null` turns line breaks into spaces, as in a title.
  * @param onBackspaceAtStart Called with the text when Backspace is pressed with the cursor at the very start.
  * @param highlight A part of the text drawn as a rhyme; `null` for none.
+ * @param onFocused Called when the field takes the focus.
  * @param focus When set, the field shows its text with the cursor at its place, takes the focus, then calls
  * [onFocusHandled].
  */
@@ -58,6 +59,7 @@ internal fun SyncedTextField(
     onLines: ((List<String>, Int) -> Unit)? = null,
     onBackspaceAtStart: ((String) -> Unit)? = null,
     highlight: TextHighlight? = null,
+    onFocused: () -> Unit = {},
     focus: VerseFocus? = null,
     onFocusHandled: () -> Unit = {},
 ) {
@@ -87,7 +89,10 @@ internal fun SyncedTextField(
         modifier = modifier
             .drawBehind { highlight?.let { drawUnderline(it, layout) } }
             .focusRequester(focusRequester)
-            .onFocusChanged { focused = it.isFocused }
+            .onFocusChanged {
+                if (it.isFocused && !focused) onFocused()
+                focused = it.isFocused
+            }
             .onPreviewKeyEvent { event ->
                 backspaceAtStart(event = event, field = field, onBackspaceAtStart = onBackspaceAtStart)
             },

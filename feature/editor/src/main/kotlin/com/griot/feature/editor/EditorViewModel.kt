@@ -9,6 +9,7 @@ import com.griot.core.data.model.SongSection
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongRepository
+import com.griot.core.data.song.VersionRepository
 import com.griot.core.data.song.WordCorrectionRepository
 import com.griot.core.data.song.toNewSections
 import com.griot.core.phonetics.PhoneticEngines
@@ -22,6 +23,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +37,8 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /** The editor of the song [songId]: every change is saved at once. */
 // One function per change the editor makes, one dependency per kind of data it reads or writes.
@@ -48,9 +53,19 @@ internal class EditorViewModel @AssistedInject constructor(
     private val detector: SongLanguageDetector,
     private val engines: PhoneticEngines,
     private val corrections: WordCorrectionRepository,
+    private val versions: VersionRepository,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
     private val pasteUndo = MutableStateFlow<PasteUndo?>(null)
+
+    // The verse being edited, whose history « Versions » opens.
+    private val editedVerse = MutableStateFlow<String?>(null)
+
+    // The versions waiting for the author to pause, by verse.
+    private val pendingVersions = mutableMapOf<String, Job>()
+
+    // The verse's saves, one after the other in the order typed.
+    private val writes = Mutex()
 
     // The whole song, detected again 1 s after the last change: a few English words do not switch a French song.
     private val detectedLanguage = editor.observeDocument(songId)
@@ -85,6 +100,7 @@ internal class EditorViewModel @AssistedInject constructor(
         .combine(focus) { state, focus -> state.copy(focus = focus) }
         .combine(preferences.editorFontSize) { state, size -> state.copy(fontSize = size) }
         .combine(pasteUndo) { state, undo -> state.copy(pasteUndo = undo) }
+        .combine(editedVerse) { state, verse -> state.copy(editedVerse = verse) }
         .combine(detectedLanguage) { state, detected ->
             state.copy(
                 detectedLanguage = detected,
@@ -139,7 +155,36 @@ internal class EditorViewModel @AssistedInject constructor(
 
     /** Saves the verse as typed; a line break is not part of a verse (GRI-15 turns it into a new verse). */
     fun onVerseChange(verseId: String, text: String) {
-        viewModelScope.launch { editor.updateVerse(verseId = verseId, text = text.singleLine()) }
+        // The first change after a pause keeps the text from before it, so that no text is ever lost.
+        val firstChange = verseId !in pendingVersions
+        viewModelScope.launch {
+            writes.withLock {
+                if (firstChange) {
+                    versions.recordVerse(verseId)
+                    versions.recordSong(songId)
+                }
+                editor.updateVerse(verseId = verseId, text = text.singleLine())
+            }
+        }
+        recordWhenPaused(verseId)
+    }
+
+    /** The verse [verseId] took the focus, or no verse has it when `null`. */
+    fun onVerseFocused(verseId: String?) {
+        editedVerse.value = verseId
+    }
+
+    // A version of the verse, and of the song at most every few minutes, once the author paused typing it.
+    private fun recordWhenPaused(verseId: String) {
+        pendingVersions.remove(verseId)?.cancel()
+        pendingVersions[verseId] = viewModelScope.launch {
+            delay(VERSION_PAUSE_MILLIS)
+            pendingVersions.remove(verseId)
+            writes.withLock {
+                versions.recordVerse(verseId)
+                versions.recordSong(songId)
+            }
+        }
     }
 
     /**
@@ -274,5 +319,6 @@ internal class EditorViewModel @AssistedInject constructor(
 
         private const val STOP_TIMEOUT_MILLIS = 5_000L
         private const val DETECTION_DELAY_MILLIS = 1_000L
+        private const val VERSION_PAUSE_MILLIS = 2_000L
     }
 }

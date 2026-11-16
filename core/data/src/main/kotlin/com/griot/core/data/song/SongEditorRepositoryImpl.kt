@@ -169,6 +169,14 @@ internal class SongEditorRepositoryImpl @Inject constructor(
         PastedSections(sectionIds = created.map { it.id }, verseIds = verseIds)
     }
 
+    override suspend fun replaceContent(songId: String, sections: List<NewSection>) = write { now ->
+        sectionDao.getBySong(songId).forEach { sectionDao.markDeleted(id = it.id, at = now) }
+        val (rows, verses) = newSectionRows(songId = songId, sections = sections, now = now)
+        rows.forEach { sectionDao.insert(it) }
+        verseDao.insertAll(verses)
+        songDao.touch(id = songId, at = now)
+    }
+
     override suspend fun undoPaste(paste: PastedSections, verseId: String, lines: List<String>) = write { now ->
         paste.sectionIds.forEach { sectionDao.markDeleted(id = it, at = now) }
         paste.verseIds.forEach { verseDao.markDeleted(id = it, at = now) }

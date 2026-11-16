@@ -8,6 +8,7 @@ package com.griot.feature.editor
  * @property onBackspaceAtStart Backspace with the cursor at the start: the verse's text.
  * @property onFocusHandled The verse asked to take the focus has it.
  * @property onCountLongPress Long press on the verse's count, to correct it.
+ * @property onFocused The verse took the focus: its history is the one « Versions » opens.
  */
 internal data class VerseInput(
     val onChange: (String, String) -> Unit,
@@ -15,4 +16,5 @@ internal data class VerseInput(
     val onBackspaceAtStart: (String, String) -> Unit,
     val onFocusHandled: () -> Unit,
     val onCountLongPress: (String) -> Unit,
+    val onFocused: (String) -> Unit,
 )

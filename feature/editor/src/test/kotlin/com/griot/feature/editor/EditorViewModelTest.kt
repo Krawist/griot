@@ -10,6 +10,7 @@ import com.griot.core.data.model.SongVerse
 import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.data.song.FakeSongEditorRepository
 import com.griot.core.data.song.FakeSongRepository
+import com.griot.core.data.song.FakeVersionRepository
 import com.griot.core.data.song.FakeWordCorrectionRepository
 import com.griot.core.phonetics.PhoneticEngines
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -21,6 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -79,6 +81,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -120,6 +123,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -146,6 +150,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
 
             // when
@@ -171,6 +176,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
 
             // when
@@ -193,6 +199,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
 
             // when
@@ -226,6 +233,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
 
             // when
@@ -269,6 +277,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -313,6 +322,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -357,6 +367,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -402,6 +413,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -446,6 +458,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -492,6 +505,7 @@ internal class EditorViewModelTest {
                     detector = FakeSongLanguageDetector(),
                     engines = engines,
                     corrections = FakeWordCorrectionRepository(),
+                    versions = FakeVersionRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -521,6 +535,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
 
             // when
@@ -541,6 +556,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -581,6 +597,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -625,6 +642,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -672,6 +690,7 @@ internal class EditorViewModelTest {
                 detector = detector,
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -695,6 +714,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
 
             // when
@@ -736,6 +756,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = engines,
                 corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -776,6 +797,7 @@ internal class EditorViewModelTest {
                 detector = FakeSongLanguageDetector(),
                 engines = PhoneticEngines(),
                 corrections = corrections,
+                versions = FakeVersionRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -786,6 +808,39 @@ internal class EditorViewModelTest {
 
             // then
             corrections.corrections.value shouldBe mapOf(SongLanguage.FRENCH to mapOf("bonabéri" to 3))
+        }
+    }
+
+    @Nested
+    inner class Versions {
+        @Test
+        fun `should record the verse and the song before the first change and once the author paused`() = runTest {
+            // given
+            val versions = FakeVersionRepository()
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = FakeSongEditorRepository(),
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = versions,
+            )
+
+            // when
+            viewModel.onVerseChange(verseId = "my-verse-id", text = "my-text-1")
+            viewModel.onVerseChange(verseId = "my-verse-id", text = "my-text-2")
+            advanceUntilIdle()
+
+            // then
+            versions.calls shouldContainExactly listOf(
+                // The text before the first change, then the text once the author paused.
+                "record verse my-verse-id AUTHOR",
+                "record song my-song-id",
+                "record verse my-verse-id AUTHOR",
+                "record song my-song-id",
+            )
         }
     }
 }
