@@ -103,6 +103,10 @@ Before implementing a screen, look at its mockup. Song titles, verses and names 
 | ink       | `#1E1B2E` | `#F4F1F8` | Main text                              |
 | muted     | `#5E5A6B` | `#A9A6B8` | Secondary text                         |
 
+All the tokens are in `GriotPalette` (`:core:design`); `GriotPaletteTest` checks 4.5:1 for every text colour. Filled
+buttons with white text use `accentFill` `#DB2277` (white on `#E0287D` is 4.4:1). Turquoise and orange text in light
+mode are `#006D65` and `#A04800`, darker than the mockups so they pass on their soft fills.
+
 Rhyme colours, in order of appearance: turquoise, orange, magenta, yellow, blue, green, violet, ochre; only the
 rhyming ending is highlighted and the margin letter (A, B, C…) always doubles the colour.
 
@@ -119,7 +123,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (`com.griot.debug`) and release (`com.griot`) install side by side. ktlint checks the Android sources through
   `kotlinScriptAdditionalPaths` (the plugin does not see AGP 9's built-in Kotlin). CI workflow ready; the repository
   has no GitHub remote yet.
-- [ ] **Next tickets:** GRI-02, GRI-03, GRI-04 and GRI-44.
+- [x] **GRI-02** — Griot theme: palette (light and dark), eight rhyme colours (`RhymeColor`,
+  `GriotTheme.rhymeColor(index)`), Outfit and Inter embedded (OFL, `core/design/licenses/`), type scale and
+  `LyricTextStyle`, radii and spacing, contrast test, preview catalogue (`catalog/ThemeCatalog.kt`).
+- [ ] **Next tickets:** GRI-03, GRI-04 and GRI-44.
 
 Update this section at the end of each ticket.
 
