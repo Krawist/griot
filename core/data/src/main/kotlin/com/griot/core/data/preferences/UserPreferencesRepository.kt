@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.map
 
 /** Small user settings that are not songs. The Room database (GRI-05) holds the songs, versions and ideas. */
 @Singleton
-class UserPreferencesRepository @Inject internal constructor(
-    private val dataStore: DataStore<Preferences>,
-) {
+class UserPreferencesRepository @Inject internal constructor(private val dataStore: DataStore<Preferences>) {
     val onboardingCompleted: Flow<Boolean> = dataStore.data.map { it[OnboardingCompleted] ?: false }
 
     suspend fun setOnboardingCompleted() {

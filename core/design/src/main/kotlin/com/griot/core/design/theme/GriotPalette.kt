@@ -31,7 +31,7 @@ data class GriotPalette(
     val syncText: Color,
 )
 
-val LightPalette = GriotPalette(
+internal val LightPalette = GriotPalette(
     background = Color(0xFFF6F3F9),
     ink = Color(0xFF1E1B2E),
     ink2 = Color(0xFF4A4658),
@@ -53,7 +53,7 @@ val LightPalette = GriotPalette(
     syncText = Color(0xFF00786F),
 )
 
-val DarkPalette = GriotPalette(
+internal val DarkPalette = GriotPalette(
     background = Color(0xFF0F1018),
     ink = Color(0xFFF4F1F8),
     ink2 = Color(0xFFC3BFD0),
@@ -75,4 +75,4 @@ val DarkPalette = GriotPalette(
     syncText = Color(0xFF3FD9CC),
 )
 
-val LocalGriotPalette = staticCompositionLocalOf { LightPalette }
+internal val LocalGriotPalette = staticCompositionLocalOf { LightPalette }

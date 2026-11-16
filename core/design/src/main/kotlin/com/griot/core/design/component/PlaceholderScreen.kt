@@ -17,9 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.theme.GriotTheme
 
-/** One button of a [PlaceholderScreen]. */
-data class PlaceholderAction(val label: String, val onClick: () -> Unit)
-
 /** Temporary screen, used until a feature has its real screens. The first action is the main one. */
 @Composable
 fun PlaceholderScreen(

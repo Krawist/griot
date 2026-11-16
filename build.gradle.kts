@@ -14,6 +14,12 @@ plugins {
 // ktlint applies to each module; detekt is configured once for the whole repository.
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    // The ktlint plugin only finds the sources of the Kotlin plugins, not those of AGP 9's built-in Kotlin: add them.
+    plugins.withId("com.android.base") {
+        configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+            kotlinScriptAdditionalPaths { include(fileTree("src") { include("**/*.kt") }) }
+        }
+    }
 }
 
 detekt {

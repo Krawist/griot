@@ -12,9 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-internal class MainViewModel @Inject constructor(
-    private val preferences: UserPreferencesRepository,
-) : ViewModel() {
+internal class MainViewModel @Inject constructor(private val preferences: UserPreferencesRepository) : ViewModel() {
     val uiState: StateFlow<MainUiState> = preferences.onboardingCompleted
         .map { MainUiState.Ready(onboardingCompleted = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), MainUiState.Loading)

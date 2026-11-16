@@ -26,10 +26,6 @@ Checks run by CI on every pull request:
 
 Fix formatting with `./gradlew ktlintFormat`.
 
-## First sync
-
-The build setup (Gradle wrapper, convention plugins, dependency versions) is copied from Cauri, which builds on this machine, but this skeleton has not been compiled yet. If the first sync fails on a missing or incompatible version, adjust `gradle/libs.versions.toml`: Android Studio suggests the available versions.
-
 ## Signing
 
 - **debug**: Android Studio's local debug key, `applicationId` suffixed with `.debug`, so both variants can be installed side by side.

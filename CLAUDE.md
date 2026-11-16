@@ -112,13 +112,14 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
 
 ## Progress
 
-- [x] **Skeleton** — multi-module project, convention plugins, CI, debug/release signing, Hilt, type-safe navigation
-  with placeholder screens (onboarding → library → editor, ideas, settings), DataStore (`UserPreferencesRepository`:
-  onboarding done or not), Room plugin wired in `:core:data` (the database class comes with its first entities in
-  GRI-05), light and dark palettes, temporary launcher icon, French default and English locales. Build setup copied
-  from Cauri, which builds on this machine; not compiled yet.
-- [ ] **Next ticket: GRI-01** (check that the skeleton builds and runs, CI green), then GRI-02, GRI-03, GRI-04 and
-  GRI-44.
+- [x] **GRI-01** — multi-module project, convention plugins, Hilt, type-safe navigation with placeholder screens
+  (onboarding → library → editor, ideas, settings), DataStore (`UserPreferencesRepository`: onboarding done or not),
+  Room plugin wired in `:core:data` (the database class comes with its first entities in GRI-05), light and dark
+  palettes, temporary launcher icon, French default and English locales. Builds and runs on the phone; debug
+  (`com.griot.debug`) and release (`com.griot`) install side by side. ktlint checks the Android sources through
+  `kotlinScriptAdditionalPaths` (the plugin does not see AGP 9's built-in Kotlin). CI workflow ready; the repository
+  has no GitHub remote yet.
+- [ ] **Next tickets:** GRI-02, GRI-03, GRI-04 and GRI-44.
 
 Update this section at the end of each ticket.
 
