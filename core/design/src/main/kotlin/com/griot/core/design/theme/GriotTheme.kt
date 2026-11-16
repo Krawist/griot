@@ -1,5 +1,6 @@
 package com.griot.core.design.theme
 
+import android.provider.Settings
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -7,7 +8,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalContext
 import com.griot.core.design.glass.LocalGlassBlur
 
 /**
@@ -54,8 +57,17 @@ fun GriotTheme(
             outline = palette.line,
         )
     }
+    val context = LocalContext.current
+    // « Supprimer les animations » sets the animator scale to 0: Griot then moves nothing.
+    val motion = remember(context) {
+        GriotMotion(
+            reduced =
+            Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f,
+        )
+    }
     CompositionLocalProvider(
         LocalGriotPalette provides palette,
+        LocalGriotMotion provides motion,
         LocalRhymeColors provides rhymeColors,
         LocalGlassBlur provides glassBlur,
     ) {
@@ -75,6 +87,12 @@ object GriotTheme {
         @ReadOnlyComposable
         get() = LocalRhymeColors.current
 
+    /** The durations, easings and transitions of every animation. */
+    val motion: GriotMotion
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalGriotMotion.current
+
     /** Colour of the rhyme at [index] in order of appearance (A = 0); after the eighth, the colours start over. */
     @Composable
     @ReadOnlyComposable
@@ -82,3 +100,5 @@ object GriotTheme {
 }
 
 internal val LocalRhymeColors = staticCompositionLocalOf { LightRhymeColors }
+
+internal val LocalGriotMotion = staticCompositionLocalOf { GriotMotion(reduced = false) }

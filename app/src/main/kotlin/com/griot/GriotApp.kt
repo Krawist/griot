@@ -1,10 +1,7 @@
 package com.griot
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph
@@ -27,11 +26,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.BottomBarTab
 import com.griot.core.design.component.GriotBottomBar
 import com.griot.core.design.component.backdrop
 import com.griot.core.design.component.screenBackdropShapes
 import com.griot.core.design.glass.GlassScreen
+import com.griot.core.design.theme.GriotMotion
+import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.editorGraph
 import com.griot.feature.editor.navigateToEditor
 import com.griot.feature.ideas.IdeasGraph
@@ -53,14 +55,21 @@ internal fun GriotApp(uiState: MainUiState, onOnboardingCompleted: () -> Unit) {
         delay(LaunchDuration)
         launchShown = true
     }
-    // The preferences load in a few milliseconds: the launch screen covers it.
-    if (launchShown && uiState is MainUiState.Ready) {
-        GriotNavHost(
-            onboardingCompleted = uiState.onboardingCompleted,
-            onOnboardingCompleted = onOnboardingCompleted,
-        )
-    } else {
-        LaunchScreen()
+    // The preferences load in a few milliseconds: the launch screen covers it, then fades into the first screen.
+    val ready = uiState.takeIf { launchShown } as? MainUiState.Ready
+    Crossfade(
+        targetState = ready,
+        animationSpec = GriotTheme.motion.tween(GriotMotion.LONG),
+        label = "launch",
+    ) { state ->
+        if (state == null) {
+            LaunchScreen()
+        } else {
+            GriotNavHost(
+                onboardingCompleted = state.onboardingCompleted,
+                onOnboardingCompleted = onOnboardingCompleted,
+            )
+        }
     }
 }
 
@@ -75,12 +84,20 @@ private fun GriotNavHost(
 ) {
     // Chosen once: a new start destination would rebuild the graph under the back stack when the onboarding completes.
     val startDestination = remember { if (onboardingCompleted) LibraryGraph else OnboardingGraph }
+    val motion = GriotTheme.motion
     GlassScreen(
         // Drawn once behind every screen, which are transparent: glass cards and the bar blur these shapes.
         background = { Box(Modifier.fillMaxSize().backdrop(screenBackdropShapes())) },
         overlay = { TabsOverlay(navController = navController) },
     ) {
-        NavHost(navController = navController, startDestination = startDestination) {
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            enterTransition = { if (betweenTabs()) motion.tabEnter() else motion.screenEnter() },
+            exitTransition = { if (betweenTabs()) motion.tabExit() else motion.screenExit() },
+            popEnterTransition = { if (betweenTabs()) motion.tabEnter() else motion.screenPopEnter() },
+            popExitTransition = { if (betweenTabs()) motion.tabExit() else motion.screenPopExit() },
+        ) {
             onboardingGraph(
                 onCompleted = {
                     onOnboardingCompleted()
@@ -104,26 +121,30 @@ private fun BoxScope.TabsOverlay(navController: NavHostController) {
     val selectedTab = TabRoutes.indexOfFirst { route ->
         destination?.hierarchy?.any { it.hasRoute(route::class) } == true
     }
-    // The last tab shown stays drawn while the bar goes down.
-    var shownTab by remember { mutableStateOf(0) }
-    if (selectedTab >= 0) shownTab = selectedTab
-    AnimatedVisibility(
-        visible = selectedTab >= 0,
-        enter = slideInVertically { it } + fadeIn(),
-        exit = slideOutVertically { it } + fadeOut(),
+    val motion = GriotTheme.motion
+    AnimatedPresence(
+        value = selectedTab.takeIf { it >= 0 },
+        enter = motion.barEnter(),
+        exit = motion.barExit(),
         modifier = Modifier.align(Alignment.BottomCenter),
-    ) {
+    ) { tab ->
         GriotBottomBar(
             tabs = listOf(
                 BottomBarTab(icon = DesignR.drawable.ic_nav_songs, label = stringResource(R.string.tab_songs)),
                 BottomBarTab(icon = DesignR.drawable.ic_nav_ideas, label = stringResource(R.string.tab_ideas)),
                 BottomBarTab(icon = DesignR.drawable.ic_nav_settings, label = stringResource(R.string.tab_settings)),
             ),
-            selectedTab = shownTab,
+            selectedTab = tab,
             onTabSelected = { index -> navController.navigateToTab(TabRoutes[index]) },
         )
     }
 }
+
+// Whether the navigation goes from a tab to another: tabs fade, side by side, instead of sliding.
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.betweenTabs() =
+    initialState.destination.isTab() && targetState.destination.isTab()
+
+private fun NavDestination.isTab() = TabRoutes.any { route -> hierarchy.any { it.hasRoute(route::class) } }
 
 // « Chansons » stays at the bottom of the back stack: back from another tab returns to it, then leaves the app. Each
 // tab keeps its own state when the user switches between them. It pops up to the library's screen, not to its graph

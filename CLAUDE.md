@@ -134,7 +134,11 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `GriotApplication`), `GlassScreen` (background, content, overlay layers), `GlassSurface` (Haze blur or opaque
   tint); `GriotBottomBar` with « Chansons », « Idées », « Réglages » on the tabs only; `navigateToTab` keeps
   « Chansons » at the bottom of the back stack. Screens are transparent over the shared `screenBackdropShapes()`.
-- [ ] **Next ticket:** GRI-44, then GRI-05.
+- [x] **GRI-44** — `GriotMotion` (from Cauri) through `GriotTheme.motion`: durations `SHORT`/`MEDIUM`/`LONG`, easings,
+  screen, tab, bar, sheet and item transitions, `colorChange()` for rhyme colours; everything snaps with « Supprimer
+  les animations ». `AnimatedPresence` and `RollingNumber` (syllable counts) in `:core:design`. Screens slide, tabs
+  fade, the bar rises and goes down, the launch screen fades into the first screen.
+- [ ] **Next ticket:** GRI-05, then GRI-06.
 
 Update this section at the end of each ticket.
 
