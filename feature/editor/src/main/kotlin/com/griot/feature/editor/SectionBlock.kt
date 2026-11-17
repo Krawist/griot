@@ -5,20 +5,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,46 +40,63 @@ import com.griot.core.phonetics.rhymeLetter
 
 private val MarginWidth = 24.dp
 
+/** The gap between two sections. */
+internal val SectionGap = 22.dp
+
 // Lighter, for a count from a word guessed by grapheme rules.
 private const val GUESSED_ALPHA = 0.55f
 
-/** A section of the editor: its header with its scheme, then its verses, each with its rhyme letter and its count. */
+/**
+ * The items of [section] in the editor's list: its header with its scheme, then each verse as an item of its own, with
+ * its rhyme letter and its count. A long section is then composed verse by verse as it scrolls in, not all at once.
+ *
+ * @param first Whether it is the first section: the others keep a gap above their header.
+ */
 @Suppress("LongParameterList") // The section, how it shows, and how its verses are typed.
-@Composable
-internal fun SectionBlock(
+internal fun LazyListScope.sectionItems(
     section: EditorSection,
+    first: Boolean,
     fontSize: Int,
     showRhymes: Boolean,
     focus: VerseFocus?,
     verseInput: VerseInput,
     onActions: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(GriotSpacing.xs)) {
-        SectionHeader(section = section, showRhymes = showRhymes, onActions = onActions)
-        section.section.verses.forEach { verse ->
-            // A repeat shows the same verses as its source: only the source's field takes the focus.
-            val ownFocus = focus?.takeIf { it.verseId == verse.id && section.section.repeatOf == null }
-            key(verse.id) {
-                VerseRow(
-                    verse = verse,
-                    sound = section.sounds.verses[verse.id],
-                    fontSize = fontSize,
-                    showRhymes = showRhymes,
-                    focus = ownFocus,
-                    input = verseInput,
-                )
-            }
-        }
+    val id = section.section.id
+    item(key = "section/$id", contentType = "section") {
+        SectionHeader(
+            section = section,
+            showRhymes = showRhymes,
+            onActions = onActions,
+            modifier = Modifier.animateItem().padding(top = if (first) 0.dp else SectionGap),
+        )
+    }
+    // A repeat shows the same verses as its source: the section's id keeps their keys apart.
+    items(items = section.section.verses, key = { "verse/$id/${it.id}" }, contentType = { "verse" }) { verse ->
+        VerseRow(
+            verse = verse,
+            sound = section.sounds.verses[verse.id],
+            fontSize = fontSize,
+            showRhymes = showRhymes,
+            // Only the source's field takes the focus.
+            focus = focus?.takeIf { it.verseId == verse.id && section.section.repeatOf == null },
+            input = verseInput,
+            modifier = Modifier.animateItem().padding(top = GriotSpacing.xs),
+        )
     }
 }
 
 @Composable
-private fun SectionHeader(section: EditorSection, showRhymes: Boolean, onActions: () -> Unit) {
+private fun SectionHeader(
+    section: EditorSection,
+    showRhymes: Boolean,
+    onActions: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val palette = GriotTheme.palette
     val label = section.label.text()
     Row(
-        modifier = Modifier.fillMaxWidth().padding(start = GriotSpacing.s),
+        modifier = modifier.fillMaxWidth().padding(start = GriotSpacing.s),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(GriotSpacing.s),
     ) {
@@ -113,11 +130,12 @@ private fun VerseRow(
     showRhymes: Boolean,
     focus: VerseFocus?,
     input: VerseInput,
+    modifier: Modifier = Modifier,
 ) {
     // The margins scale with the lyrics, so the letters and counts stay aligned with them.
     val marginStyle = MaterialTheme.typography.labelSmall.copy(fontSize = (fontSize * MARGIN_RATIO).sp)
     val marginTop = (fontSize * TOP_RATIO).dp
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
         VerseLetter(
             sound = sound,
             showRhymes = showRhymes,

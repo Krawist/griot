@@ -108,7 +108,7 @@ private fun TrashContent(uiState: TrashUiState, onBack: () -> Unit, onRestore: (
 @Composable
 private fun TrashRow(item: TrashItem, onRestore: () -> Unit, modifier: Modifier = Modifier) {
     val palette = GriotTheme.palette
-    GlassSurface(shape = RoundedCornerShape(GriotRadius.card), modifier = modifier.fillMaxWidth()) {
+    GlassSurface(shape = RoundedCornerShape(GriotRadius.card), modifier = modifier.fillMaxWidth(), blur = false) {
         Row(
             modifier = Modifier.padding(
                 start = GriotSpacing.l,

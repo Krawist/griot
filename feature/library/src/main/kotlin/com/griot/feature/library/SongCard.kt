@@ -44,6 +44,7 @@ internal fun SongCard(item: LibraryItem, onClick: () -> Unit, onLongClick: () ->
         shape = RoundedCornerShape(GriotRadius.card),
         modifier = modifier.fillMaxWidth(),
         interaction = Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick),
+        blur = false,
     ) {
         Column(
             modifier = Modifier.padding(horizontal = GriotSpacing.l, vertical = GriotSpacing.m + 2.dp),

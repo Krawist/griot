@@ -19,7 +19,7 @@ The documents kept in Claude are the reference; they are written in French.
 | Document                                   | Local copy        | Reference                                         |
 |--------------------------------------------|-------------------|---------------------------------------------------|
 | Vision and features (what and why)         | —                 | https://claude.ai/artifact/TFJQahYirQ72jEVJMs1Xoy |
-| MVP tickets (GRI-01 to GRI-44, 3 phases)   | `docs/tickets.md` | —                                                 |
+| MVP tickets (GRI-01 to GRI-45, 3 phases)   | `docs/tickets.md` | —                                                 |
 | Logo and mockups, light and dark (canvas)  | —                 | https://claude.ai/artifact/GtB94FRDSFC6mVmKKVfCfq |
 
 `docs/tickets.md` is the detailed English working copy: acceptance criteria, dependencies and the mockup of each
@@ -265,6 +265,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   without a model the tabs say so. A rhyme is inserted at the verse's cursor (`VerseInput.onCursor`, `insertWord`),
   a suggestion replaces the verse and is recorded as « Suggestion IA » (`onUseSuggestion`). Rhymes and insertion
   checked on the phone; the model tabs wait for GRI-32/33.
+- [x] **GRI-45** — `ScrollControls` (`:core:design`, `rememberScrollControls`): scrolling a list down hides a screen's
+  controls, scrolling up or reaching the top brings them back; `TopControls` and `BottomControls` slide them while
+  keeping them composed, `JumpToTopButton` takes the list back to its top. The song list hides its header,
+  « Nouvelle chanson » and the bottom bar (`libraryGraph(onControlsShownChange)`, `TabsOverlay(hidden)`); the editor
+  its top bar and toolbar (a verse taking the focus brings them back), and lays out each verse as its own list item.
+  Cards of scrolling lists are tinted without blur (`GlassSurface(blur = false)`): songs and trash; ideas still blur.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-32/33 (models:
   need setup), then GRI-36/37 to check with a real model.
 

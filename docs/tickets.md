@@ -2,7 +2,7 @@
 
 > Reference documents kept in Claude (November 16, 2026): the vision and features document, https://claude.ai/artifact/TFJQahYirQ72jEVJMs1Xoy, and the design canvas, https://claude.ai/artifact/GtB94FRDSFC6mVmKKVfCfq. If this file and the vision document differ on scope, the vision document prevails. Update this copy when they change.
 
-This document splits the Griot MVP into 44 tickets over three phases. Phase 1 gives an app usable every day that replaces Samsung Notes for songwriting: a structured editor, live syllables and rhymes in French and English, version history and Google Drive sync. Phase 2 adds the AI panel and the ideas box. Phase 3 adds the features listed under "Ensuite" in the vision document.
+This document splits the Griot MVP into 45 tickets over three phases. Phase 1 gives an app usable every day that replaces Samsung Notes for songwriting: a structured editor, live syllables and rhymes in French and English, version history and Google Drive sync. Phase 2 adds the AI panel and the ideas box. Phase 3 adds the features listed under "Ensuite" in the vision document.
 
 Indicative sizes: S for a day at most, M for two or three days, L for about a week.
 
@@ -210,6 +210,17 @@ Each song has a writing language: French, English or automatic. In automatic mod
 - Detection is on-device (ML Kit language identification) and never sends text anywhere.
 
 Size: S. Dependencies: GRI-14. Mockup: « Éditeur » (chip « FR »).
+
+### GRI-45 · Give the songs and the lyrics the whole screen while scrolling
+
+Once many songs are imported, the song list scrolls with stutters, and its header, the « Nouvelle chanson » button and the bottom bar leave little room for the songs; the editor's top bar and toolbar do the same to the lyrics. In the song list and in the editor, scrolling down hides these controls so the content takes the whole screen; scrolling up brings them back. Once scrolled down, a small floating button jumps back to the top.
+
+- Scrolling the song list (40 songs and more) and a long song (40 verses and more) stays smooth on the phone.
+- The controls slide away and back with the shared motion tokens; they come back at the top of the list or of the song, and when a verse takes the focus.
+- « Haut de la liste » and « Haut de la chanson » appear only away from the top, and take the screen back to its top.
+- Scrolling and the jump to the top behave the same on both screens: one shared implementation.
+
+Size: S. Dependencies: GRI-04, GRI-12, GRI-14, GRI-44. Mockups: « Bibliothèque », « Éditeur ».
 
 ## Phase 1 · Phonetics
 

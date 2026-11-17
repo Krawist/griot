@@ -32,6 +32,8 @@ private val GlassBorderWidth = 1.dp
  * @param elevation Height of the soft shadow under the surface, for surfaces that float above the content.
  * @param interaction What makes the surface react to touch (`clickable`, `selectable`…), applied inside its shape so
  * that the press feedback follows the corners. Passed in [modifier] instead, the feedback would be a rectangle.
+ * @param blur Whether to blur what is behind. `false` for the cards of a scrolling list: they are only tinted, as the
+ * mockups draw them, since blurring every card again on each frame of a scroll makes it stutter.
  */
 @Composable
 fun GlassSurface(
@@ -40,6 +42,7 @@ fun GlassSurface(
     strong: Boolean = false,
     elevation: Dp = 0.dp,
     interaction: Modifier = Modifier,
+    blur: Boolean = true,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val palette = GriotTheme.palette
@@ -54,11 +57,13 @@ fun GlassSurface(
             noiseFactor(0f)
         }
     }
-    val fill = if (LocalGlassBlur.current && hazeState != null) {
+    val fill = when {
+        // The backdrop of the glass screen shows through the tint, without the cost of a blur.
+        !blur -> Modifier.background(tint)
         // The layers of the glass screen below this surface, as the zIndex of their sources orders them.
-        Modifier.hazeBlur(input = HazeInput.Sources(hazeState), style = style)
-    } else {
-        Modifier.background(tint.compositeOver(palette.background))
+        LocalGlassBlur.current && hazeState != null ->
+            Modifier.hazeBlur(input = HazeInput.Sources(hazeState), style = style)
+        else -> Modifier.background(tint.compositeOver(palette.background))
     }
     Box(
         modifier = modifier

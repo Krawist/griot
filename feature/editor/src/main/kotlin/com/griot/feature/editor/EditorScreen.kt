@@ -5,18 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +43,6 @@ import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.SongVerse
 import com.griot.core.data.song.SectionLabel
 import com.griot.core.design.R as DesignR
-import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.FileShareSheet
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
@@ -59,7 +51,6 @@ import com.griot.feature.editor.ai.AiPanelSheet
 
 private val AddSectionHeight = 48.dp
 private val DashWidth = 1.5.dp
-private val SectionGap = 22.dp
 
 /** The structured editor of the song [songId]: its title, its sections and their verses, all saved as typed. */
 @Composable
@@ -268,85 +259,8 @@ private fun CountCorrection(
     )
 }
 
-@Suppress("LongParameterList") // One callback per change the editor makes.
 @Composable
-private fun EditorContent(
-    uiState: EditorUiState,
-    onBack: () -> Unit,
-    onTitleChange: (String) -> Unit,
-    verseInput: VerseInput,
-    onSectionActions: (String) -> Unit,
-    onAddSection: () -> Unit,
-    onFontSize: () -> Unit,
-    onFontSizeChange: (Int) -> Unit,
-    onLanguage: () -> Unit,
-    onMenu: () -> Unit,
-    onShowRhymesChange: (Boolean) -> Unit,
-    onOpenHistory: () -> Unit,
-    onAiHelp: () -> Unit,
-    onShowConflict: () -> Unit,
-    onDismissConflicts: () -> Unit,
-) {
-    val motion = GriotTheme.motion
-    Box(modifier = Modifier.fillMaxSize().safeDrawingPadding().imePadding()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            EditorTopBar(
-                title = uiState.title,
-                language = uiState.language,
-                detectedLanguage = uiState.detectedLanguage,
-                onBack = onBack,
-                onTitleChange = onTitleChange,
-                onFontSize = onFontSize,
-                onLanguage = onLanguage,
-                onMenu = onMenu,
-            )
-            AnimatedPresence(
-                value = uiState.conflicts.size.takeIf { it > 0 },
-                enter = motion.itemEnter(),
-                exit = motion.itemExit(),
-                modifier = Modifier.padding(start = GriotSpacing.l, top = GriotSpacing.s, end = GriotSpacing.l),
-            ) { ConflictNotice(count = it, onShow = onShowConflict, onDismiss = onDismissConflicts) }
-            if (!uiState.loading) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pinchToResize(size = uiState.fontSize, onSizeChange = onFontSizeChange),
-                    contentPadding = PaddingValues(
-                        start = GriotSpacing.l,
-                        top = GriotSpacing.xl,
-                        end = GriotSpacing.l,
-                        bottom = GriotSpacing.xxl + EditorToolbarHeight + GriotSpacing.xl,
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(SectionGap),
-                ) {
-                    items(items = uiState.sections, key = { it.section.id }) { section ->
-                        SectionBlock(
-                            section = section,
-                            fontSize = uiState.fontSize,
-                            showRhymes = uiState.showRhymes,
-                            focus = uiState.focus,
-                            verseInput = verseInput,
-                            onActions = { onSectionActions(section.section.id) },
-                            modifier = Modifier.animateItem(),
-                        )
-                    }
-                    item(key = "add") { AddSectionButton(onClick = onAddSection, modifier = Modifier.animateItem()) }
-                }
-            }
-        }
-        EditorToolbar(
-            showRhymes = uiState.showRhymes,
-            onAddSection = onAddSection,
-            onShowRhymesChange = onShowRhymesChange,
-            onAiHelp = onAiHelp,
-            onOpenHistory = onOpenHistory,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(GriotSpacing.l),
-        )
-    }
-}
-
-@Composable
-private fun AddSectionButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun AddSectionButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(GriotRadius.field)
     Row(

@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,7 +19,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -26,15 +29,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -51,13 +60,18 @@ import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.AnimatedPresence
+import com.griot.core.design.component.JumpToTopButton
+import com.griot.core.design.component.ScrollControls
+import com.griot.core.design.component.TopControls
 import com.griot.core.design.component.UndoBar
+import com.griot.core.design.component.rememberScrollControls
 import com.griot.core.design.format.RelativeTime
 import com.griot.core.design.format.text
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import java.time.Instant
+import kotlinx.coroutines.launch
 
 private val SearchHeight = 46.dp
 private val NewSongHeight = 52.dp
@@ -67,14 +81,31 @@ private val NewSongElevation = 10.dp
 private val NewSongBottom = 112.dp
 private val ListBottom = 184.dp
 
-/** Library of songs: search, filters, the songs last changed first and « Nouvelle chanson ». */
+/**
+ * Library of songs: search, filters, the songs last changed first and « Nouvelle chanson ». Scrolling down the songs
+ * hides the header and the buttons, and shows « Haut de la liste ».
+ *
+ * @param onControlsShownChange Whether the controls show, for the app's bottom bar to follow them; `true` again when
+ * the screen leaves.
+ */
 @Composable
-internal fun LibraryScreen(onOpenSong: (String) -> Unit, viewModel: LibraryViewModel = hiltViewModel()) {
+internal fun LibraryScreen(
+    onOpenSong: (String) -> Unit,
+    onControlsShownChange: (Boolean) -> Unit,
+    viewModel: LibraryViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val list = rememberLazyListState()
+    val controls = rememberScrollControls(list)
+    val currentOnControlsShownChange by rememberUpdatedState(onControlsShownChange)
+    LaunchedEffect(controls) { snapshotFlow { controls.shown }.collect { currentOnControlsShownChange(it) } }
+    DisposableEffect(Unit) { onDispose { currentOnControlsShownChange(true) } }
     // The song whose actions show after a long press.
     var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
     LibraryContent(
         uiState = uiState,
+        list = list,
+        controls = controls,
         onQueryChange = viewModel::onQueryChange,
         onFilterSelected = viewModel::onFilterSelected,
         onOpenSong = onOpenSong,
@@ -110,6 +141,8 @@ internal fun LibraryScreen(onOpenSong: (String) -> Unit, viewModel: LibraryViewM
 @Composable
 private fun LibraryContent(
     uiState: LibraryUiState,
+    list: LazyListState,
+    controls: ScrollControls,
     onQueryChange: (String) -> Unit,
     onFilterSelected: (LibraryFilter) -> Unit,
     onOpenSong: (String) -> Unit,
@@ -119,6 +152,7 @@ private fun LibraryContent(
     onUndoDismissed: () -> Unit,
 ) {
     val motion = GriotTheme.motion
+    val scope = rememberCoroutineScope()
     // Focusable, so that the focus given back when a sheet closes lands here, not in the search field.
     Box(modifier = Modifier.fillMaxSize().focusable()) {
         Column(
@@ -126,11 +160,13 @@ private fun LibraryContent(
                 .fillMaxSize()
                 .statusBarsPadding()
                 .padding(start = GriotSpacing.xl, top = GriotSpacing.l, end = GriotSpacing.xl),
-            verticalArrangement = Arrangement.spacedBy(GriotSpacing.l),
         ) {
-            Header(authorName = uiState.authorName)
-            SearchField(query = uiState.query, onQueryChange = onQueryChange)
-            Filters(selected = uiState.filter, onFilterSelected = onFilterSelected)
+            LibraryHeader(
+                uiState = uiState,
+                shown = controls.shown,
+                onQueryChange = onQueryChange,
+                onFilterSelected = onFilterSelected,
+            )
             when {
                 uiState.loading -> Unit
                 uiState.items.isEmpty() && !uiState.hasSongs -> EmptyState(
@@ -141,35 +177,86 @@ private fun LibraryContent(
                     title = stringResource(R.string.library_no_result_title),
                     body = stringResource(R.string.library_no_result_body),
                 )
-                else -> SongList(items = uiState.items, onOpenSong = onOpenSong, onSongActions = onSongActions)
+                else -> SongList(
+                    items = uiState.items,
+                    list = list,
+                    controls = controls,
+                    onOpenSong = onOpenSong,
+                    onSongActions = onSongActions,
+                )
             }
         }
-        val floating = Modifier
-            .align(Alignment.BottomEnd)
-            .navigationBarsPadding()
-            .padding(start = GriotSpacing.l, end = GriotSpacing.xl, bottom = NewSongBottom)
-        // The undo bar takes the place of « Nouvelle chanson » while it shows.
-        AnimatedPresence(
-            value = uiState.deleted,
-            enter = motion.barEnter(),
-            exit = motion.barExit(),
-            modifier = floating,
-        ) { deleted ->
-            UndoBar(
-                message = stringResource(R.string.library_deleted, deleted.title),
-                onUndo = onUndoDelete,
-                onDismissed = onUndoDismissed,
-            )
-        }
-        AnimatedVisibility(
-            visible = uiState.deleted == null,
-            enter = motion.barEnter(),
-            exit = motion.barExit(),
-            modifier = floating,
+        FloatingButtons(
+            deleted = uiState.deleted,
+            shown = controls.shown,
+            onNewSong = onNewSong,
+            onUndoDelete = onUndoDelete,
+            onUndoDismissed = onUndoDismissed,
+            onJumpToTop = {
+                controls.show()
+                scope.launch { list.animateScrollToItem(0) }
+            },
+        )
+    }
+}
+
+// The greeting, the title, the search and the filters, which go up out of the screen while the songs scroll down.
+@Composable
+private fun LibraryHeader(
+    uiState: LibraryUiState,
+    shown: Boolean,
+    onQueryChange: (String) -> Unit,
+    onFilterSelected: (LibraryFilter) -> Unit,
+) {
+    TopControls(shown = shown) {
+        Column(
+            modifier = Modifier.padding(bottom = GriotSpacing.l),
+            verticalArrangement = Arrangement.spacedBy(GriotSpacing.l),
         ) {
-            NewSongButton(onClick = onNewSong)
+            Header(authorName = uiState.authorName)
+            SearchField(query = uiState.query, onQueryChange = onQueryChange)
+            Filters(selected = uiState.filter, onFilterSelected = onFilterSelected)
         }
     }
+}
+
+// « Nouvelle chanson », the undo bar of a delete in its place, and « Haut de la liste » while the controls are hidden.
+@Suppress("LongParameterList") // What shows, and one callback per button.
+@Composable
+private fun BoxScope.FloatingButtons(
+    deleted: DeletedSong?,
+    shown: Boolean,
+    onNewSong: () -> Unit,
+    onUndoDelete: () -> Unit,
+    onUndoDismissed: () -> Unit,
+    onJumpToTop: () -> Unit,
+) {
+    val motion = GriotTheme.motion
+    val floating = Modifier
+        .align(Alignment.BottomEnd)
+        .navigationBarsPadding()
+        .padding(start = GriotSpacing.l, end = GriotSpacing.xl, bottom = NewSongBottom)
+    // The undo bar takes the place of « Nouvelle chanson » while it shows.
+    AnimatedPresence(value = deleted, enter = motion.barEnter(), exit = motion.barExit(), modifier = floating) { song ->
+        UndoBar(
+            message = stringResource(R.string.library_deleted, song.title),
+            onUndo = onUndoDelete,
+            onDismissed = onUndoDismissed,
+        )
+    }
+    AnimatedVisibility(
+        visible = deleted == null && shown,
+        enter = motion.barEnter(),
+        exit = motion.barExit(),
+        modifier = floating,
+    ) { NewSongButton(onClick = onNewSong) }
+    // With the bottom bar down, « Haut de la liste » floats at the bottom of the screen.
+    AnimatedVisibility(
+        visible = !shown,
+        enter = motion.barEnter(),
+        exit = motion.barExit(),
+        modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding().padding(GriotSpacing.xl),
+    ) { JumpToTopButton(label = stringResource(R.string.library_jump_to_top), onClick = onJumpToTop) }
 }
 
 @Composable
@@ -232,11 +319,19 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
     )
 }
 
+// The songs; the user's scrolls drive [controls].
 @Composable
-private fun SongList(items: List<LibraryItem>, onOpenSong: (String) -> Unit, onSongActions: (String) -> Unit) {
+private fun SongList(
+    items: List<LibraryItem>,
+    list: LazyListState,
+    controls: ScrollControls,
+    onOpenSong: (String) -> Unit,
+    onSongActions: (String) -> Unit,
+) {
     val motion = GriotTheme.motion
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        state = list,
+        modifier = Modifier.fillMaxSize().nestedScroll(controls.connection),
         contentPadding = PaddingValues(bottom = ListBottom),
         verticalArrangement = Arrangement.spacedBy(GriotSpacing.m - 2.dp),
     ) {
@@ -321,7 +416,10 @@ private fun LibraryScreenPreview() {
     )
     GriotTheme {
         Box(Modifier.background(GriotTheme.palette.background)) {
+            val list = rememberLazyListState()
             LibraryContent(
+                list = list,
+                controls = rememberScrollControls(list),
                 uiState = LibraryUiState(
                     authorName = "Krawist",
                     items = listOf(

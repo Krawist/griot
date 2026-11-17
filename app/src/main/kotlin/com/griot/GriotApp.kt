@@ -28,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.BottomBarTab
+import com.griot.core.design.component.BottomControls
 import com.griot.core.design.component.GriotBottomBar
 import com.griot.core.design.component.backdrop
 import com.griot.core.design.component.screenBackdropShapes
@@ -87,10 +88,12 @@ private fun GriotNavHost(
     // Chosen once: a new start destination would rebuild the graph under the back stack when the onboarding completes.
     val startDestination = remember { if (onboardingCompleted) LibraryGraph else OnboardingGraph }
     val motion = GriotTheme.motion
+    // The library hides the bar while its songs scroll down.
+    var barHidden by remember { mutableStateOf(false) }
     GlassScreen(
         // Drawn once behind every screen, which are transparent: glass cards and the bar blur these shapes.
         background = { Box(Modifier.fillMaxSize().backdrop(screenBackdropShapes())) },
-        overlay = { TabsOverlay(navController = navController) },
+        overlay = { TabsOverlay(navController = navController, hidden = barHidden) },
     ) {
         NavHost(
             navController = navController,
@@ -114,6 +117,7 @@ private fun GriotNavHost(
             libraryGraph(
                 onOpenSong = { songId -> navController.navigateToEditor(songId) },
                 onBack = { navController.popBackStack() },
+                onControlsShownChange = { shown -> barHidden = !shown },
             )
             ideasGraph(onOpenSong = { songId -> navController.navigateToEditor(songId) })
             settingsGraph(
@@ -125,9 +129,9 @@ private fun GriotNavHost(
     }
 }
 
-// The bottom bar, only on the tabs: it goes down during the onboarding and in the editor.
+// The bottom bar, only on the tabs: it goes down during the onboarding, in the editor, and while [hidden] by a tab.
 @Composable
-private fun BoxScope.TabsOverlay(navController: NavHostController) {
+private fun BoxScope.TabsOverlay(navController: NavHostController, hidden: Boolean) {
     val destination = navController.currentBackStackEntryAsState().value?.destination
     val selectedTab = TabRoutes.indexOfFirst { route ->
         destination?.hierarchy?.any { it.hasRoute(route::class) } == true
@@ -139,15 +143,20 @@ private fun BoxScope.TabsOverlay(navController: NavHostController) {
         exit = motion.barExit(),
         modifier = Modifier.align(Alignment.BottomCenter),
     ) { tab ->
-        GriotBottomBar(
-            tabs = listOf(
-                BottomBarTab(icon = DesignR.drawable.ic_nav_songs, label = stringResource(R.string.tab_songs)),
-                BottomBarTab(icon = DesignR.drawable.ic_nav_ideas, label = stringResource(R.string.tab_ideas)),
-                BottomBarTab(icon = DesignR.drawable.ic_nav_settings, label = stringResource(R.string.tab_settings)),
-            ),
-            selectedTab = tab,
-            onTabSelected = { index -> navController.navigateToTab(TabRoutes[index]) },
-        )
+        BottomControls(shown = !hidden) {
+            GriotBottomBar(
+                tabs = listOf(
+                    BottomBarTab(icon = DesignR.drawable.ic_nav_songs, label = stringResource(R.string.tab_songs)),
+                    BottomBarTab(icon = DesignR.drawable.ic_nav_ideas, label = stringResource(R.string.tab_ideas)),
+                    BottomBarTab(
+                        icon = DesignR.drawable.ic_nav_settings,
+                        label = stringResource(R.string.tab_settings),
+                    ),
+                ),
+                selectedTab = tab,
+                onTabSelected = { index -> navController.navigateToTab(TabRoutes[index]) },
+            )
+        }
     }
 }
 

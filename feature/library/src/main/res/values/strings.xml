@@ -12,6 +12,7 @@
     <string name="library_filter_english">English</string>
     <string name="library_filter_french">Français</string>
     <string name="library_greeting">Salut %1$s</string>
+    <string name="library_jump_to_top">Haut de la liste</string>
     <string name="library_language_automatic">Auto</string>
     <string name="library_language_english" translatable="false">EN</string>
     <string name="library_language_french" translatable="false">FR</string>
