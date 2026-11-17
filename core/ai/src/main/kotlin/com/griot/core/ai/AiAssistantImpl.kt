@@ -40,7 +40,8 @@ internal class AiAssistantImpl @Inject constructor(
         val engine = engines.of(request.language)
         val counts = (request.before + request.verse + request.after).map { engine.countSyllables(it).syllables }
         val answer = provider.generate(critiquePrompt(request = request, counts = counts))
-        return AiAnswer(items = answerLines(answer), location = provider.location)
+        val remarks = keepRemarks(remarks = answerLines(answer), request = request)
+        return AiAnswer(items = remarks, location = provider.location)
     }
 
     // The phone's model when it can answer, else the online one.

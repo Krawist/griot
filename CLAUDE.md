@@ -284,8 +284,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   whole section. Checked on the Galaxy S25.
 - [x] **GRI-36** — each rephrased verse shows the words it changes in the AI colour (`changedWords` of the history)
   and « N syllabes · autant que le vers / N de plus / N de moins · garde la rime », all read by Griot, not the model.
+- [x] **GRI-37** — `keepRemarks` drops a remark quoting three words or more that no verse of the section has (a
+  rewritten verse); the critique prompt gives the section's counts from the engine. The online model (GRI-33) is next.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
-  need setup), then GRI-36/37 to check with a real model.
+  need setup).
 
 Update this section at the end of each ticket.
 

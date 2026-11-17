@@ -18,6 +18,9 @@ interface AiAssistant {
      */
     suspend fun rephrase(request: VerseRequest): AiAnswer<CheckedSuggestion>?
 
-    /** At most three short remarks on the verse, its rhythm read from the engine's counts; `null` without a model. */
+    /**
+     * At most three short remarks on the verse, its rhythm read from the engine's counts, those holding a rewritten
+     * verse dropped; `null` without a model.
+     */
     suspend fun critique(request: VerseRequest): AiAnswer<String>?
 }
