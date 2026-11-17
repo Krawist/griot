@@ -170,6 +170,12 @@ class GriotType internal constructor() {
     /** Words stressed inside a text, such as what a suggestion changes. */
     val emphasis = SpanStyle(fontWeight = FontWeight.SemiBold)
 
+    /** The seconds inside « Reculer de 15 secondes ». */
+    val micro = inter(size = 7.5f, weight = FontWeight.Bold).copy(
+        lineHeight = 8.sp,
+        platformStyle = PlatformTextStyle(includeFontPadding = false),
+    )
+
     private val chipSelected = inter(size = 14f, weight = FontWeight.SemiBold)
     private val chipDefault = inter(size = 14f, weight = FontWeight.Medium)
     private val tabSelected = inter(size = 12f, weight = FontWeight.SemiBold)

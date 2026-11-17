@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.ai.AiStatus
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.FileShareSheet
+import com.griot.core.design.component.GriotSwitch
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 
@@ -114,7 +115,7 @@ private fun SyncGroup() {
             sub = stringResource(R.string.settings_auto_sync_sub),
             first = false,
             enabled = false,
-        ) { SettingsSwitch(checked = false, enabled = false, onCheckedChange = {}) }
+        ) { GriotSwitch(checked = false, onCheckedChange = {}, enabled = false) }
     }
 }
 
@@ -139,7 +140,7 @@ private fun AiGroup(onDeviceAi: Boolean, onDeviceStatus: AiStatus, onOnDeviceAiC
             enabled = supported,
             onClick = { onOnDeviceAiChange(!onDeviceAi) },
         ) {
-            SettingsSwitch(checked = supported && onDeviceAi, enabled = supported, onCheckedChange = onOnDeviceAiChange)
+            GriotSwitch(checked = supported && onDeviceAi, onCheckedChange = onOnDeviceAiChange, enabled = supported)
         }
         SettingsRow(
             letter = stringResource(R.string.settings_ai_online_letter),
@@ -148,7 +149,7 @@ private fun AiGroup(onDeviceAi: Boolean, onDeviceStatus: AiStatus, onOnDeviceAiC
             sub = unavailable,
             first = false,
             enabled = false,
-        ) { SettingsSwitch(checked = false, enabled = false, onCheckedChange = {}) }
+        ) { GriotSwitch(checked = false, onCheckedChange = {}, enabled = false) }
     }
 }
 

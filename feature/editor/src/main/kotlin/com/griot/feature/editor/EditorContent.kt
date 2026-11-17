@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.DashedAddButton
 import com.griot.core.design.component.JumpToTopButton
@@ -44,7 +45,7 @@ import kotlinx.coroutines.launch
  * reaching the top or focusing a verse brings it back. The [verseSheet] of the selected verse sits at the bottom, and
  * the lyrics scroll above it.
  */
-@Suppress("LongParameterList") // One callback per change the editor makes, and the menus' items.
+@Suppress("LongParameterList", "LongMethod") // The editor's layers, its menus, its sheet and its player.
 @Composable
 internal fun EditorContent(
     uiState: EditorUiState,
@@ -60,13 +61,17 @@ internal fun EditorContent(
     onFontSizeChange: (Int) -> Unit,
     onShowConflict: () -> Unit,
     onDismissConflicts: () -> Unit,
-    verseSheet: @Composable (Modifier) -> Unit,
+    verseSheet: @Composable (Modifier, Dp) -> Unit,
+    player: (@Composable (Modifier) -> Unit)?,
 ) {
     val list = rememberLazyListState()
     val density = LocalDensity.current
     // The height of the verse's sheet: the lyrics scroll above it.
     var measuredSheet by remember { mutableIntStateOf(0) }
-    val sheetHeight = if (uiState.selection != null) measuredSheet else 0
+    // The height of the beat's player, with its margin: the sheet reaches behind it, the lyrics scroll above it.
+    var measuredPlayer by remember { mutableIntStateOf(0) }
+    val playerHeight = if (player != null) measuredPlayer else 0
+    val sheetHeight = if (uiState.selection != null) maxOf(measuredSheet, playerHeight) else playerHeight
     KeepSelectionVisible(list = list, verseId = uiState.selection?.verseId, hiddenHeight = sheetHeight)
     val controls = rememberScrollControls(list)
     val scope = rememberCoroutineScope()
@@ -108,7 +113,11 @@ internal fun EditorContent(
                 )
             }
         }
-        SelectedVerseSheet(shown = uiState.selection != null, verseSheet = verseSheet) { measuredSheet = it }
+        SelectedVerseSheet(
+            shown = uiState.selection != null,
+            verseSheet = { modifier -> verseSheet(modifier, with(density) { playerHeight.toDp() }) },
+        ) { measuredSheet = it }
+        BeatSlot(player = player, onHeight = { measuredPlayer = it })
         JumpToTop(
             shown = !controls.shown,
             bottom = with(density) { sheetHeight.toDp() },
@@ -213,6 +222,22 @@ private fun EditorLyrics(
             )
         }
     }
+}
+
+// The space under the beat's player.
+private val PlayerMargin = 16.dp
+
+// The beat's player at the bottom; its height, with its margin, goes to [onHeight].
+@Composable
+private fun BoxScope.BeatSlot(player: (@Composable (Modifier) -> Unit)?, onHeight: (Int) -> Unit) {
+    val density = LocalDensity.current
+    player?.invoke(
+        Modifier
+            .align(Alignment.BottomCenter)
+            .onSizeChanged { onHeight(it.height + with(density) { PlayerMargin.roundToPx() }) }
+            .padding(horizontal = GriotSpacing.m)
+            .padding(bottom = PlayerMargin),
+    )
 }
 
 // The sheet of the selected verse, rising from the bottom while one is [shown]; its height goes to [onHeight].

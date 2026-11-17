@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,6 +41,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.theme.GriotSpacing
@@ -71,6 +74,7 @@ internal fun VerseSheet(
     onVersions: () -> Unit,
     onMemo: () -> Unit,
     modifier: Modifier = Modifier,
+    bottomInset: Dp = 0.dp,
 ) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(topStart = SheetRadius, topEnd = SheetRadius)
@@ -96,6 +100,8 @@ internal fun VerseSheet(
         AnimatedVisibility(visible = expanded, enter = expandVertically(), exit = shrinkVertically()) {
             Options(onRhymes = onRhymes, onAiHelp = onAiHelp, onVersions = onVersions, onMemo = onMemo)
         }
+        // The beat's player sits over the bottom of the sheet.
+        Spacer(Modifier.height(bottomInset))
     }
 }
 

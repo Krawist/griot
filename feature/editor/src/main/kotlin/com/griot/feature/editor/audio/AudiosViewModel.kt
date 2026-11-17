@@ -83,14 +83,9 @@ internal class AudiosViewModel @AssistedInject constructor(
         val uri = item.attachment.uri
         if (uiState.value.playing == uri) {
             player.pause()
-        } else if (!player.play(uri)) {
+        } else if (!player.play(uri = uri, title = item.attachment.title)) {
             failed.value = true
         }
-    }
-
-    override fun onCleared() {
-        // Leaving the audios stops what plays: the player under the lyrics comes with GRI-52.
-        player.stop()
     }
 
     fun onFailureShown() {

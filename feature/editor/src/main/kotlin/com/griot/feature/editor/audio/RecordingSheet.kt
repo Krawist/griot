@@ -21,6 +21,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +37,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.GriotSheet
+import com.griot.core.design.component.GriotSwitch
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.R
@@ -57,8 +61,19 @@ internal fun RecordingSheet(songId: String, verseId: String?, onVerse: Boolean, 
         creationCallback = { factory -> factory.create(songId, verseId, onVerse) },
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val beatViewModel = hiltViewModel<BeatViewModel, BeatViewModel.Factory>(
+        key = "beat/$songId",
+        creationCallback = { factory -> factory.create(songId) },
+    )
+    val beat by beatViewModel.uiState.collectAsStateWithLifecycle()
+    var withBeat by rememberSaveable { mutableStateOf(false) }
     val title = memoTitle(uiState.target)
-    val stop = { viewModel.onStop(title = title, onDone = onClosed) }
+    // The beat played for the recording stops with it.
+    val end = {
+        if (withBeat) beatViewModel.onPause()
+        onClosed()
+    }
+    val stop = { viewModel.onStop(title = title, onDone = end) }
     GriotSheet(onDismiss = stop) {
         if (uiState.failed) {
             Text(
@@ -68,14 +83,23 @@ internal fun RecordingSheet(songId: String, verseId: String?, onVerse: Boolean, 
             )
             return@GriotSheet
         }
-        Clock(uiState = uiState)
+        Clock(uiState = uiState, withBeat = withBeat)
         Waveform(levels = uiState.levels)
         Targets(uiState = uiState, onTarget = viewModel::onTarget)
+        if (beat != null) {
+            BeatSwitch(
+                checked = withBeat,
+                onCheckedChange = { on ->
+                    withBeat = on
+                    if (on) beatViewModel.onPlay() else beatViewModel.onPause()
+                },
+            )
+        }
         Controls(
             paused = uiState.paused,
             onCancel = {
                 viewModel.onCancel()
-                onClosed()
+                end()
             },
             onStop = stop,
             onPauseToggle = viewModel::onPauseToggle,
@@ -89,7 +113,7 @@ private fun memoTitle(target: MemoTarget): String = stringResource(R.string.reco
 
 // The red dot with « Enregistrement » or « En pause », and the time.
 @Composable
-private fun Clock(uiState: RecordingUiState) {
+private fun Clock(uiState: RecordingUiState, withBeat: Boolean) {
     val palette = GriotTheme.palette
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -106,7 +130,13 @@ private fun Clock(uiState: RecordingUiState) {
                     .background(if (uiState.paused) palette.muted else palette.accent, CircleShape),
             )
             Text(
-                text = stringResource(if (uiState.paused) R.string.recording_paused else R.string.recording_running),
+                text = stringResource(
+                    when {
+                        uiState.paused -> R.string.recording_paused
+                        withBeat -> R.string.recording_running_beat
+                        else -> R.string.recording_running
+                    },
+                ),
                 style = GriotTheme.type.smallStrong,
                 color = palette.accentText,
             )
@@ -175,6 +205,38 @@ private fun Targets(uiState: RecordingUiState, onTarget: (MemoTarget) -> Unit) {
                 )
             }
         }
+    }
+}
+
+// « Jouer le beat pendant l'enregistrement », and the reminder that headphones keep it out of the memo.
+@Composable
+private fun BeatSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    val palette = GriotTheme.palette
+    val shape = RoundedCornerShape(GriotSpacing.l)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(palette.glass, shape)
+            .border(1.dp, palette.line, shape)
+            .clickable(role = Role.Switch, onClick = { onCheckedChange(!checked) })
+            .padding(horizontal = GriotSpacing.m + 2.dp, vertical = GriotSpacing.m),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m),
+    ) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                text = stringResource(R.string.recording_beat),
+                style = GriotTheme.type.bodyStrong,
+                color = palette.ink,
+            )
+            Text(
+                text = stringResource(R.string.recording_beat_hint),
+                style = GriotTheme.type.caption,
+                color = palette.muted,
+            )
+        }
+        GriotSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 

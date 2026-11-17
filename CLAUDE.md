@@ -368,7 +368,15 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   button is the mockup's headphones (`ic_headphones`) with a 16 dp pill badge. Checked on the S25 (record, pause,
   cancel, keep, play). « Jouer le beat pendant l'enregistrement » comes with GRI-52; recording stops if Griot leaves
   the screen (a foreground service would be needed).
-- [ ] **Next tickets:** GRI-52, GRI-53 (audio); GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
+- [x] **GRI-52** — Media3 1.11.1: one `ExoPlayer` (`PlayerHolder`, audio focus, pauses when headphones are unplugged)
+  behind `AudioPlayer`, with `PlaybackService` (`MediaSessionService`, the session added at once so the notification
+  and the lock screen show it). `CoverReader` reads the embedded artwork and its Palette swatches; `PlayerColors`
+  darkens the background until white keeps 4.5:1, Griot's own colours without artwork (a generated record cover).
+  `BeatPlayer` (`BeatViewModel`: the song's newest readable file) sits alone at the bottom of the editor, the verse
+  sheet reaching behind it; cover and play button follow the player's radius minus its padding; « Reculer de 15
+  secondes » never goes before the start. The recording sheet's « Jouer le beat pendant l'enregistrement »
+  (`GriotSwitch`, now shared by the settings) plays it and stops it with the memo. Checked on the S23.
+- [ ] **Next tickets:** GRI-53 (audio); GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30; GRI-33 (online model: need setup).
 
 Update this section at the end of each ticket.

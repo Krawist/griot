@@ -126,7 +126,12 @@
     <string name="microphone_refused">Le micro est refusé pour Griot. Tu peux l\'autoriser dans les réglages du téléphone, rubrique Autorisations.</string>
     <string name="microphone_settings">Ouvrir les réglages</string>
     <string name="microphone_title">Enregistrer ta voix</string>
+    <string name="player_position">%1$s / %2$s · fichier du téléphone</string>
+    <string name="player_rewind">Reculer de 15 secondes</string>
+    <string name="player_rewind_seconds" translatable="false">15</string>
     <string name="recording_attach">Rattacher à</string>
+    <string name="recording_beat">Jouer le beat pendant l\'enregistrement</string>
+    <string name="recording_beat_hint">Avec des écouteurs, le beat n\'est pas capté</string>
     <string name="recording_cancel">Annuler</string>
     <string name="recording_failed">Le micro n\'est pas disponible : une autre app l\'utilise peut-être.</string>
     <string name="recording_memo_title">Mémo · %1$s</string>
@@ -135,6 +140,7 @@
     <string name="recording_record">Enregistrer sa voix</string>
     <string name="recording_resume">Reprendre</string>
     <string name="recording_running">Enregistrement</string>
+    <string name="recording_running_beat">Enregistrement · beat en fond</string>
     <string name="recording_stop">Arrêter et garder le mémo</string>
     <string name="recording_whole_song">Toute la chanson</string>
     <plurals name="ai_fewer_syllables">

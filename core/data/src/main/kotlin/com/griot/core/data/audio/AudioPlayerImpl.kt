@@ -1,10 +1,13 @@
 package com.griot.core.data.audio
 
 import android.content.Context
-import android.media.MediaPlayer
+import android.content.Intent
 import android.net.Uri
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -18,73 +21,92 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-/** Default implementation for [AudioPlayer], on [MediaPlayer]. */
+/** Default implementation for [AudioPlayer], on Media3's ExoPlayer, with the session of [PlaybackService]. */
 @Singleton
-internal class AudioPlayerImpl @Inject constructor(@param:ApplicationContext private val context: Context) :
-    AudioPlayer {
+internal class AudioPlayerImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val holder: PlayerHolder,
+) : AudioPlayer {
     private val mutableState = MutableStateFlow(PlayerState())
     override val state: StateFlow<PlayerState> = mutableState.asStateFlow()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    private var player: MediaPlayer? = null
     private var ticker: Job? = null
+    private var listening = false
 
-    override fun play(uri: String): Boolean {
-        val current = player
-        if (current != null && mutableState.value.uri == uri) {
-            current.start()
-            mutableState.value = mutableState.value.copy(playing = true)
-            tick()
-            return true
+    private val listener = object : Player.Listener {
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            update()
+            if (isPlaying) tick() else ticker?.cancel()
         }
-        stop()
-        val media = MediaPlayer()
-        return try {
-            media.setDataSource(context, Uri.parse(uri))
-            media.prepare()
-            media.setOnCompletionListener {
-                mutableState.value = mutableState.value.copy(playing = false, positionMillis = 0)
-                it.seekTo(0)
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (playbackState == Player.STATE_ENDED) {
+                holder.player.pause()
+                holder.player.seekTo(0)
             }
-            media.start()
-            player = media
-            mutableState.value = PlayerState(uri = uri, playing = true, durationMillis = media.duration.toLong())
-            tick()
-            true
-        } catch (_: IOException) {
-            media.release()
-            false
-        } catch (_: RuntimeException) {
-            media.release()
-            false
+            update()
         }
+
+        override fun onPlayerError(error: PlaybackException) {
+            stop()
+        }
+    }
+
+    override fun play(uri: String, title: String): Boolean {
+        val player = holder.player
+        if (!listening) {
+            player.addListener(listener)
+            listening = true
+        }
+        if (mutableState.value.uri != uri) {
+            val parsed = runCatching { Uri.parse(uri) }.getOrNull() ?: return false
+            val item = MediaItem.Builder()
+                .setUri(parsed)
+                .setMediaMetadata(MediaMetadata.Builder().setTitle(title).build())
+                .build()
+            player.setMediaItem(item)
+            player.prepare()
+            mutableState.value = PlayerState(uri = uri)
+        }
+        // The session shows on the lock screen while it plays.
+        context.startService(Intent(context, PlaybackService::class.java))
+        player.play()
+        return true
     }
 
     override fun pause() {
-        player?.pause()
-        mutableState.value = mutableState.value.copy(playing = false)
+        holder.player.pause()
     }
 
     override fun rewind(millis: Long) {
-        val media = player ?: return
-        val position = (media.currentPosition - millis).coerceAtLeast(0)
-        media.seekTo(position.toInt())
-        mutableState.value = mutableState.value.copy(positionMillis = position)
+        val player = holder.player
+        player.seekTo((player.currentPosition - millis).coerceAtLeast(0))
+        update()
     }
 
     override fun stop() {
         ticker?.cancel()
-        player?.release()
-        player = null
+        holder.player.stop()
+        holder.player.clearMediaItems()
         mutableState.value = PlayerState()
+    }
+
+    private fun update() {
+        val player = holder.player
+        if (mutableState.value.uri == null) return
+        mutableState.value = mutableState.value.copy(
+            playing = player.isPlaying,
+            positionMillis = player.currentPosition,
+            durationMillis = player.duration.coerceAtLeast(0),
+        )
     }
 
     private fun tick() {
         ticker?.cancel()
         ticker = scope.launch {
             while (isActive) {
-                val media = player ?: break
-                mutableState.value = mutableState.value.copy(positionMillis = media.currentPosition.toLong())
+                update()
                 delay(TICK_MILLIS)
             }
         }

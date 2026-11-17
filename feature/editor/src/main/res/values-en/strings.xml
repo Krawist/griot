@@ -121,7 +121,11 @@
     <string name="microphone_refused">The microphone is refused for Griot. You can allow it in the phone\'s settings, under Permissions.</string>
     <string name="microphone_settings">Open the settings</string>
     <string name="microphone_title">Record your voice</string>
+    <string name="player_position">%1$s / %2$s · file on the phone</string>
+    <string name="player_rewind">Back 15 seconds</string>
     <string name="recording_attach">Attach to</string>
+    <string name="recording_beat">Play the beat while recording</string>
+    <string name="recording_beat_hint">With headphones, the beat is not recorded</string>
     <string name="recording_cancel">Cancel</string>
     <string name="recording_failed">The microphone is not available: another app may be using it.</string>
     <string name="recording_memo_title">Memo · %1$s</string>
@@ -130,6 +134,7 @@
     <string name="recording_record">Record your voice</string>
     <string name="recording_resume">Resume</string>
     <string name="recording_running">Recording</string>
+    <string name="recording_running_beat">Recording · beat playing</string>
     <string name="recording_stop">Stop and keep the memo</string>
     <string name="recording_whole_song">Whole song</string>
     <plurals name="ai_fewer_syllables">

@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -151,27 +149,6 @@ internal fun SettingsValue(value: String, chevron: Boolean = true) {
             )
         }
     }
-}
-
-/** A switch in the sync colour; [enabled] false while its feature is not available. */
-@Composable
-internal fun SettingsSwitch(checked: Boolean, enabled: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    val palette = GriotTheme.palette
-    Switch(
-        checked = checked,
-        onCheckedChange = onCheckedChange,
-        enabled = enabled,
-        colors = SwitchDefaults.colors(
-            checkedTrackColor = palette.sync,
-            checkedThumbColor = palette.onAccent,
-            uncheckedTrackColor = palette.switchOff,
-            uncheckedThumbColor = palette.onAccent,
-            uncheckedBorderColor = palette.switchOff,
-            disabledUncheckedTrackColor = palette.switchOff,
-            disabledUncheckedThumbColor = palette.onAccent,
-            disabledUncheckedBorderColor = palette.switchOff,
-        ),
-    )
 }
 
 /** A small tinted button at the end of a row, such as « Synchroniser ». */

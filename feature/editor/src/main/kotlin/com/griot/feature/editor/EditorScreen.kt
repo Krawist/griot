@@ -30,6 +30,8 @@ import com.griot.core.design.component.TextInputForm
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.ai.AiPanelSheet
 import com.griot.feature.editor.ai.AiTab
+import com.griot.feature.editor.audio.BeatPlayer
+import com.griot.feature.editor.audio.BeatViewModel
 import com.griot.feature.editor.audio.MemoRecorder
 import com.griot.feature.editor.audio.MemoRequest
 
@@ -48,6 +50,11 @@ internal fun EditorScreen(
     ),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val beatViewModel = hiltViewModel<BeatViewModel, BeatViewModel.Factory>(
+        key = "beat/$songId",
+        creationCallback = { factory -> factory.create(songId) },
+    )
+    val beat by beatViewModel.uiState.collectAsStateWithLifecycle()
     // A song deleted meanwhile, on this phone or another one, closes the editor.
     LaunchedEffect(uiState.missing) { if (uiState.missing) onBack() }
     var menu by remember { mutableStateOf<EditorMenu?>(null) }
@@ -85,7 +92,7 @@ internal fun EditorScreen(
         uiState = uiState,
         onBack = onBack,
         verseInput = viewModel.verseInput(onCountLongPress = { countFor = it }),
-        verseSheet = { modifier ->
+        verseSheet = { modifier, bottomInset ->
             uiState.selection?.let { selection ->
                 VerseSheet(
                     selection = selection,
@@ -101,6 +108,17 @@ internal fun EditorScreen(
                     },
                     onVersions = { onOpenHistory(selection.verseId) },
                     onMemo = { memo = MemoRequest(verseId = selection.verseId, onVerse = true) },
+                    modifier = modifier,
+                    bottomInset = bottomInset,
+                )
+            }
+        },
+        player = beat?.let { state ->
+            { modifier ->
+                BeatPlayer(
+                    beat = state,
+                    onPlayToggle = beatViewModel::onPlayToggle,
+                    onRewind = beatViewModel::onRewind,
                     modifier = modifier,
                 )
             }
@@ -364,7 +382,8 @@ private fun EditorScreenPreview() {
                 onFontSizeChange = {},
                 onShowConflict = {},
                 onDismissConflicts = {},
-                verseSheet = {},
+                verseSheet = { _, _ -> },
+                player = null,
             )
         }
     }
