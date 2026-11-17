@@ -661,6 +661,12 @@ Every list with nothing to show follows « Vide »: an illustration in a glass t
 
 Size: S. Dependencies: GRI-11, GRI-56, GRI-57, GRI-65. Mockups: « Vide · premier lancement », « Vide · dossier », « Vide · aucun résultat ».
 
+### GRI-67 · Search a folder
+
+« Tous les textes » and every folder have a search field over their filters (« Chercher dans ces textes… »), on titles and verses as on the home screen (accents, case and apostrophes ignored). It works with the filters: « Voir N textes » counts the songs both keep, and « Effacer les filtres » clears the search too.
+
+Size: S. Dependencies: GRI-57, GRI-65.
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style

@@ -13,6 +13,7 @@ import com.griot.feature.library.RECENT_FOLDER_ID
 import com.griot.feature.library.SongActions
 import com.griot.feature.library.isRecent
 import com.griot.feature.library.isVirtualFolder
+import com.griot.feature.library.matches
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -46,6 +47,9 @@ internal class FolderViewModel @AssistedInject constructor(
 ) : ViewModel() {
     private val filters = MutableStateFlow(FolderFilters())
 
+    // The search typed over the songs.
+    private val query = MutableStateFlow("")
+
     // The filters being chosen in « Filtres et tri »; `null` while it is closed.
     private val draft = MutableStateFlow<FolderFilters?>(null)
     private val selection = MutableStateFlow<Set<String>?>(null)
@@ -61,9 +65,12 @@ internal class FolderViewModel @AssistedInject constructor(
         Triple(library, folders, genres)
     }
 
-    val uiState: StateFlow<FolderUiState> = combine(library, filters, draft, selection, actions.deleted) {
+    // The filters applied and the search, which together choose the songs shown.
+    private val search = combine(filters, query) { filters, query -> filters to query }
+
+    val uiState: StateFlow<FolderUiState> = combine(library, search, draft, selection, actions.deleted) {
             (library, folders, genres),
-            filters,
+            (filters, query),
             draft,
             selection,
             deleted,
@@ -78,6 +85,7 @@ internal class FolderViewModel @AssistedInject constructor(
                 else -> folderId in song.folderIds
             }
         }
+        val found = if (query.isBlank()) inFolder else inFolder.filter { it.matches(query) }
         val present = inFolder.flatMap { it.genreIds }.toSet()
         val archives = folderId == FolderRepository.ARCHIVES_ID
         FolderUiState(
@@ -89,7 +97,7 @@ internal class FolderViewModel @AssistedInject constructor(
             filterSheet = draft?.let {
                 FilterSheetState(
                     draft = it,
-                    count = inFolder.filteredBy(it, archives = archives).size,
+                    count = found.filteredBy(it, archives = archives).size,
                     genres = genres,
                     folders = if (folder ==
                         null
@@ -102,12 +110,13 @@ internal class FolderViewModel @AssistedInject constructor(
                     showArchives = !archives,
                 )
             },
-            items = inFolder.filteredBy(filters, archives = archives)
+            query = query,
+            items = found.filteredBy(filters, archives = archives)
                 .map { items.itemOf(song = it, folders = folders, genres = genres, now = now) },
             moreInArchives = !archives &&
                 !filters.includeArchives &&
-                inFolder.filteredBy(filters.copy(includeArchives = true)).size >
-                inFolder.filteredBy(filters).size,
+                found.filteredBy(filters.copy(includeArchives = true)).size >
+                found.filteredBy(filters).size,
             selecting = selection != null,
             selected = selection.orEmpty(),
             loading = false,
@@ -131,9 +140,15 @@ internal class FolderViewModel @AssistedInject constructor(
         }
     }
 
-    /** « Effacer les filtres »: every song of the folder, the last changed first. */
+    /** Keeps the songs whose title or verses hold [text]. */
+    fun onQueryChange(text: String) {
+        query.value = text
+    }
+
+    /** « Effacer les filtres »: every song of the folder, the last changed first, the search cleared. */
     fun onFiltersCleared() {
         filters.value = FolderFilters()
+        query.value = ""
     }
 
     /** « Chercher dans les archives »: the filters applied, the archived songs included. */

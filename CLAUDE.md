@@ -440,6 +440,8 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (write, import: `libraryGraph(onImport)`), `FolderEmptyState` (`FolderEmptyActions`: clear filters, include archives,
   « Nouvelle chanson ici » `onNewSongHere`, every text), search with no result (clears the query; `SearchField`
   clears its text when the query becomes empty).
+- [x] **GRI-67** — the folder screen has the home's `SearchField` (with a `placeholder`), `FolderViewModel.onQueryChange`
+  (`LibrarySong.matches`) before the filters; `onFiltersCleared` clears it too.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 

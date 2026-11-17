@@ -34,6 +34,7 @@ import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.library.R
+import com.griot.feature.library.SearchField
 import com.griot.feature.library.SongActionsHost
 import com.griot.feature.library.SongCard
 import com.griot.feature.library.SongExportHost
@@ -80,6 +81,11 @@ internal fun FolderScreen(
                 onBack = onBack,
                 onSelecting = viewModel::onSelecting,
                 onSheet = { sheet = it },
+            )
+            SearchField(
+                query = uiState.query,
+                onQueryChange = viewModel::onQueryChange,
+                placeholder = stringResource(R.string.folder_search),
             )
             FolderFilterBar(
                 uiState = uiState,
@@ -151,7 +157,7 @@ private fun SongList(
     val palette = GriotTheme.palette
     val shape = remember { RoundedCornerShape(GriotRadius.card) }
     val list = rememberLazyListState()
-    LaunchedEffect(uiState.filters) { list.scrollToItem(0) }
+    LaunchedEffect(uiState.filters, uiState.query) { list.scrollToItem(0) }
     LazyColumn(
         state = list,
         modifier = Modifier.fillMaxSize(),

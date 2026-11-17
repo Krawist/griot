@@ -13,6 +13,7 @@ import com.griot.feature.library.LibraryItem
  *   for « Récents » (the songs changed in the last 24 hours) or « Favoris »; `null` otherwise.
  * @property songCount How many songs the folder (or the library) holds, before the filters.
  * @property genres The genres its songs have, in the genres' order: the chips after « Tous ».
+ * @property query The search typed, on titles and verses; empty for none.
  * @property filters The filters and the order applied.
  * @property filterCount How many filters are on: the count on the filter button.
  * @property filterSheet « Filtres et tri », while it is open; `null` otherwise.
@@ -29,6 +30,7 @@ internal data class FolderUiState(
     val virtual: String? = null,
     val songCount: Int = 0,
     val genres: List<Genre> = emptyList(),
+    val query: String = "",
     val filters: FolderFilters = FolderFilters(),
     val filterCount: Int = 0,
     val filterSheet: FilterSheetState? = null,

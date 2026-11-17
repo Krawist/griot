@@ -84,11 +84,15 @@ internal fun Header(authorName: String?, onNewSong: () -> Unit) {
     }
 }
 
+/** The search of the songs, on titles and verses, showing [placeholder] while empty. */
 @Composable
-internal fun SearchField(query: String, onQueryChange: (String) -> Unit) {
+internal fun SearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    placeholder: String = stringResource(R.string.library_search),
+) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(GriotRadius.field)
-    val placeholder = stringResource(R.string.library_search)
     val textStyle = GriotTheme.type.body.copy(color = palette.ink)
     // The field keeps what is typed: the query comes back from the songs' search a moment later, and showing that
     // one would move the cursor back while typing. A query that becomes empty, as « Effacer la recherche » does, clears

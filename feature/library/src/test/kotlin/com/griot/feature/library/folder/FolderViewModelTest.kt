@@ -663,6 +663,73 @@ internal class FolderViewModelTest {
     }
 
     @Nested
+    inner class OnQueryChange {
+        @Test
+        fun `should keep the songs whose title or verses hold the search`() = runTest {
+            // given
+            val library = listOf("Les néons" to "Je marche seul", "Mboa" to "On vient d'en bas").mapIndexed {
+                    index,
+                    (title, lyrics),
+                ->
+                LibrarySong(
+                    id = "my-song-id-${index + 1}",
+                    title = title,
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = lyrics,
+                    lyrics = lyrics,
+                )
+            }
+            val viewModel = FolderViewModel(
+                folderId = null,
+                songs = FakeSongRepository(library = library),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            viewModel.onQueryChange("neons")
+
+            // then
+            viewModel.uiState.first { it.query == "neons" }.items.map { it.song.id } shouldContainExactly
+                listOf("my-song-id-1")
+        }
+    }
+
+    @Nested
+    inner class OnFiltersCleared {
+        @Test
+        fun `should clear the search with the filters`() = runTest {
+            // given
+            val viewModel = FolderViewModel(
+                folderId = null,
+                songs = FakeSongRepository(),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onQueryChange("my-query")
+            viewModel.onGenreSelected("rap")
+
+            // when
+            viewModel.onFiltersCleared()
+
+            // then
+            val state = viewModel.uiState.first { !it.loading && it.query.isEmpty() }
+            state.filters shouldBe FolderFilters()
+        }
+    }
+
+    @Nested
     inner class OnToggleSelected {
         @Test
         fun `should select the songs tapped in the multiple selection`() = runTest {
