@@ -1,5 +1,6 @@
 package com.griot.feature.library.folder
 
+import com.griot.core.data.export.FakeMarkdownExporter
 import com.griot.core.data.model.Folder
 import com.griot.core.data.model.FolderColor
 import com.griot.core.data.model.FolderKind
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("LongMethod") // Each test declares the songs it needs.
 internal class FolderViewModelTest {
     private val engines = PhoneticEngines()
     private val clock = Clock.fixed(Instant.parse("2026-11-16T16:00:00Z"), ZoneOffset.UTC)
@@ -104,6 +106,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(folders = listOf(folder)),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -170,6 +173,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(folders = listOf(folder)),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -203,6 +207,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -237,6 +242,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -296,6 +302,7 @@ internal class FolderViewModelTest {
                     },
                 ),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -316,6 +323,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -384,6 +392,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(folders = listOf(folder)),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -453,6 +462,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(folders = listOf(folder)),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -484,6 +494,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(folders = listOf(folder)),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -514,6 +525,7 @@ internal class FolderViewModelTest {
                 folders = FakeFolderRepository(folders = listOf(folder)),
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -547,6 +559,7 @@ internal class FolderViewModelTest {
                 folders = folders,
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -574,6 +587,7 @@ internal class FolderViewModelTest {
                 folders = folders,
                 genres = FakeGenreRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)

@@ -629,6 +629,16 @@ Every sheet choosing one option follows « Feuille de choix unique »: its title
 
 Size: S. Dependencies: GRI-56, GRI-62. Mockups: « Cartes de chanson · pistes », « Feuille de choix unique », « Accueil ».
 
+### GRI-64 · A text's action sheet
+
+A long press on a song opens « Feuille d'actions d'un texte »: its title, then its folders, genres, language and when it changed; « Ouvrir », « Ranger » (« Dossier et genre ») and « Partager » side by side; then « Ajouter aux favoris » (or « Retirer »), « Renommer », « Dupliquer », « Langue » (with the song's language), « Exporter en Markdown » (« .md ») and « Déplacer dans Archives » (or « Sortir des Archives »); and « Supprimer · récupérable 30 jours ».
+
+- « Partager » sends the song's Markdown file to the system's share sheet; « Exporter en Markdown » offers to share or save it.
+- « Langue » opens the song's language sheet, the editor's (GRI-63), on the library's screens too.
+- « Partager »'s icon stays neutral: orange is for the AI.
+
+Size: M. Dependencies: GRI-13, GRI-25, GRI-58, GRI-62, GRI-63. Mockup: « Feuille d'actions d'un texte ».
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style

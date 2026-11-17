@@ -426,6 +426,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (`GriotType.cardVerse`); dots, folders · genres (`LibraryItem.meta`, no time now), language badge. One
   `ChoiceSheet` (`:core:design`, `ChoiceOption`; « Appliquer ») for the app language, preferred AI, theme and song
   language; `ChoiceCard` draws its badge only when given one.
+- [x] **GRI-64** — `SongActionsSheet` (« Feuille d'actions d'un texte »): header (title, folders · genres · language ·
+  « modifié »), « Ouvrir », « Ranger », « Partager » tiles, then favourites, rename, duplicate, « Langue », « Exporter en
+  Markdown », Archives in or out, and « Supprimer · récupérable 30 jours » (`SongAction`, `SongActionsHost`).
+  `SongActions` archives and exports (`SongExport`, `SongExportHost`: `shareFile` straight away, or `FileShareSheet`).
+  The song's language sheet is public in the editor (`SongLanguageSheet`, `SongLanguageViewModel`), shown by `:app`
+  for the library (`libraryGraph(onSongLanguage)`). `GriotSheet` opens whole (`skipPartiallyExpanded`).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 

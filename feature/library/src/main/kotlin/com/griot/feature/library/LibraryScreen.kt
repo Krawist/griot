@@ -77,6 +77,7 @@ internal fun LibraryScreen(
     onOpenSong: (String) -> Unit,
     onOpenFolder: (String?) -> Unit,
     onTidyUp: () -> Unit,
+    onSongLanguage: (String) -> Unit,
     onControlsShownChange: (Boolean) -> Unit,
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
@@ -108,12 +109,15 @@ internal fun LibraryScreen(
         .firstOrNull { it.song.id == actionsFor }
         ?.let { item ->
             SongActionsHost(
-                song = item.song,
+                item = item,
                 actions = viewModel.actions,
+                onOpen = onOpenSong,
                 onFile = { filing = item.song.id },
+                onLanguage = onSongLanguage,
                 onClosed = { actionsFor = null },
             )
         }
+    SongExportHost(actions = viewModel.actions)
     filing?.let { songId -> FilingSheet(songIds = listOf(songId), onDismiss = { filing = null }) }
     if (newFolder) {
         GriotSheet(onDismiss = { newFolder = false }) {

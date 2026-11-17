@@ -3,6 +3,7 @@ package com.griot.feature.library
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.ai.AiAssistant
+import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.organisation.FolderRepository
 import com.griot.core.data.organisation.GenreRepository
 import com.griot.core.data.preferences.UserPreferencesRepository
@@ -33,12 +34,13 @@ internal class LibraryViewModel @Inject constructor(
     private val assistant: AiAssistant,
     preferences: UserPreferencesRepository,
     private val items: LibraryItems,
+    exporter: MarkdownExporter,
     private val clock: Clock,
 ) : ViewModel() {
     private val query = MutableStateFlow("")
 
     /** Rename, duplicate or delete a song long pressed. */
-    val actions = SongActions(songs = songs, scope = viewModelScope)
+    val actions = SongActions(songs = songs, folders = folders, exporter = exporter, scope = viewModelScope)
 
     private val library = combine(songs.observeLibrary(), folders.observeFolders(), genres.observeGenres()) {
             library,

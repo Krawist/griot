@@ -2,6 +2,7 @@ package com.griot.feature.library.folder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.model.FolderColor
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.organisation.FolderRepository
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
  * The songs of the folder [folderId], of « Récents » ([RECENT_FOLDER_ID]: the songs changed in the last 24 hours), of
  * « Favoris » ([FAVORITES_FOLDER_ID]), or of the whole library when it is `null`, with their filters.
  */
+@Suppress("LongParameterList") // The folder, its songs, folders and genres, their cards, and the export.
 @HiltViewModel(assistedFactory = FolderViewModel.Factory::class)
 internal class FolderViewModel @AssistedInject constructor(
     @Assisted private val folderId: String?,
@@ -40,13 +42,14 @@ internal class FolderViewModel @AssistedInject constructor(
     private val folders: FolderRepository,
     genres: GenreRepository,
     private val items: LibraryItems,
+    exporter: MarkdownExporter,
     private val clock: Clock,
 ) : ViewModel() {
     private val filters = MutableStateFlow(FolderFilters())
     private val selection = MutableStateFlow<Set<String>?>(null)
 
     /** Rename, duplicate or delete a song long pressed. */
-    val actions = SongActions(songs = songs, scope = viewModelScope)
+    val actions = SongActions(songs = songs, folders = folders, exporter = exporter, scope = viewModelScope)
 
     private val library = combine(songs.observeLibrary(), folders.observeFolders(), genres.observeGenres()) {
             library,

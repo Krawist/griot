@@ -1,6 +1,7 @@
 package com.griot.feature.library
 
 import com.griot.core.ai.FakeAiAssistant
+import com.griot.core.data.export.FakeMarkdownExporter
 import com.griot.core.data.model.Folder
 import com.griot.core.data.model.FolderColor
 import com.griot.core.data.model.FolderKind
@@ -85,6 +86,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -121,6 +123,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -155,6 +158,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -185,6 +189,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -219,6 +224,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -241,6 +247,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(authorName = " "),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -277,6 +284,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -314,6 +322,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -338,6 +347,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -364,6 +374,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             var opened: String? = null
@@ -391,6 +402,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
 
@@ -416,6 +428,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
 
@@ -441,6 +454,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -468,6 +482,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -496,6 +511,7 @@ internal class LibraryViewModelTest {
                 assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)

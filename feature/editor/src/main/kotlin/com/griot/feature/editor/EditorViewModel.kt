@@ -8,7 +8,6 @@ import com.griot.core.data.idea.IdeaRepository
 import com.griot.core.data.language.SongLanguageDetector
 import com.griot.core.data.model.ExportFile
 import com.griot.core.data.model.SectionKind
-import com.griot.core.data.model.SongDocument
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.VersionSource
@@ -162,24 +161,6 @@ internal class EditorViewModel @AssistedInject constructor(
     /** Hides the notices of every conflict of the song; the versions stay in the history. */
     fun onConflictsDismissed() {
         viewModelScope.launch { versions.dismissSongConflicts(songId) }
-    }
-
-    /**
-     * The author chose a language, or the automatic mode: the language is then detected at once, and kept when the
-     * lyrics are too short to tell.
-     */
-    fun onLanguageSelected(choice: LanguageChoice) {
-        viewModelScope.launch {
-            when (choice) {
-                LanguageChoice.FRENCH -> editor.setLanguage(songId, language = SongLanguage.FRENCH, detected = false)
-                LanguageChoice.ENGLISH -> editor.setLanguage(songId, language = SongLanguage.ENGLISH, detected = false)
-                LanguageChoice.AUTOMATIC -> {
-                    val document = editor.observeDocument(songId).first() ?: return@launch
-                    val language = detector.detect(document.lyrics()) ?: document.language
-                    editor.setLanguage(songId = songId, language = language, detected = true)
-                }
-            }
-        }
     }
 
     fun onShowRhymesChange(show: Boolean) {
@@ -430,9 +411,6 @@ internal class EditorViewModel @AssistedInject constructor(
     }
 
     // The text of the song, each verse once: the repeats show their source's verses.
-    private fun SongDocument.lyrics() =
-        sections.filter { it.repeatOf == null }.flatMap { it.verses }.joinToString(separator = "\n") { it.text }
-
     private fun engineOf(language: SongLanguage) =
         engines.of(if (language == SongLanguage.ENGLISH) PhoneticLanguage.ENGLISH else PhoneticLanguage.FRENCH)
 

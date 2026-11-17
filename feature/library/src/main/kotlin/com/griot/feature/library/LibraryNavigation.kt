@@ -41,12 +41,14 @@ fun NavController.navigateToTrash() = navigate(TrashRoute)
  *
  * @param onOpenSong Opens the song with this id in the editor, a new one included.
  * @param onBack Leaves the trash.
+ * @param onSongLanguage Shows the language sheet of the song with this id, from its long press.
  * @param onControlsShownChange Whether the library's controls show while the songs scroll: the bottom bar follows them.
  */
 fun NavGraphBuilder.libraryGraph(
     navController: NavController,
     onOpenSong: (String) -> Unit,
     onBack: () -> Unit,
+    onSongLanguage: (String) -> Unit,
     onControlsShownChange: (Boolean) -> Unit,
 ) {
     navigation<LibraryGraph>(startDestination = LibraryRoute) {
@@ -55,6 +57,7 @@ fun NavGraphBuilder.libraryGraph(
                 onOpenSong = onOpenSong,
                 onOpenFolder = { folderId -> navController.navigate(FolderRoute(folderId)) },
                 onTidyUp = { navController.navigate(TidyUpRoute) },
+                onSongLanguage = onSongLanguage,
                 onControlsShownChange = onControlsShownChange,
             )
         }
@@ -66,6 +69,7 @@ fun NavGraphBuilder.libraryGraph(
             folderId = entry.toRoute<FolderRoute>().folderId,
             onBack = onBack,
             onOpenSong = onOpenSong,
+            onSongLanguage = onSongLanguage,
         )
     }
 }

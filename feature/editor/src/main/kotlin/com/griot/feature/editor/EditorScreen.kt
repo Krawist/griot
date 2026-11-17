@@ -158,6 +158,7 @@ internal fun EditorScreen(
         onDismissConflicts = viewModel::onConflictsDismissed,
     )
     EditorSheets(
+        songId = songId,
         uiState = uiState,
         viewModel = viewModel,
         sheet = sheet,
@@ -250,6 +251,7 @@ private fun AiPanel(
 @Suppress("LongParameterList") // Which sheets are open, and how each one closes.
 @Composable
 private fun EditorSheets(
+    songId: String,
     uiState: EditorUiState,
     viewModel: EditorViewModel,
     sheet: EditorSheet?,
@@ -263,12 +265,18 @@ private fun EditorSheets(
         onUndo = viewModel::onUndoPaste,
         onDismissed = viewModel::onPasteUndoDismissed,
     )
-    OpenSheet(sheet = sheet, uiState = uiState, viewModel = viewModel, onClosed = onSheetClosed)
+    OpenSheet(songId = songId, sheet = sheet, uiState = uiState, viewModel = viewModel, onClosed = onSheetClosed)
 }
 
 // The sheet [sheet] of the editor, with its export's share sheet.
 @Composable
-private fun OpenSheet(sheet: EditorSheet?, uiState: EditorUiState, viewModel: EditorViewModel, onClosed: () -> Unit) {
+private fun OpenSheet(
+    songId: String,
+    sheet: EditorSheet?,
+    uiState: EditorUiState,
+    viewModel: EditorViewModel,
+    onClosed: () -> Unit,
+) {
     when (sheet) {
         EditorSheet.FONT_SIZE -> FontSizeSheet(
             size = uiState.fontSize,
@@ -283,15 +291,7 @@ private fun OpenSheet(sheet: EditorSheet?, uiState: EditorUiState, viewModel: Ed
             },
             onDismiss = onClosed,
         )
-        EditorSheet.LANGUAGE -> LanguageSheet(
-            choice = uiState.languageChoice,
-            language = uiState.language,
-            onSelect = { choice ->
-                viewModel.onLanguageSelected(choice)
-                onClosed()
-            },
-            onDismiss = onClosed,
-        )
+        EditorSheet.LANGUAGE -> SongLanguageSheet(songId = songId, onDismiss = onClosed)
         EditorSheet.RENAME_SONG -> GriotSheet(onDismiss = onClosed) {
             TextInputForm(
                 value = uiState.title,

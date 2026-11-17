@@ -35,6 +35,7 @@ import com.griot.core.design.component.screenBackdropShapes
 import com.griot.core.design.glass.GlassScreen
 import com.griot.core.design.theme.GriotMotion
 import com.griot.core.design.theme.GriotTheme
+import com.griot.feature.editor.SongLanguageSheet
 import com.griot.feature.editor.editorGraph
 import com.griot.feature.editor.navigateToEditor
 import com.griot.feature.ideas.IdeasGraph
@@ -93,6 +94,8 @@ private fun GriotNavHost(
     var barHidden by remember { mutableStateOf(false) }
     // The song the editor asked to file in « Dossier et genre », a sheet of the library.
     var filing by rememberSaveable { mutableStateOf<String?>(null) }
+    // The song whose language a long press in the library asked for, a sheet of the editor.
+    var language by rememberSaveable { mutableStateOf<String?>(null) }
     GlassScreen(
         // Drawn once behind every screen, which are transparent: glass cards and the bar blur these shapes.
         background = { Box(Modifier.fillMaxSize().backdrop(screenBackdropShapes())) },
@@ -121,6 +124,7 @@ private fun GriotNavHost(
                 navController = navController,
                 onOpenSong = { songId -> navController.navigateToEditor(songId) },
                 onBack = { navController.popBackStack() },
+                onSongLanguage = { songId -> language = songId },
                 onControlsShownChange = { shown -> barHidden = !shown },
             )
             ideasGraph(onOpenSong = { songId -> navController.navigateToEditor(songId) })
@@ -136,6 +140,7 @@ private fun GriotNavHost(
         }
     }
     filing?.let { songId -> FilingSheet(songIds = listOf(songId), onDismiss = { filing = null }) }
+    language?.let { songId -> SongLanguageSheet(songId = songId, onDismiss = { language = null }) }
 }
 
 // The bottom bar, only on the tabs: it goes down during the onboarding, in the editor, and while [hidden] by a tab.

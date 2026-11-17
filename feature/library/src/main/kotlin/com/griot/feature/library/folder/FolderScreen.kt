@@ -37,6 +37,7 @@ import com.griot.feature.library.FAVORITES_FOLDER_ID
 import com.griot.feature.library.R
 import com.griot.feature.library.SongActionsHost
 import com.griot.feature.library.SongCard
+import com.griot.feature.library.SongExportHost
 import com.griot.feature.library.filing.FilingSheet
 import com.griot.feature.library.meta
 
@@ -47,11 +48,13 @@ private val ListBottom = 120.dp
  * The songs of the folder [folderId], or every song (« Tous les textes ») when it is `null`: genre chips and a
  * language filter, the folder's « ⋯ » menu, and « Sélectionner » to file several songs at once.
  */
+@Suppress("LongMethod") // The screen, its sheets, and the export of a song.
 @Composable
 internal fun FolderScreen(
     folderId: String?,
     onBack: () -> Unit,
     onOpenSong: (String) -> Unit,
+    onSongLanguage: (String) -> Unit,
     viewModel: FolderViewModel = hiltViewModel<FolderViewModel, FolderViewModel.Factory>(
         key = folderId ?: "all",
         creationCallback = { factory -> factory.create(folderId) },
@@ -98,12 +101,15 @@ internal fun FolderScreen(
     }
     uiState.items.firstOrNull { it.song.id == actionsFor }?.let { item ->
         SongActionsHost(
-            song = item.song,
+            item = item,
             actions = viewModel.actions,
+            onOpen = onOpenSong,
             onFile = { filing = listOf(item.song.id) },
+            onLanguage = onSongLanguage,
             onClosed = { actionsFor = null },
         )
     }
+    SongExportHost(actions = viewModel.actions)
     filing?.let { songIds ->
         FilingSheet(
             songIds = songIds,
