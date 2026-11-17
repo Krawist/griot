@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,7 @@ private val ContentMaxHeight = 380.dp
  * « Critiquer », and where the answers come from at the bottom. Orange marks every AI element.
  *
  * @param language The language the song is read in, French or English.
+ * @param tab The tab it opens on.
  * @param onInsertWord Inserts a rhyme at the cursor of the verse.
  * @param onUseSuggestion Replaces the verse by a suggestion.
  */
@@ -57,6 +59,7 @@ internal fun AiPanelSheet(
     songId: String,
     verseId: String,
     language: SongLanguage,
+    tab: AiTab,
     onInsertWord: (String) -> Unit,
     onUseSuggestion: (String) -> Unit,
     onDismiss: () -> Unit,
@@ -66,6 +69,8 @@ internal fun AiPanelSheet(
     ),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    // The panel opens on the [tab] asked: « Aide IA » on « Reformuler », « Rimes » on the rhymes.
+    LaunchedEffect(viewModel, tab) { if (tab != AiTab.RHYMES) viewModel.onTabSelected(tab) }
     GriotSheet(onDismiss = onDismiss) {
         PanelHeader(uiState = uiState, onClose = onDismiss)
         PanelTabs(selected = uiState.tab, onSelect = viewModel::onTabSelected)

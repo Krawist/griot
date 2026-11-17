@@ -1,6 +1,7 @@
 package com.griot.feature.editor
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -14,12 +15,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.JumpToTopButton
 import com.griot.core.design.component.ScrollControls
@@ -32,7 +40,8 @@ import kotlinx.coroutines.launch
 /**
  * The editor's layout: the top bar and the lyrics, with the song's and the sections' menus anchored to their « ⋯ »
  * ([menu] is the one open). Scrolling down the song hides the top bar and shows « Haut de la chanson »; scrolling up,
- * reaching the top or focusing a verse brings it back.
+ * reaching the top or focusing a verse brings it back. The [verseSheet] of the selected verse sits at the bottom, and
+ * the lyrics scroll above it.
  */
 @Suppress("LongParameterList") // One callback per change the editor makes, and the menus' items.
 @Composable
@@ -48,8 +57,14 @@ internal fun EditorContent(
     onFontSizeChange: (Int) -> Unit,
     onShowConflict: () -> Unit,
     onDismissConflicts: () -> Unit,
+    verseSheet: @Composable (Modifier) -> Unit,
 ) {
     val list = rememberLazyListState()
+    val density = LocalDensity.current
+    // The height of the verse's sheet: the lyrics scroll above it.
+    var measuredSheet by remember { mutableIntStateOf(0) }
+    val sheetHeight = if (uiState.selection != null) measuredSheet else 0
+    KeepSelectionVisible(list = list, verseId = uiState.selection?.verseId, hiddenHeight = sheetHeight)
     val controls = rememberScrollControls(list)
     val scope = rememberCoroutineScope()
     // A verse taking the focus brings the controls back.
@@ -84,11 +99,14 @@ internal fun EditorContent(
                     sectionMenu = sectionMenu,
                     onAddSection = onAddSection,
                     onFontSizeChange = onFontSizeChange,
+                    bottom = with(density) { sheetHeight.toDp() },
                 )
             }
         }
+        SelectedVerseSheet(shown = uiState.selection != null, verseSheet = verseSheet) { measuredSheet = it }
         JumpToTop(
             shown = !controls.shown,
+            bottom = with(density) { sheetHeight.toDp() },
             onClick = {
                 controls.show()
                 scope.launch { list.animateScrollToItem(0) }
@@ -146,6 +164,7 @@ private fun EditorLyrics(
     sectionMenu: @Composable ColumnScope.(EditorSection) -> Unit,
     onAddSection: () -> Unit,
     onFontSizeChange: (Int) -> Unit,
+    bottom: Dp,
 ) {
     LazyColumn(
         state = list,
@@ -157,7 +176,7 @@ private fun EditorLyrics(
             start = GriotSpacing.l,
             top = GriotSpacing.xl,
             end = GriotSpacing.l,
-            bottom = GriotSpacing.xxl * 3,
+            bottom = GriotSpacing.xxl * 3 + bottom,
         ),
     ) {
         uiState.sections.forEachIndexed { index, section ->
@@ -168,6 +187,7 @@ private fun EditorLyrics(
                 fontSize = uiState.fontSize,
                 showRhymes = uiState.showRhymes,
                 focus = uiState.focus,
+                selected = uiState.selection?.verseId,
                 verseInput = verseInput,
                 menuOpen = menu == sectionMenuOf,
                 onActions = { onMenu(sectionMenuOf) },
@@ -181,14 +201,49 @@ private fun EditorLyrics(
     }
 }
 
-// « Haut de la chanson », while the top bar is hidden.
+// The sheet of the selected verse, rising from the bottom while one is [shown]; its height goes to [onHeight].
 @Composable
-private fun BoxScope.JumpToTop(shown: Boolean, onClick: () -> Unit) {
+private fun BoxScope.SelectedVerseSheet(
+    shown: Boolean,
+    verseSheet: @Composable (Modifier) -> Unit,
+    onHeight: (Int) -> Unit,
+) {
+    AnimatedVisibility(
+        visible = shown,
+        enter = GriotTheme.motion.barEnter(),
+        exit = GriotTheme.motion.barExit(),
+        modifier = Modifier.align(Alignment.BottomCenter),
+    ) { verseSheet(Modifier.onSizeChanged { onHeight(it.height) }) }
+}
+
+// « Haut de la chanson », while the top bar is hidden, above the verse's sheet.
+@Composable
+private fun BoxScope.JumpToTop(shown: Boolean, bottom: Dp, onClick: () -> Unit) {
     val motion = GriotTheme.motion
     AnimatedVisibility(
         visible = shown,
         enter = motion.barEnter(),
         exit = motion.barExit(),
-        modifier = Modifier.align(Alignment.BottomEnd).padding(GriotSpacing.l),
+        modifier = Modifier.align(Alignment.BottomEnd).padding(GriotSpacing.l).padding(bottom = bottom),
     ) { JumpToTopButton(label = stringResource(R.string.editor_jump_to_top), onClick = onClick) }
+}
+
+// Scrolls the list so that the verse [verseId], once selected, is not hidden by the last [hiddenHeight] pixels (the
+// verse's sheet) nor cut at the top.
+@Composable
+private fun KeepSelectionVisible(list: LazyListState, verseId: String?, hiddenHeight: Int) {
+    val margin = with(LocalDensity.current) { GriotSpacing.l.roundToPx() }
+    LaunchedEffect(verseId, hiddenHeight) {
+        if (verseId == null) return@LaunchedEffect
+        val info = list.layoutInfo
+        val item = info.visibleItemsInfo.firstOrNull { (it.key as? String)?.endsWith("/$verseId") == true }
+            ?: return@LaunchedEffect
+        val bottom = info.viewportEndOffset - hiddenHeight - margin
+        val below = item.offset + item.size - bottom
+        val above = info.viewportStartOffset - item.offset
+        when {
+            below > 0 -> list.animateScrollBy(below.toFloat())
+            above > 0 -> list.animateScrollBy(-above.toFloat())
+        }
+    }
 }

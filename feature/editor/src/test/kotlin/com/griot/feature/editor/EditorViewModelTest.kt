@@ -1140,6 +1140,192 @@ internal class EditorViewModelTest {
     }
 
     @Nested
+    inner class Selection {
+        @Test
+        fun `should select the verse focused, with its place and its count`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.CHORUS,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "Je marche seul dans la ville"),
+                                SongVerse(id = "my-verse-id-2", text = ""),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            viewModel.onVerseFocused("my-verse-id-1")
+
+            // then
+            viewModel.uiState.first { it.selection != null }.selection shouldBe VerseSelection(
+                verseId = "my-verse-id-1",
+                section = SectionLabel(kind = SectionKind.CHORUS, number = null, name = null),
+                number = 1,
+                syllables = 7,
+                letter = 0,
+            )
+        }
+
+        @Test
+        fun `should select a verse without text, without a count`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.CHORUS,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "Je marche seul dans la ville"),
+                                SongVerse(id = "my-verse-id-2", text = ""),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            viewModel.onVerseSelected("my-verse-id-2")
+
+            // then
+            viewModel.uiState.first { it.selection != null }.selection?.let { it.number to it.syllables } shouldBe
+                (2 to null)
+        }
+
+        @Test
+        fun `should leave the selection`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.CHORUS,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "Je marche seul dans la ville"),
+                                SongVerse(id = "my-verse-id-2", text = ""),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onVerseSelected("my-verse-id-1")
+            viewModel.uiState.first { it.selection != null }
+
+            // when
+            viewModel.onVerseSelected(null)
+
+            // then
+            viewModel.uiState.first { !it.loading }.selection.shouldBeNull()
+        }
+
+        @Test
+        fun `should leave the selection of a verse no longer in the song`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.CHORUS,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "Je marche seul dans la ville"),
+                                SongVerse(id = "my-verse-id-2", text = ""),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onVerseSelected("my-verse-id-1")
+            viewModel.uiState.first { it.selection != null }
+
+            // when
+            editor.document.value = editor.document.value?.copy(sections = emptyList())
+
+            // then
+            viewModel.uiState.first { it.sections.isEmpty() }.selection.shouldBeNull()
+        }
+    }
+
+    @Nested
     inner class Sounds {
         @Test
         fun `should give each section its rhymes in the song's language`() = runTest {

@@ -69,7 +69,16 @@
     <string name="editor_repeat_tag">Reprise</string>
     <string name="editor_section_actions">Options de %1$s</string>
     <string name="editor_title_placeholder">Sans titre</string>
+    <string name="editor_verse_ai">Aide IA</string>
+    <string name="editor_verse_collapse">Réduire les options du vers</string>
+    <string name="editor_verse_collapse_hint">Réduire</string>
+    <string name="editor_verse_expand">Afficher les options du vers</string>
+    <string name="editor_verse_hint">Glisse pour les options</string>
+    <string name="editor_verse_place">%1$s · vers %2$d</string>
     <string name="editor_verse_placeholder">Écris un vers…</string>
+    <string name="editor_verse_rhymes">Rimes</string>
+    <string name="editor_verse_summary">%1$s · %2$s</string>
+    <string name="editor_verse_versions">Versions du vers</string>
     <string name="history_back">Retour à la chanson</string>
     <string name="history_badge_ai">Suggestion IA</string>
     <string name="history_badge_conflict">Autre appareil</string>
@@ -112,5 +121,10 @@
         <item quantity="one">%1$d section créée</item>
         <item quantity="many">%1$d sections créées</item>
         <item quantity="other">%1$d sections créées</item>
+    </plurals>
+    <plurals name="editor_syllables">
+        <item quantity="one">%1$d syllabe</item>
+        <item quantity="many">%1$d syllabes</item>
+        <item quantity="other">%1$d syllabes</item>
     </plurals>
 </resources>

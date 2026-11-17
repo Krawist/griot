@@ -303,6 +303,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   Ajouter une section en dessous (`addSection(after)`), Renommer, Répéter, Monter, Descendre (kept, not in the
   ticket), Fusionner, Supprimer (confirmation sheet). Microphone and audios in the top bar come with GRI-50/51, the
   sync state under the title with GRI-27; « Aide IA » comes back in the verse sheet (GRI-49).
+- [x] **GRI-49** — a verse is selected by focusing its text or tapping its letter or count (which drops the focus,
+  no keyboard): `EditorViewModel.onVerseSelected`, `EditorUiState.selection` (`VerseSelection`: section, place, count,
+  letter). The row is circled (`palette.selection`, magenta line at 45 %). `VerseSheet` rises at the bottom: handle and
+  « Couplet 1 · vers 2 · 9 syllabes »; a tap on the handle or a drag up shows « Rimes », « Aide IA » (the AI panel on
+  « Reformuler », `AiPanelSheet(tab)`) and « Versions du vers »; « Mémo sur ce vers » comes with GRI-50. Back closes
+  the options, then leaves the selection. The lyrics scroll above the sheet (`KeepSelectionVisible`).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 

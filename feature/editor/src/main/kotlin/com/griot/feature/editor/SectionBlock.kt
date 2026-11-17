@@ -2,6 +2,8 @@ package com.griot.feature.editor
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -22,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -56,6 +60,7 @@ internal fun LazyListScope.sectionItems(
     fontSize: Int,
     showRhymes: Boolean,
     focus: VerseFocus?,
+    selected: String?,
     verseInput: VerseInput,
     menuOpen: Boolean,
     onActions: () -> Unit,
@@ -83,6 +88,7 @@ internal fun LazyListScope.sectionItems(
             showRhymes = showRhymes,
             // Only the source's field takes the focus.
             focus = focus?.takeIf { it.verseId == verse.id && section.section.repeatOf == null },
+            selected = verse.id == selected,
             input = verseInput,
             modifier = Modifier.animateItem().padding(top = GriotSpacing.xs),
         )
@@ -140,16 +146,26 @@ private fun VerseRow(
     fontSize: Int,
     showRhymes: Boolean,
     focus: VerseFocus?,
+    selected: Boolean,
     input: VerseInput,
     modifier: Modifier = Modifier,
 ) {
     val marginTop = (fontSize * TOP_RATIO).dp
-    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+    val focusManager = LocalFocusManager.current
+    // The letter and the count select the verse without the keyboard: the field gives up its focus.
+    val select = {
+        focusManager.clearFocus()
+        input.onSelect(verse.id)
+    }
+    Row(modifier = modifier.fillMaxWidth().selected(selected), verticalAlignment = Alignment.Top) {
         VerseLetter(
             sound = sound,
             showRhymes = showRhymes,
             style = GriotTheme.type.rhymeLetter(lyricsSize = fontSize),
-            modifier = Modifier.width(MarginWidth).padding(top = marginTop),
+            modifier = Modifier
+                .width(MarginWidth)
+                .clickable(interactionSource = null, indication = null, onClick = select)
+                .padding(top = marginTop),
         )
         SyncedTextField(
             text = verse.text,
@@ -168,6 +184,7 @@ private fun VerseRow(
         )
         VerseCount(
             sound = sound.takeIf { verse.text.isNotBlank() },
+            onClick = select,
             onLongPress = { input.onCountLongPress(verse.id) },
             style = GriotTheme.type.syllableCount(lyricsSize = fontSize),
             modifier = Modifier.width(MarginWidth).padding(top = marginTop),
@@ -215,10 +232,21 @@ private fun VerseLetter(sound: VerseSound?, showRhymes: Boolean, style: TextStyl
 // The syllables in the margin, rolling to their new count, lighter when a word was guessed: a long press then offers
 // to correct it.
 @Composable
-private fun VerseCount(sound: VerseSound?, onLongPress: () -> Unit, style: TextStyle, modifier: Modifier) {
+private fun VerseCount(
+    sound: VerseSound?,
+    onClick: () -> Unit,
+    onLongPress: () -> Unit,
+    style: TextStyle,
+    modifier: Modifier,
+) {
     val palette = GriotTheme.palette
     val guessed = sound?.count?.guessedWords.orEmpty().isNotEmpty()
-    val press = if (guessed) Modifier.combinedClickable(onClick = {}, onLongClick = onLongPress) else Modifier
+    val press = Modifier.combinedClickable(
+        interactionSource = null,
+        indication = null,
+        onClick = onClick,
+        onLongClick = onLongPress.takeIf { guessed },
+    )
     Box(modifier = modifier.then(press), contentAlignment = Alignment.TopEnd) {
         if (sound != null) {
             RollingNumber(value = sound.count.syllables) { syllables ->
@@ -237,6 +265,28 @@ private fun VerseCount(sound: VerseSound?, onLongPress: () -> Unit, style: TextS
         }
     }
 }
+
+// The selected verse is circled, its letter and count included: a magenta outline on a light magenta fill.
+@Composable
+private fun Modifier.selected(selected: Boolean): Modifier {
+    val palette = GriotTheme.palette
+    val shape = RoundedCornerShape(SelectionRadius)
+    val fill by animateColorAsState(
+        targetValue = if (selected) palette.selection else Color.Transparent,
+        animationSpec = GriotTheme.motion.colorChange(),
+        label = "selection fill",
+    )
+    val line by animateColorAsState(
+        targetValue = if (selected) palette.accent.copy(alpha = SELECTION_LINE_ALPHA) else Color.Transparent,
+        animationSpec = GriotTheme.motion.colorChange(),
+        label = "selection line",
+    )
+    return background(fill, shape).border(SelectionLine, line, shape).padding(horizontal = GriotSpacing.xs)
+}
+
+private val SelectionRadius = 12.dp
+private val SelectionLine = 1.5.dp
+private const val SELECTION_LINE_ALPHA = 0.45f
 
 // The margins' text starts lower, on the lyrics' first line.
 private const val TOP_RATIO = 0.55f

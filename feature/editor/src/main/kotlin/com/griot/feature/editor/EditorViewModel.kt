@@ -71,7 +71,7 @@ internal class EditorViewModel @AssistedInject constructor(
     private val export = MutableStateFlow<ExportFile?>(null)
 
     // The verse being edited, whose history « Versions » opens.
-    private val editedVerse = MutableStateFlow<String?>(null)
+    private val selectedVerse = MutableStateFlow<String?>(null)
 
     // The verse and the place of its cursor, where a rhyme of the AI panel goes.
     private var cursor: Pair<String, Int>? = null
@@ -114,7 +114,6 @@ internal class EditorViewModel @AssistedInject constructor(
         .combine(focus) { state, focus -> state.copy(focus = focus) }
         .combine(preferences.editorFontSize) { state, size -> state.copy(fontSize = size) }
         .combine(pasteUndo) { state, undo -> state.copy(pasteUndo = undo) }
-        .combine(editedVerse) { state, verse -> state.copy(editedVerse = verse) }
         .combine(export) { state, file -> state.copy(export = file) }
         .combine(ideas.observeSongIdeas(songId)) { state, linked -> state.copy(ideas = linked) }
         .combine(versions.observeConflicts(songId)) { state, verses -> state.copy(conflicts = verses) }
@@ -128,6 +127,7 @@ internal class EditorViewModel @AssistedInject constructor(
             state
         }
         .map { state -> state.withSounds() }
+        .combine(selectedVerse) { state, verse -> state.copy(selection = verse?.let { state.selectionOf(it) }) }
         // The phonetics read their dictionaries and count every verse: never on the main thread.
         .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), EditorUiState())
@@ -254,9 +254,14 @@ internal class EditorViewModel @AssistedInject constructor(
         export.value = null
     }
 
-    /** The verse [verseId] took the focus, or no verse has it when `null`. */
-    fun onVerseFocused(verseId: String?) {
-        editedVerse.value = verseId
+    /** The verse [verseId] took the focus: it is the selected one. */
+    fun onVerseFocused(verseId: String) {
+        selectedVerse.value = verseId
+    }
+
+    /** The author selected the verse [verseId] without editing it, or left the selection when `null`. */
+    fun onVerseSelected(verseId: String?) {
+        selectedVerse.value = verseId
     }
 
     /** The cursor of the verse [verseId] is at [cursor]: a rhyme chosen in the AI panel goes there. */
@@ -404,6 +409,21 @@ internal class EditorViewModel @AssistedInject constructor(
         viewModelScope.launch {
             corrections.correct(language = state.language, word = word, syllables = corrected)
         }
+    }
+
+    // The selected verse [verseId] in the first section holding it (a repeat shows its source's verses); `null` when
+    // it is no longer in the song.
+    private fun EditorUiState.selectionOf(verseId: String): VerseSelection? {
+        val section = sections.firstOrNull { section -> section.section.verses.any { it.id == verseId } } ?: return null
+        val index = section.section.verses.indexOfFirst { it.id == verseId }
+        val sound = section.sounds.verses[verseId]
+        return VerseSelection(
+            verseId = verseId,
+            section = section.label,
+            number = index + 1,
+            syllables = sound?.count?.syllables?.takeIf { section.section.verses[index].text.isNotBlank() },
+            letter = sound?.letter?.takeIf { showRhymes },
+        )
     }
 
     // The text of the song, each verse once: the repeats show their source's verses.

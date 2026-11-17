@@ -1,6 +1,7 @@
 package com.griot.feature.editor
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -49,6 +51,7 @@ import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.ai.AiPanelSheet
+import com.griot.feature.editor.ai.AiTab
 
 private val AddSectionHeight = 48.dp
 private val DashWidth = 1.5.dp
@@ -74,6 +77,20 @@ internal fun EditorScreen(
     var sheetSection by rememberSaveable { mutableStateOf<String?>(null) }
     var countFor by rememberSaveable { mutableStateOf<String?>(null) }
     var aiFor by rememberSaveable { mutableStateOf<String?>(null) }
+    var aiTab by rememberSaveable { mutableStateOf(AiTab.RHYMES) }
+    var verseSheetOpen by rememberSaveable { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+    // Another verse selected shows its sheet closed.
+    LaunchedEffect(uiState.selection?.verseId) { verseSheetOpen = false }
+    // Back closes the verse's options, then leaves the selection.
+    BackHandler(enabled = uiState.selection != null) {
+        if (verseSheetOpen) {
+            verseSheetOpen = false
+        } else {
+            focusManager.clearFocus()
+            viewModel.onVerseSelected(null)
+        }
+    }
     // An item of a menu closes it, and opens its sheet when it has one.
     val openSheet = { next: EditorSheet ->
         menu = null
@@ -88,6 +105,25 @@ internal fun EditorScreen(
         uiState = uiState,
         onBack = onBack,
         verseInput = viewModel.verseInput(onCountLongPress = { countFor = it }),
+        verseSheet = { modifier ->
+            uiState.selection?.let { selection ->
+                VerseSheet(
+                    selection = selection,
+                    expanded = verseSheetOpen,
+                    onExpandedChange = { verseSheetOpen = it },
+                    onRhymes = {
+                        aiTab = AiTab.RHYMES
+                        aiFor = selection.verseId
+                    },
+                    onAiHelp = {
+                        aiTab = AiTab.REPHRASE
+                        aiFor = selection.verseId
+                    },
+                    onVersions = { onOpenHistory(selection.verseId) },
+                    modifier = modifier,
+                )
+            }
+        },
         menu = menu,
         onMenu = { menu = it },
         songMenu = {
@@ -129,7 +165,14 @@ internal fun EditorScreen(
             sheetSection = null
         },
     )
-    AiPanel(songId = songId, verseId = aiFor, uiState = uiState, viewModel = viewModel, onClosed = { aiFor = null })
+    AiPanel(
+        songId = songId,
+        verseId = aiFor,
+        tab = aiTab,
+        uiState = uiState,
+        viewModel = viewModel,
+        onClosed = { aiFor = null },
+    )
 }
 
 // How the verses are typed, into [EditorViewModel]; a long press on a count asks to correct it.
@@ -140,6 +183,7 @@ private fun EditorViewModel.verseInput(onCountLongPress: (String) -> Unit) = Ver
     onFocusHandled = ::onFocusHandled,
     onCountLongPress = onCountLongPress,
     onFocused = ::onVerseFocused,
+    onSelect = ::onVerseSelected,
     onCursor = ::onVerseCursor,
 )
 
@@ -149,11 +193,13 @@ private fun onConflict(viewModel: EditorViewModel, verseId: String, onOpenHistor
     onOpenHistory(verseId)
 }
 
-// The AI panel of the verse [verseId], while it is set; a rhyme or a suggestion chosen closes it.
+// The AI panel of the verse [verseId] on [tab], while it is set; a rhyme or a suggestion chosen closes it.
+@Suppress("LongParameterList") // The verse, its tab, the song, and how the panel closes.
 @Composable
 private fun AiPanel(
     songId: String,
     verseId: String?,
+    tab: AiTab,
     uiState: EditorUiState,
     viewModel: EditorViewModel,
     onClosed: () -> Unit,
@@ -163,6 +209,7 @@ private fun AiPanel(
         songId = songId,
         verseId = verseId,
         language = uiState.language,
+        tab = tab,
         onInsertWord = { word ->
             onClosed()
             viewModel.onInsertWord(verseId = verseId, word = word)
@@ -312,6 +359,7 @@ private val PreviewVerseInput = VerseInput(
     onFocusHandled = {},
     onCountLongPress = {},
     onFocused = {},
+    onSelect = {},
     onCursor = { _, _ -> },
 )
 
@@ -368,6 +416,7 @@ private fun EditorScreenPreview() {
                 onFontSizeChange = {},
                 onShowConflict = {},
                 onDismissConflicts = {},
+                verseSheet = {},
             )
         }
     }
