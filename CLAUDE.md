@@ -399,6 +399,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   other one when it cannot answer or fails, and fails only when both do. The choice opens only when both AIs are usable (allowed, and the
   phone's model or a key there); otherwise the row shows the only one, or « Aucune », dimmed.
   A proxy is still needed before any public release.
+- [x] **GRI-60** — rhymes across French and English: rhyme keys no longer carry the language; the French engine's are
+  its Lexique ending, the English engine's its ARPAbet ending written in Lexique's alphabet (`inLexique`,
+  `EnglishSounds.kt`: each English sound as the nearest French one, an IPA letter for those French has not). A close
+  rhyme shows like any other. Guessed English words keep `en~` + letters. « Rimes » follows the last word's language.
+  `reference/cross-rhymes.tsv` (19 pairs) is checked by `ReferenceRhymesTest`; only 18 of 32 176 English endings
+  share a key (a diphthong and its vowel + glide). Checked on the S25 (« encore / vide / before / need » → ABAB).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 

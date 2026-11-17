@@ -16,13 +16,12 @@ import com.griot.core.phonetics.wordsOf
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
-// Rhyme keys of this engine start with it, or with the second one for a guessed word.
-private const val KEY_PREFIX = "en:"
+// The rhyme key of a guessed word starts with it: its ending is letters, not sounds, so it only rhymes with guesses.
 private const val GUESSED_KEY_PREFIX = "en~"
 
 /**
  * The English engine, on the CMU Pronouncing Dictionary. Syllables are its vowel phonemes; a rhyme goes from the last
- * stressed vowel to the end of the word.
+ * stressed vowel to the end of the word, its key written in Lexique's alphabet so that it can rhyme with French.
  *
  * @param other The French engine, for French words of an English song.
  */
@@ -89,7 +88,7 @@ class EnglishEngine internal constructor(
             other()?.rhyme(verse)
         } else {
             Rhyme(
-                key = (if (analysis.known) KEY_PREFIX else GUESSED_KEY_PREFIX) + analysis.rhyme,
+                key = if (analysis.heard) inLexique(analysis.rhyme.split(' ')) else GUESSED_KEY_PREFIX + analysis.rhyme,
                 start = last.start + rhymeStart(last.text, analysis.silent),
                 end = last.end,
             )
@@ -98,14 +97,18 @@ class EnglishEngine internal constructor(
 
     // The CMU dictionary holds many names: only the words of its frequency list are suggested.
     override fun rhymingWords(verse: String): List<RhymingWord> {
-        val key = rhyme(verse)?.key
+        val last = wordsOf(verse).lastOrNull() ?: return emptyList()
+        val analysis = analyse(last.text)
         return when {
-            key == null || key.startsWith(GUESSED_KEY_PREFIX) -> emptyList()
             // A French word ends the verse: its rhymes are the French engine's.
-            !key.startsWith(KEY_PREFIX) -> other()?.rhymingWords(verse).orEmpty()
-            else -> rhymesOf(ending = key.removePrefix(KEY_PREFIX), own = wordsOf(verse).last().text)
+            analysis.language == PhoneticLanguage.FRENCH -> other()?.rhymingWords(verse).orEmpty()
+            analysis.heard -> rhymesOf(ending = analysis.rhyme, own = last.text)
+            else -> emptyList()
         }
     }
+
+    // Whether the word's sounds are known, not guessed from its letters.
+    private val Analysis.heard get() = known && phonemes.isNotEmpty()
 
     // The words of the frequency list ending with the sound [ending], but the verse's own word.
     private fun rhymesOf(ending: String, own: String): List<RhymingWord> {

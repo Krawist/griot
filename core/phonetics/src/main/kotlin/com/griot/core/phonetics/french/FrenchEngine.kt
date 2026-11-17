@@ -18,9 +18,6 @@ import java.util.concurrent.ConcurrentHashMap
 // Vowels of Lexique's notation; j, w and 8 are semi-vowels, not syllables.
 private const val VOWELS = "aieEoOuy2951@§°"
 
-// Rhyme keys of this engine start with it.
-private const val KEY_PREFIX = "fr:"
-
 // The rhyming ending of a sound: from its last vowel to the end.
 private fun ending(phonemes: String): String {
     val vowel = phonemes.indexOfLast { it in VOWELS }
@@ -116,7 +113,7 @@ class FrenchEngine internal constructor(
             other()?.rhyme(verse)
         } else {
             Rhyme(
-                key = "$KEY_PREFIX$ending",
+                key = ending,
                 start = last.start + rhymeStart(last.text, analysis.silent),
                 end = last.end,
             )
@@ -124,12 +121,12 @@ class FrenchEngine internal constructor(
     }
 
     override fun rhymingWords(verse: String): List<RhymingWord> {
-        val key = rhyme(verse)?.key
-        return when {
-            key == null -> emptyList()
+        val last = wordsOf(verse).lastOrNull() ?: return emptyList()
+        val analysis = analyse(last.text)
+        return when (analysis.language) {
             // An English word ends the verse: its rhymes are the English engine's.
-            !key.startsWith(KEY_PREFIX) -> other()?.rhymingWords(verse).orEmpty()
-            else -> rhymesOf(ending = key.removePrefix(KEY_PREFIX), own = wordsOf(verse).last().text)
+            PhoneticLanguage.ENGLISH -> other()?.rhymingWords(verse).orEmpty()
+            PhoneticLanguage.FRENCH -> rhymesOf(ending = ending(analysis.phonemes), own = last.text)
         }
     }
 

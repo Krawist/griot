@@ -587,6 +587,18 @@ So that the library never turns into a pile, Griot sometimes proposes a tidy-up:
 
 Size: L. Dependencies: GRI-31, GRI-55, GRI-56, GRI-58. Mockup: « Propositions de rangement ».
 
+### GRI-60 · Rhyme across French and English
+
+A French verse and an English verse rhyme when their endings sound alike: « encore » and « before », « vide » and « need », « dos » and « go ». The rhyme letters and colours of a section that mixes both languages show them like any other rhyme.
+
+- The engines keep their dictionaries; their rhyme endings are written in one alphabet, Lexique's, the English sounds mapped to their nearest French sound (« r », « o » for « go », « é » for « day »). English sounds French has not (« love », « think ») and French sounds English has not (« an », « on », « lune ») only rhyme within their language.
+- Two sounds distinct within a language stay distinct: no rhyme of a language changes (an English diphthong and the same vowel followed by its glide, « OY » and « AO Y », sound alike and share a key).
+- A close rhyme between the two languages is shown as a rhyme, like an exact one.
+- The « Rimes » tab still offers the words of the language of the verse's last word.
+- A reference set of cross-language pairs, rhyming and not, is checked by tests.
+
+Size: M. Dependencies: GRI-21, GRI-23.
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style
