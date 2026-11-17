@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /** Default implementation for [SongRepository], on the Room database. */
-// One function per change of the library: create, import, detect, rename, duplicate, delete, restore, purge.
+// One function per change of the library: create, import, detect, file, rename, duplicate, delete, restore, purge.
 @Suppress("TooManyFunctions")
 @Singleton
 internal class SongRepositoryImpl @Inject constructor(
@@ -104,6 +104,14 @@ internal class SongRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun setFolder(ids: List<String>, folderId: String?) {
+        songDao.setFolder(ids = ids, folderId = folderId, at = Instant.now(clock))
+    }
+
+    override suspend fun setGenre(ids: List<String>, genreId: String?) {
+        songDao.setGenre(ids = ids, genreId = genreId, at = Instant.now(clock))
+    }
+
     override suspend fun renameSong(id: String, title: String) {
         songDao.rename(id = id, title = title, at = Instant.now(clock))
     }
@@ -151,6 +159,8 @@ internal class SongRepositoryImpl @Inject constructor(
         title = title,
         language = language,
         status = status,
+        folderId = folderId,
+        genreId = genreId,
         updatedAt = updatedAt,
         sectionCount = sectionCount,
         firstVerse = firstVerse,

@@ -7,4 +7,6 @@ enum class SyncEntityType {
     VERSE,
     VERSION,
     IDEA,
+    FOLDER,
+    GENRE,
 }

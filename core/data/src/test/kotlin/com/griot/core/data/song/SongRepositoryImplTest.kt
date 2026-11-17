@@ -259,6 +259,44 @@ internal class SongRepositoryImplTest {
     }
 
     @Nested
+    inner class SetFolder {
+        @Test
+        fun `should file the songs in the folder`() = runTest {
+            // given
+            coJustRun { songDao.setFolder(any(), any(), any()) }
+
+            // when
+            repository.setFolder(ids = listOf("my-song-id-1", "my-song-id-2"), folderId = "my-folder-id")
+
+            // then
+            coVerifySequence {
+                songDao.setFolder(
+                    ids = listOf("my-song-id-1", "my-song-id-2"),
+                    folderId = "my-folder-id",
+                    at = Instant.parse("2026-11-16T10:00:00Z"),
+                )
+            }
+        }
+    }
+
+    @Nested
+    inner class SetGenre {
+        @Test
+        fun `should tag the songs with the genre`() = runTest {
+            // given
+            coJustRun { songDao.setGenre(any(), any(), any()) }
+
+            // when
+            repository.setGenre(ids = listOf("my-song-id"), genreId = null)
+
+            // then
+            coVerifySequence {
+                songDao.setGenre(ids = listOf("my-song-id"), genreId = null, at = Instant.parse("2026-11-16T10:00:00Z"))
+            }
+        }
+    }
+
+    @Nested
     inner class PurgeTrash {
         @Test
         fun `should remove the songs deleted more than 30 days ago`() = runTest {

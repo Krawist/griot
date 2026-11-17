@@ -6,6 +6,7 @@ import com.griot.core.data.model.TrashedSong
 import kotlinx.coroutines.flow.Flow
 
 /** The songs, written to the phone first; sync sends them to the other devices. */
+@Suppress("TooManyFunctions") // One function per change of the library.
 interface SongRepository {
     /** The songs out of the trash, last changed first. */
     fun observeLibrary(): Flow<List<LibrarySong>>
@@ -31,6 +32,12 @@ interface SongRepository {
      * before GRI-54 or changed on another device get theirs. A song too short to tell keeps its language.
      */
     suspend fun detectLanguages()
+
+    /** Files the songs [ids] in the folder [folderId], or in « Aucun dossier » when it is `null`. */
+    suspend fun setFolder(ids: List<String>, folderId: String?)
+
+    /** Tags the songs [ids] with the genre [genreId], or with none when it is `null`. */
+    suspend fun setGenre(ids: List<String>, genreId: String?)
 
     /** Gives the song [id] the [title]. */
     suspend fun renameSong(id: String, title: String)

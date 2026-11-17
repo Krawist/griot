@@ -4,6 +4,8 @@ import androidx.room.immediateTransaction
 import androidx.room.useWriterConnection
 import com.griot.core.data.database.GriotDatabase
 import com.griot.core.data.database.entity.ConflictEntity
+import com.griot.core.data.database.entity.FolderEntity
+import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.IdeaEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
@@ -66,6 +68,20 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
             updatedAt = IdeaEntity::updatedAt,
             keep = ::keepIdea,
         ),
+        SyncEntityType.FOLDER to Table(
+            serializer = FolderEntity.serializer(),
+            get = database.folderDao()::getById,
+            insert = database.folderDao()::insert,
+            update = database.folderDao()::update,
+            updatedAt = FolderEntity::updatedAt,
+        ),
+        SyncEntityType.GENRE to Table(
+            serializer = GenreEntity.serializer(),
+            get = database.genreDao()::getById,
+            insert = database.genreDao()::insert,
+            update = database.genreDao()::update,
+            updatedAt = GenreEntity::updatedAt,
+        ),
     )
 
     override fun observePendingCount(): Flow<Int> = syncDao.observePendingCount()
@@ -76,7 +92,9 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
                 syncDao.pendingSections().map { record(SyncEntityType.SECTION, it.id, it.updatedAt, it.deleted, it) } +
                 syncDao.pendingVerses().map { record(SyncEntityType.VERSE, it.id, it.updatedAt, it.deleted, it) } +
                 syncDao.pendingVersions().map { record(SyncEntityType.VERSION, it.id, it.updatedAt, it.deleted, it) } +
-                syncDao.pendingIdeas().map { record(SyncEntityType.IDEA, it.id, it.updatedAt, it.deleted, it) }
+                syncDao.pendingIdeas().map { record(SyncEntityType.IDEA, it.id, it.updatedAt, it.deleted, it) } +
+                syncDao.pendingFolders().map { record(SyncEntityType.FOLDER, it.id, it.updatedAt, it.deleted, it) } +
+                syncDao.pendingGenres().map { record(SyncEntityType.GENRE, it.id, it.updatedAt, it.deleted, it) }
         }
     }
 

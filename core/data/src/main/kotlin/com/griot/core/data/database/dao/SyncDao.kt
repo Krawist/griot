@@ -2,6 +2,8 @@ package com.griot.core.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.griot.core.data.database.entity.FolderEntity
+import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.IdeaEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
@@ -55,6 +57,22 @@ internal interface SyncDao {
     )
     suspend fun pendingIdeas(): List<IdeaEntity>
 
+    @Query(
+        """
+        SELECT t.* FROM folders t LEFT JOIN sync_state s ON s.entityType = 'FOLDER' AND s.entityId = t.id
+        WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt
+        """,
+    )
+    suspend fun pendingFolders(): List<FolderEntity>
+
+    @Query(
+        """
+        SELECT t.* FROM genres t LEFT JOIN sync_state s ON s.entityType = 'GENRE' AND s.entityId = t.id
+        WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt
+        """,
+    )
+    suspend fun pendingGenres(): List<GenreEntity>
+
     /** How many rows have changes to push, updated on every write. */
     @Query(
         """
@@ -68,6 +86,10 @@ internal interface SyncDao {
         + (SELECT COUNT(*) FROM versions t LEFT JOIN sync_state s ON s.entityType = 'VERSION' AND s.entityId = t.id
             WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
         + (SELECT COUNT(*) FROM ideas t LEFT JOIN sync_state s ON s.entityType = 'IDEA' AND s.entityId = t.id
+            WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
+        + (SELECT COUNT(*) FROM folders t LEFT JOIN sync_state s ON s.entityType = 'FOLDER' AND s.entityId = t.id
+            WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
+        + (SELECT COUNT(*) FROM genres t LEFT JOIN sync_state s ON s.entityType = 'GENRE' AND s.entityId = t.id
             WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
         """,
     )

@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.griot.core.data.database.dao.ConflictDao
+import com.griot.core.data.database.dao.FolderDao
+import com.griot.core.data.database.dao.GenreDao
 import com.griot.core.data.database.dao.IdeaDao
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
@@ -14,6 +16,8 @@ import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.dao.VersionDao
 import com.griot.core.data.database.dao.WordCorrectionDao
 import com.griot.core.data.database.entity.ConflictEntity
+import com.griot.core.data.database.entity.FolderEntity
+import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.IdeaEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
@@ -33,14 +37,18 @@ import com.griot.core.data.database.entity.WordCorrectionEntity
         SyncStateEntity::class,
         WordCorrectionEntity::class,
         ConflictEntity::class,
+        FolderEntity::class,
+        GenreEntity::class,
     ],
-    version = 4,
+    version = 5,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 4, to = 5),
     ],
 )
 @TypeConverters(DatabaseConverters::class)
+@Suppress("TooManyFunctions") // One DAO per table.
 internal abstract class GriotDatabase : RoomDatabase() {
     abstract fun songDao(): SongDao
 
@@ -59,4 +67,8 @@ internal abstract class GriotDatabase : RoomDatabase() {
     abstract fun wordCorrectionDao(): WordCorrectionDao
 
     abstract fun conflictDao(): ConflictDao
+
+    abstract fun folderDao(): FolderDao
+
+    abstract fun genreDao(): GenreDao
 }

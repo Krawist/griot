@@ -309,6 +309,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   « Couplet 1 · vers 2 · 9 syllabes »; a tap on the handle or a drag up shows « Rimes », « Aide IA » (the AI panel on
   « Reformuler », `AiPanelSheet(tab)`) and « Versions du vers »; « Mémo sur ce vers » comes with GRI-50. Back closes
   the options, then leaves the selection. The lyrics scroll above the sheet (`KeepSelectionVisible`).
+- [x] **GRI-55** — `folders` and `genres` tables (database version 5, auto-migration); a song has `folderId` and
+  `genreId` (no foreign key: deletes are flags). `BuiltInRows` (a Room callback, at every open) writes « Archives »
+  (id `archives`, `FolderKind.ARCHIVES`, `FolderColor.NEUTRAL`) and the built-in genres (`BuiltInGenre`, fixed ids,
+  names from the interface) when missing, dated at the epoch. `FolderRepository` and `GenreRepository`
+  (`:core:data` `organisation`): built-ins cannot be renamed or deleted; deleting a folder puts its songs back in no
+  folder, deleting a genre removes it from its songs. `SongRepository.setFolder`/`setGenre` file several songs at
+  once. Folders and genres sync (`SyncEntityType.FOLDER`, `GENRE`).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 
