@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ai_close">Close AI help</string>
+    <string name="ai_critique_empty">Nothing to say about this verse.</string>
+    <string name="ai_failed">The answer did not come.</string>
+    <string name="ai_more">More ideas</string>
+    <string name="ai_nothing_kept">No suggestion keeps the rhyme and the rhythm of the verse. Ask for more ideas.</string>
+    <string name="ai_place">%1$s · verse %2$d</string>
+    <string name="ai_quoted">“%1$s”</string>
+    <string name="ai_retry">Retry</string>
+    <string name="ai_rhymes_empty">No rhyme found in the dictionary for this verse.</string>
+    <string name="ai_rhymes_title">Rhymes in « -%1$s », by number of syllables</string>
+    <string name="ai_rhymes_used">Crossed out: already in this song.</string>
+    <string name="ai_source_device">AI · on your phone, your text stays there</string>
+    <string name="ai_source_dictionary">Rhyme dictionary · on your phone</string>
+    <string name="ai_source_none">No AI available yet</string>
+    <string name="ai_source_online">AI · online</string>
+    <string name="ai_tab_critique">Critique</string>
+    <string name="ai_tab_rephrase">Rephrase</string>
+    <string name="ai_tab_rhymes">Rhymes</string>
+    <string name="ai_thinking">The AI is thinking…</string>
+    <string name="ai_unavailable">AI help is coming: a model on your phone, or online if you allow it in the settings. Rhymes already work.</string>
+    <string name="ai_use">Use</string>
     <string name="editor_add_section">Add a section</string>
     <string name="editor_back">Back to the songs</string>
     <string name="editor_conflicts_dismiss">Dismiss</string>
@@ -32,6 +53,7 @@
     <string name="editor_repeat_tag">Repeat</string>
     <string name="editor_section_actions">%1$s options</string>
     <string name="editor_title_placeholder">Untitled</string>
+    <string name="editor_tool_ai">AI help</string>
     <string name="editor_tool_rhymes">Rhymes</string>
     <string name="editor_tool_section">Section</string>
     <string name="editor_tool_versions">Versions</string>
@@ -49,6 +71,10 @@
     <string name="history_subtitle_verse">%1$s · %2$s, verse %3$d</string>
     <string name="history_title">Versions</string>
     <string name="history_when">%1$s, %2$s</string>
+    <plurals name="ai_syllables">
+        <item quantity="one">%1$d syllable</item>
+        <item quantity="other">%1$d syllables</item>
+    </plurals>
     <plurals name="editor_conflicts">
         <item quantity="one">A verse changed on two devices: both texts are kept.</item>
         <item quantity="other">%1$d verses changed on two devices: both texts are kept.</item>

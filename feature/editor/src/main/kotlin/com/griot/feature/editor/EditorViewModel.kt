@@ -9,6 +9,7 @@ import com.griot.core.data.model.ExportFile
 import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
+import com.griot.core.data.model.VersionSource
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepository
 import com.griot.core.data.song.SongRepository
@@ -68,6 +69,9 @@ internal class EditorViewModel @AssistedInject constructor(
 
     // The verse being edited, whose history « Versions » opens.
     private val editedVerse = MutableStateFlow<String?>(null)
+
+    // The verse and the place of its cursor, where a rhyme of the AI panel goes.
+    private var cursor: Pair<String, Int>? = null
 
     // The versions waiting for the author to pause, by verse.
     private val pendingVersions = mutableMapOf<String, Job>()
@@ -215,6 +219,37 @@ internal class EditorViewModel @AssistedInject constructor(
         editedVerse.value = verseId
     }
 
+    /** The cursor of the verse [verseId] is at [cursor]: a rhyme chosen in the AI panel goes there. */
+    fun onVerseCursor(verseId: String, cursor: Int) {
+        this.cursor = verseId to cursor
+    }
+
+    /** Inserts [word] at the cursor of the verse [verseId] (at its end when its cursor is unknown), then focuses it. */
+    fun onInsertWord(verseId: String, word: String) {
+        val text = verseText(verseId) ?: return
+        val at = cursor?.takeIf { it.first == verseId }?.second ?: text.length
+        val (inserted, after) = insertWord(text = text, cursor = at, word = word)
+        onVerseChange(verseId = verseId, text = inserted)
+        cursor = verseId to after
+        focus.value = VerseFocus(verseId = verseId, text = inserted, cursor = after)
+    }
+
+    /**
+     * Replaces the verse [verseId] by [text], a suggestion of the AI: its text before is kept, and the suggestion is
+     * recorded as a version « Suggestion IA ».
+     */
+    fun onUseSuggestion(verseId: String, text: String) {
+        viewModelScope.launch {
+            writes.withLock {
+                versions.recordVerse(verseId)
+                editor.updateVerse(verseId = verseId, text = text.singleLine())
+                versions.recordVerse(verseId = verseId, source = VersionSource.AI_SUGGESTION)
+                versions.recordSong(songId)
+            }
+        }
+        focus.value = VerseFocus(verseId = verseId, text = text.singleLine(), cursor = text.singleLine().length)
+    }
+
     // A version of the verse, and of the song at most every few minutes, once the author paused typing it.
     private fun recordWhenPaused(verseId: String) {
         pendingVersions.remove(verseId)?.cancel()
@@ -343,6 +378,8 @@ internal class EditorViewModel @AssistedInject constructor(
     // The first section showing the verse: the source of a repeat, or the repeat, hold the same verses.
     private fun sectionOf(verseId: String): SongSection? =
         uiState.value.sections.map { it.section }.firstOrNull { section -> section.verses.any { it.id == verseId } }
+
+    private fun verseText(verseId: String): String? = sectionOf(verseId)?.verses?.firstOrNull { it.id == verseId }?.text
 
     private fun String.singleLine() = replace('\n', ' ')
 

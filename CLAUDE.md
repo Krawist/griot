@@ -257,8 +257,15 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   first: `fr-frequent.txt.gz` (Lexique films + books) and `en-frequent.txt.gz` (FrequencyWords, OpenSubtitles 2018,
   CC BY-SA 4.0; only these English words are offered, the CMU dictionary is full of names), built by
   `build_tables.py`. Listed in the settings' licences.
-- [ ] **Next tickets:** GRI-34 (AI panel); GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30;
-  GRI-32/33 (models: need setup).
+- [x] **GRI-34** — « Aide IA » (orange) in the editor toolbar opens `AiPanelSheet` on the verse being edited (else the
+  first verse with text): place and count, the verse, tabs « Rimes », « Reformuler », « Critiquer », and where the
+  answers come from. `AiPanelViewModel` (assisted: song, verse, language) reads the verse's section and neighbours,
+  its rhymes (words of the song crossed out), and asks `AiAssistant` when a model tab opens or on « Autres idées »;
+  without a model the tabs say so. A rhyme is inserted at the verse's cursor (`VerseInput.onCursor`, `insertWord`),
+  a suggestion replaces the verse and is recorded as « Suggestion IA » (`onUseSuggestion`). Rhymes and insertion
+  checked on the phone; the model tabs wait for GRI-32/33.
+- [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-32/33 (models:
+  need setup), then GRI-36/37 to check with a real model.
 
 Update this section at the end of each ticket.
 

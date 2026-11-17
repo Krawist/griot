@@ -41,12 +41,16 @@ internal val EditorToolbarHeight = 64.dp
 private val ToolbarElevation = 12.dp
 private val ItemRadius = 18.dp
 
-/** The floating glass toolbar of the editor: a new section, the rhymes shown or hidden, and the versions. */
+/**
+ * The floating glass toolbar of the editor: a new section, the rhymes shown or hidden, the AI help on the verse (in
+ * orange), and the versions.
+ */
 @Composable
 internal fun EditorToolbar(
     showRhymes: Boolean,
     onAddSection: () -> Unit,
     onShowRhymesChange: (Boolean) -> Unit,
+    onAiHelp: () -> Unit,
     onOpenHistory: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -75,6 +79,13 @@ internal fun EditorToolbar(
                     .toggleable(value = showRhymes, role = Role.Switch, onValueChange = onShowRhymesChange),
             )
             ToolbarItem(
+                icon = DesignR.drawable.ic_ai,
+                label = stringResource(R.string.editor_tool_ai),
+                selected = false,
+                ai = true,
+                modifier = Modifier.weight(1f).clickable(role = Role.Button, onClick = onAiHelp),
+            )
+            ToolbarItem(
                 icon = DesignR.drawable.ic_history,
                 label = stringResource(R.string.editor_tool_versions),
                 selected = false,
@@ -84,18 +95,32 @@ internal fun EditorToolbar(
     }
 }
 
-// An item of the toolbar, turquoise while its mode is on.
+// An item of the toolbar, turquoise while its mode is on; the AI item is always orange.
 @Composable
-private fun ToolbarItem(@DrawableRes icon: Int, label: String, selected: Boolean, modifier: Modifier = Modifier) {
+private fun ToolbarItem(
+    @DrawableRes icon: Int,
+    label: String,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+    ai: Boolean = false,
+) {
     val palette = GriotTheme.palette
     val motion = GriotTheme.motion
     val fill by animateColorAsState(
-        targetValue = if (selected) palette.syncSoft else Color.Transparent,
+        targetValue = when {
+            ai -> palette.ai
+            selected -> palette.syncSoft
+            else -> Color.Transparent
+        },
         animationSpec = motion.colorChange(),
         label = "tool fill",
     )
     val content by animateColorAsState(
-        targetValue = if (selected) palette.syncText else palette.ink2,
+        targetValue = when {
+            ai -> palette.onAi
+            selected -> palette.syncText
+            else -> palette.ink2
+        },
         animationSpec = motion.colorChange(),
         label = "tool content",
     )
@@ -109,7 +134,7 @@ private fun ToolbarItem(@DrawableRes icon: Int, label: String, selected: Boolean
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 11.sp,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                fontWeight = if (selected || ai) FontWeight.SemiBold else FontWeight.Medium,
             ),
             color = content,
         )

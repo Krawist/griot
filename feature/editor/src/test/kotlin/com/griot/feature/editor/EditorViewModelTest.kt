@@ -17,6 +17,7 @@ import com.griot.core.data.song.FakeWordCorrectionRepository
 import com.griot.core.data.song.SectionLabel
 import com.griot.core.phonetics.PhoneticEngines
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -989,6 +990,85 @@ internal class EditorViewModelTest {
 
             // then
             versions.calls shouldContainExactly listOf("dismiss song conflicts my-song-id")
+        }
+    }
+
+    @Nested
+    inner class OnInsertWord {
+        @Test
+        fun `should insert the word at the cursor of the verse and focus it after the word`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(SongVerse(id = "my-verse-id", text = "Le soleil sur la")),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+            viewModel.uiState.first { !it.loading }
+            viewModel.onVerseCursor(verseId = "my-verse-id", cursor = 9)
+
+            // when
+            viewModel.onInsertWord(verseId = "my-verse-id", word = "brûle")
+
+            // then
+            viewModel.uiState.first { it.focus != null }.focus shouldBe
+                VerseFocus(verseId = "my-verse-id", text = "Le soleil brûle sur la", cursor = 15)
+            editor.calls shouldContain "verse my-verse-id Le soleil brûle sur la"
+        }
+    }
+
+    @Nested
+    inner class OnUseSuggestion {
+        @Test
+        fun `should replace the verse and record the suggestion as a version`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository()
+            val versions = FakeVersionRepository()
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = versions,
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            viewModel.onUseSuggestion(verseId = "my-verse-id", text = "my-suggestion")
+
+            // then
+            versions.calls shouldContainExactly listOf(
+                "record verse my-verse-id AUTHOR",
+                "record verse my-verse-id AI_SUGGESTION",
+                "record song my-song-id",
+            )
+            editor.calls shouldContain "verse my-verse-id my-suggestion"
         }
     }
 }

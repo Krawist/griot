@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ai_close">Fermer l\'aide IA</string>
+    <string name="ai_critique_empty">Rien à redire sur ce vers.</string>
+    <string name="ai_failed">La réponse n\'est pas venue.</string>
+    <string name="ai_more">Autres idées</string>
+    <string name="ai_nothing_kept">Aucune proposition ne garde la rime et le rythme du vers. Demande d\'autres idées.</string>
+    <string name="ai_place">%1$s · vers %2$d</string>
+    <string name="ai_quoted">« %1$s »</string>
+    <string name="ai_retry">Réessayer</string>
+    <string name="ai_rhymes_empty">Aucune rime trouvée dans le dictionnaire pour ce vers.</string>
+    <string name="ai_rhymes_title">Rimes en « -%1$s », classées par nombre de syllabes</string>
+    <string name="ai_rhymes_used">Barré : déjà utilisé dans cette chanson.</string>
+    <string name="ai_source_device">IA · sur ton téléphone, ton texte n\'en sort pas</string>
+    <string name="ai_source_dictionary">Dictionnaire de rimes · sur ton téléphone</string>
+    <string name="ai_source_none">Aucune IA disponible pour l\'instant</string>
+    <string name="ai_source_online">IA · en ligne</string>
+    <string name="ai_tab_critique">Critiquer</string>
+    <string name="ai_tab_rephrase">Reformuler</string>
+    <string name="ai_tab_rhymes">Rimes</string>
+    <string name="ai_thinking">L\'IA réfléchit…</string>
+    <string name="ai_unavailable">L\'aide IA arrive bientôt : un modèle sur ton téléphone, ou en ligne si tu le permets dans les réglages. Les rimes, elles, marchent déjà.</string>
+    <string name="ai_use">Utiliser</string>
     <string name="editor_add_section">Ajouter une section</string>
     <string name="editor_back">Retour aux chansons</string>
     <string name="editor_conflicts_dismiss">Ignorer</string>
@@ -38,6 +59,7 @@
     <string name="editor_repeat_tag">Reprise</string>
     <string name="editor_section_actions">Options de %1$s</string>
     <string name="editor_title_placeholder">Sans titre</string>
+    <string name="editor_tool_ai">Aide IA</string>
     <string name="editor_tool_rhymes">Rimes</string>
     <string name="editor_tool_section">Section</string>
     <string name="editor_tool_versions">Versions</string>
@@ -55,6 +77,11 @@
     <string name="history_subtitle_verse">%1$s · %2$s, vers %3$d</string>
     <string name="history_title">Versions</string>
     <string name="history_when">%1$s, %2$s</string>
+    <plurals name="ai_syllables">
+        <item quantity="one">%1$d syllabe</item>
+        <item quantity="many">%1$d syllabes</item>
+        <item quantity="other">%1$d syllabes</item>
+    </plurals>
     <plurals name="editor_conflicts">
         <item quantity="one">Un vers a changé sur deux appareils : les deux textes sont gardés.</item>
         <item quantity="many">%1$d vers ont changé sur deux appareils : les deux textes sont gardés.</item>

@@ -134,6 +134,7 @@ private fun VerseRow(
             onBackspaceAtStart = { text -> input.onBackspaceAtStart(verse.id, text) },
             highlight = rhymeHighlight(sound = sound, showRhymes = showRhymes),
             onFocused = { input.onFocused(verse.id) },
+            onCursor = { input.onCursor(verse.id, it) },
             focus = focus,
             onFocusHandled = input.onFocusHandled,
         )

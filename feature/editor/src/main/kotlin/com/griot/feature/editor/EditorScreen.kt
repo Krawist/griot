@@ -55,6 +55,7 @@ import com.griot.core.design.component.FileShareSheet
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import com.griot.feature.editor.ai.AiPanelSheet
 
 private val AddSectionHeight = 48.dp
 private val DashWidth = 1.5.dp
@@ -77,6 +78,7 @@ internal fun EditorScreen(
     var sheet by rememberSaveable { mutableStateOf<EditorSheet?>(null) }
     var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
     var countFor by rememberSaveable { mutableStateOf<String?>(null) }
+    var aiFor by rememberSaveable { mutableStateOf<String?>(null) }
     EditorContent(
         uiState = uiState,
         onBack = onBack,
@@ -88,6 +90,7 @@ internal fun EditorScreen(
             onFocusHandled = viewModel::onFocusHandled,
             onCountLongPress = { countFor = it },
             onFocused = viewModel::onVerseFocused,
+            onCursor = viewModel::onVerseCursor,
         ),
         onSectionActions = { actionsFor = it },
         onAddSection = { sheet = EditorSheet.ADD_SECTION },
@@ -97,6 +100,7 @@ internal fun EditorScreen(
         onMenu = { sheet = EditorSheet.MENU },
         onShowRhymesChange = viewModel::onShowRhymesChange,
         onOpenHistory = { onOpenHistory(uiState.editedVerse) },
+        onAiHelp = { aiFor = uiState.editedVerse ?: uiState.firstWrittenVerse() },
         onShowConflict = {
             uiState.conflicts.firstOrNull()?.let { verseId ->
                 viewModel.onConflictShown(verseId)
@@ -115,7 +119,38 @@ internal fun EditorScreen(
         countFor = countFor,
         onCountClosed = { countFor = null },
     )
+    AiPanel(songId = songId, verseId = aiFor, uiState = uiState, viewModel = viewModel, onClosed = { aiFor = null })
 }
+
+// The AI panel of the verse [verseId], while it is set; a rhyme or a suggestion chosen closes it.
+@Composable
+private fun AiPanel(
+    songId: String,
+    verseId: String?,
+    uiState: EditorUiState,
+    viewModel: EditorViewModel,
+    onClosed: () -> Unit,
+) {
+    if (verseId == null) return
+    AiPanelSheet(
+        songId = songId,
+        verseId = verseId,
+        language = uiState.soundLanguage,
+        onInsertWord = { word ->
+            onClosed()
+            viewModel.onInsertWord(verseId = verseId, word = word)
+        },
+        onUseSuggestion = { text ->
+            onClosed()
+            viewModel.onUseSuggestion(verseId = verseId, text = text)
+        },
+        onDismiss = onClosed,
+    )
+}
+
+// The first verse with text, which the AI panel opens on when no verse was edited yet.
+private fun EditorUiState.firstWrittenVerse(): String? =
+    sections.firstNotNullOfOrNull { section -> section.section.verses.firstOrNull { it.text.isNotBlank() }?.id }
 
 // What the editor shows over its content: the undo bar of a paste, the [sheet] open, and the actions of a section.
 @Suppress("LongParameterList") // Which sheets are open, and how each one closes.
@@ -248,6 +283,7 @@ private fun EditorContent(
     onMenu: () -> Unit,
     onShowRhymesChange: (Boolean) -> Unit,
     onOpenHistory: () -> Unit,
+    onAiHelp: () -> Unit,
     onShowConflict: () -> Unit,
     onDismissConflicts: () -> Unit,
 ) {
@@ -269,9 +305,7 @@ private fun EditorContent(
                 enter = motion.itemEnter(),
                 exit = motion.itemExit(),
                 modifier = Modifier.padding(start = GriotSpacing.l, top = GriotSpacing.s, end = GriotSpacing.l),
-            ) { count ->
-                ConflictNotice(count = count, onShow = onShowConflict, onDismiss = onDismissConflicts)
-            }
+            ) { ConflictNotice(count = it, onShow = onShowConflict, onDismiss = onDismissConflicts) }
             if (!uiState.loading) {
                 LazyColumn(
                     modifier = Modifier
@@ -304,6 +338,7 @@ private fun EditorContent(
             showRhymes = uiState.showRhymes,
             onAddSection = onAddSection,
             onShowRhymesChange = onShowRhymesChange,
+            onAiHelp = onAiHelp,
             onOpenHistory = onOpenHistory,
             modifier = Modifier.align(Alignment.BottomCenter).padding(GriotSpacing.l),
         )
@@ -348,6 +383,17 @@ private fun AddSectionButton(onClick: () -> Unit, modifier: Modifier = Modifier)
         )
     }
 }
+
+// Typing does nothing in the preview.
+private val PreviewVerseInput = VerseInput(
+    onChange = { _, _ -> },
+    onLines = { _, _, _ -> },
+    onBackspaceAtStart = { _, _ -> },
+    onFocusHandled = {},
+    onCountLongPress = {},
+    onFocused = {},
+    onCursor = { _, _ -> },
+)
 
 @Preview(name = "Light", heightDp = 844, widthDp = 390)
 @Preview(name = "Dark", heightDp = 844, widthDp = 390, uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -394,9 +440,7 @@ private fun EditorScreenPreview() {
                 ),
                 onBack = {},
                 onTitleChange = {},
-                verseInput = VerseInput(onChange = { _, _ ->
-                }, onLines = { _, _, _ ->
-                }, onBackspaceAtStart = { _, _ -> }, onFocusHandled = {}, onCountLongPress = {}, onFocused = {}),
+                verseInput = PreviewVerseInput,
                 onSectionActions = {},
                 onAddSection = {},
                 onFontSize = {},
@@ -405,6 +449,7 @@ private fun EditorScreenPreview() {
                 onMenu = {},
                 onShowRhymesChange = {},
                 onOpenHistory = {},
+                onAiHelp = {},
                 onShowConflict = {},
                 onDismissConflicts = {},
             )

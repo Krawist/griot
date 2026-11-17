@@ -45,6 +45,7 @@ import com.griot.core.design.theme.GriotTheme
  * @param onBackspaceAtStart Called with the text when Backspace is pressed with the cursor at the very start.
  * @param highlight A part of the text drawn as a rhyme; `null` for none.
  * @param onFocused Called when the field takes the focus.
+ * @param onCursor Called with the cursor's place after each change of the field.
  * @param focus When set, the field shows its text with the cursor at its place, takes the focus, then calls
  * [onFocusHandled].
  */
@@ -60,6 +61,7 @@ internal fun SyncedTextField(
     onBackspaceAtStart: ((String) -> Unit)? = null,
     highlight: TextHighlight? = null,
     onFocused: () -> Unit = {},
+    onCursor: (Int) -> Unit = {},
     focus: VerseFocus? = null,
     onFocusHandled: () -> Unit = {},
 ) {
@@ -81,6 +83,7 @@ internal fun SyncedTextField(
         onValueChange = { typed ->
             field =
                 typed(typed = typed, field = field, onLines = onLines, onTextChange = onTextChange)
+            onCursor(field.selection.start)
         },
         textStyle = style.copy(color = palette.ink),
         cursorBrush = SolidColor(palette.accent),

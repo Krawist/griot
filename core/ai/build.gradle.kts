@@ -5,6 +5,9 @@ plugins {
 
 android {
     namespace = "com.griot.core.ai"
+
+    // Fakes shared by the tests of the modules that use this one.
+    testFixtures.enable = true
 }
 
 dependencies {
