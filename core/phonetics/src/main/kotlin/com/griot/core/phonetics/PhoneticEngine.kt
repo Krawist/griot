@@ -22,6 +22,12 @@ interface PhoneticEngine {
     fun rhyme(verse: String): Rhyme?
 
     /**
+     * Words that rhyme with [verse], from the dictionary of the language of its last word: by number of syllables,
+     * the most common first, the verse's own last word left out. Empty when that word is in no dictionary.
+     */
+    fun rhymingWords(verse: String): List<RhymingWord>
+
+    /**
      * Replaces the syllables the user gave to words of this language, by word in lower case: they win over the
      * dictionary and the grapheme rules, and the words are no longer guessed.
      */

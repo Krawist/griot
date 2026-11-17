@@ -2,7 +2,10 @@ package com.griot.core.phonetics.french
 
 import com.griot.core.phonetics.PhoneticEngines
 import com.griot.core.phonetics.PhoneticLanguage
+import com.griot.core.phonetics.RhymingWord
 import com.griot.core.phonetics.SyllableCount
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -143,6 +146,49 @@ internal class FrenchEngineTest {
             // then
             (transcription.phonemes.joinToString(separator = "") to transcription.known) shouldBe ("vil" to true)
             transcription.language shouldBe PhoneticLanguage.FRENCH
+        }
+    }
+
+    @Nested
+    inner class RhymingWords {
+        @Test
+        fun `should suggest the most common words with the rhyme of the verse first`() {
+            // when
+            val words = engine.rhymingWords("Les néons pleurent sur le bitume")
+
+            // then
+            words.take(3) shouldContainExactly listOf(
+                RhymingWord(word = "fume", syllables = 1),
+                RhymingWord(word = "brume", syllables = 1),
+                RhymingWord(word = "plume", syllables = 1),
+            )
+        }
+
+        @Test
+        fun `should order the words by number of syllables`() {
+            // when
+            val words = engine.rhymingWords("Je marche seul dans la ville")
+
+            // then
+            words.map { it.syllables } shouldBe words.map { it.syllables }.sorted()
+        }
+
+        @Test
+        fun `should leave out the last word of the verse`() {
+            // when
+            val words = engine.rhymingWords("Je marche seul dans la ville")
+
+            // then
+            words.map { it.word } shouldNotContain "ville"
+        }
+
+        @Test
+        fun `should suggest English rhymes for a verse ending with an English word`() {
+            // when
+            val words = engine.rhymingWords("Je danse toute la night")
+
+            // then
+            words.first() shouldBe RhymingWord(word = "right", syllables = 1)
         }
     }
 }

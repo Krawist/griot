@@ -30,6 +30,8 @@
     <string name="settings_language_system">Langue du téléphone</string>
     <string name="settings_licence_cmu" translatable="false">CMU Pronouncing Dictionary</string>
     <string name="settings_licence_cmu_terms">Carnegie Mellon University · licence BSD</string>
+    <string name="settings_licence_frequency">Fréquences des mots anglais</string>
+    <string name="settings_licence_frequency_terms" translatable="false">FrequencyWords, Hermit Dave (OpenSubtitles 2018) · CC BY-SA 4.0</string>
     <string name="settings_licence_inter">Police Inter</string>
     <string name="settings_licence_inter_terms" translatable="false">The Inter Project Authors · SIL Open Font License 1.1</string>
     <string name="settings_licence_lexique" translatable="false">Lexique 3.83</string>

@@ -4,8 +4,12 @@ import com.griot.core.phonetics.PhoneticDictionary
 import com.griot.core.phonetics.PhoneticEngine
 import com.griot.core.phonetics.PhoneticLanguage
 import com.griot.core.phonetics.Rhyme
+import com.griot.core.phonetics.RhymingWord
 import com.griot.core.phonetics.SyllableCount
 import com.griot.core.phonetics.Transcription
+import com.griot.core.phonetics.WordRanks
+import com.griot.core.phonetics.chooseRhymes
+import com.griot.core.phonetics.isSuggestible
 import com.griot.core.phonetics.rhymeStart
 import com.griot.core.phonetics.wordsOf
 import java.util.Locale
@@ -13,6 +17,15 @@ import java.util.concurrent.ConcurrentHashMap
 
 // Vowels of Lexique's notation; j, w and 8 are semi-vowels, not syllables.
 private const val VOWELS = "aieEoOuy2951@§°"
+
+// Rhyme keys of this engine start with it.
+private const val KEY_PREFIX = "fr:"
+
+// The rhyming ending of a sound: from its last vowel to the end.
+private fun ending(phonemes: String): String {
+    val vowel = phonemes.indexOfLast { it in VOWELS }
+    return if (vowel >= 0) phonemes.substring(vowel) else phonemes
+}
 
 // Spellings of a mute e at the end of a word, longest first.
 private val MuteEndings = listOf("ent", "es", "e")
@@ -30,6 +43,7 @@ private val Elided = setOf("l", "d", "j", "m", "t", "s", "n", "c", "qu", "jusqu"
 @Suppress("TooManyFunctions")
 class FrenchEngine internal constructor(
     private val dictionary: PhoneticDictionary,
+    private val ranks: WordRanks,
     private val other: () -> PhoneticEngine?,
 ) : PhoneticEngine {
     /**
@@ -96,14 +110,39 @@ class FrenchEngine internal constructor(
     override fun rhyme(verse: String): Rhyme? {
         val last = wordsOf(verse).lastOrNull() ?: return null
         val analysis = analyse(last.text)
-        val vowel = analysis.phonemes.indexOfLast { it in VOWELS }
-        val ending = if (vowel >= 0) analysis.phonemes.substring(vowel) else analysis.phonemes
+        val ending = ending(analysis.phonemes)
         // An English word ends the verse: its rhyme is the English engine's.
         return if (analysis.language == PhoneticLanguage.ENGLISH) {
             other()?.rhyme(verse)
         } else {
-            Rhyme(key = "fr:$ending", start = last.start + rhymeStart(last.text, analysis.silent), end = last.end)
+            Rhyme(
+                key = "$KEY_PREFIX$ending",
+                start = last.start + rhymeStart(last.text, analysis.silent),
+                end = last.end,
+            )
         }
+    }
+
+    override fun rhymingWords(verse: String): List<RhymingWord> {
+        val key = rhyme(verse)?.key
+        return when {
+            key == null -> emptyList()
+            // An English word ends the verse: its rhymes are the English engine's.
+            !key.startsWith(KEY_PREFIX) -> other()?.rhymingWords(verse).orEmpty()
+            else -> rhymesOf(ending = key.removePrefix(KEY_PREFIX), own = wordsOf(verse).last().text)
+        }
+    }
+
+    // The words of the dictionary ending with the sound [ending], but the verse's own word.
+    private fun rhymesOf(ending: String, own: String): List<RhymingWord> {
+        val own = own.lowercase(Locale.FRENCH)
+        val candidates = mutableListOf<RhymingWord>()
+        dictionary.forEach { word, phonemes ->
+            if (word != own && isSuggestible(word) && ending(phonemes) == ending) {
+                candidates += RhymingWord(word = word, syllables = known(word, phonemes).syllables)
+            }
+        }
+        return chooseRhymes(candidates = candidates, rank = { ranks[it] })
     }
 
     private fun analyse(word: String): Analysis = cache.getOrPut(word.lowercase(Locale.FRENCH)) {

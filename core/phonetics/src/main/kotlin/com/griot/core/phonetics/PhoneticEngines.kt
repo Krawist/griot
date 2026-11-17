@@ -12,10 +12,18 @@ class PhoneticEngines {
     private val englishDictionary = PhoneticDictionary("/phonetics/en-cmudict.tsv.gz")
 
     /** The French engine, on Lexique. */
-    val french: PhoneticEngine = FrenchEngine(dictionary = frenchDictionary, other = { english })
+    val french: PhoneticEngine = FrenchEngine(
+        dictionary = frenchDictionary,
+        ranks = WordRanks("/phonetics/fr-frequent.txt.gz"),
+        other = { english },
+    )
 
     /** The English engine, on the CMU Pronouncing Dictionary. */
-    val english: PhoneticEngine = EnglishEngine(dictionary = englishDictionary, other = { french })
+    val english: PhoneticEngine = EnglishEngine(
+        dictionary = englishDictionary,
+        ranks = WordRanks("/phonetics/en-frequent.txt.gz"),
+        other = { french },
+    )
 
     /** The engine of [language]. */
     fun of(language: PhoneticLanguage): PhoneticEngine = when (language) {

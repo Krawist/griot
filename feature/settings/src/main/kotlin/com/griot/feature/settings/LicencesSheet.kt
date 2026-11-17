@@ -14,6 +14,7 @@ import com.griot.core.design.theme.GriotTheme
 private val Licences = listOf(
     R.string.settings_licence_lexique to R.string.settings_licence_lexique_terms,
     R.string.settings_licence_cmu to R.string.settings_licence_cmu_terms,
+    R.string.settings_licence_frequency to R.string.settings_licence_frequency_terms,
     R.string.settings_licence_outfit to R.string.settings_licence_outfit_terms,
     R.string.settings_licence_inter to R.string.settings_licence_inter_terms,
 )

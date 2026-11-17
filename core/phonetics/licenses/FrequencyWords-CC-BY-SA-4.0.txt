@@ -1,0 +1,8 @@
+en-frequent.txt.gz is derived from FrequencyWords by Hermit Dave
+(https://github.com/hermitdave/FrequencyWords), content/2018/en/en_50k.txt, built from the OpenSubtitles 2018
+corpus (http://opus.nlpl.eu/OpenSubtitles2018.php).
+
+The content of FrequencyWords is licensed under the Creative Commons Attribution-ShareAlike 4.0 International
+licence (CC BY-SA 4.0): https://creativecommons.org/licenses/by-sa/4.0/ — its full text is in
+Lexique-CC-BY-SA-4.0.txt, next to this file. Griot keeps the words that the CMU Pronouncing Dictionary also has,
+most frequent first, without their counts.

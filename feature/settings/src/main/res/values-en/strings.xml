@@ -17,6 +17,7 @@
     <string name="settings_language_sub">Default language of songs</string>
     <string name="settings_language_system">Phone language</string>
     <string name="settings_licence_cmu_terms">Carnegie Mellon University · BSD licence</string>
+    <string name="settings_licence_frequency">English word frequencies</string>
     <string name="settings_licence_inter">Inter font</string>
     <string name="settings_licence_outfit">Outfit font</string>
     <string name="settings_licences">Licences</string>

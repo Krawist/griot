@@ -1,7 +1,10 @@
 package com.griot.core.phonetics.english
 
 import com.griot.core.phonetics.PhoneticEngines
+import com.griot.core.phonetics.RhymingWord
 import com.griot.core.phonetics.SyllableCount
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Nested
@@ -67,6 +70,31 @@ internal class EnglishEngineTest {
 
             // then
             rhyme?.let { verse.substring(it.start, it.end) } shouldBe ending
+        }
+    }
+
+    @Nested
+    inner class RhymingWords {
+        @Test
+        fun `should suggest the most common words with the rhyme of the verse first`() {
+            // when
+            val words = engine.rhymingWords("I walk alone in the night")
+
+            // then
+            words.take(3) shouldContainExactly listOf(
+                RhymingWord(word = "right", syllables = 1),
+                RhymingWord(word = "might", syllables = 1),
+                RhymingWord(word = "quite", syllables = 1),
+            )
+        }
+
+        @Test
+        fun `should suggest no rhyme for a word in no dictionary`() {
+            // when
+            val words = engine.rhymingWords("Dancing with the zorblax")
+
+            // then
+            words.shouldBeEmpty()
         }
     }
 }

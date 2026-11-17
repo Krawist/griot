@@ -48,3 +48,6 @@ private fun String.isConsonantU(index: Int): Boolean {
     val after = getOrNull(index + 1)?.lowercaseChar()
     return before == 'q' || (before == 'g' && after != null && after in "eiyéèê")
 }
+
+/** Whether [word] of a dictionary may be suggested as a rhyme: one word of letters (hyphens allowed), not a letter. */
+internal fun isSuggestible(word: String): Boolean = word.length > 1 && word.all { it.isLetter() || it == '-' }

@@ -17,6 +17,12 @@ internal class PhoneticDictionary(private val resource: String) {
         return if (index >= 0) phonemes[index] else null
     }
 
+    /** Calls [action] with every word and its phonemes, in the order of the words. */
+    fun forEach(action: (word: String, phonemes: String) -> Unit) {
+        val (words, phonemes) = table
+        words.indices.forEach { action(words[it], phonemes[it]) }
+    }
+
     private fun read(): Pair<Array<String>, Array<String>> {
         val stream = requireNotNull(javaClass.getResourceAsStream(resource)) { "Missing resource $resource" }
         val words = ArrayList<String>(TABLE_SIZE)

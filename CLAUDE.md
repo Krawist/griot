@@ -252,8 +252,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   section, neighbouring verses, target count, the section's counts for the rhythm), the parsing (`answerLines`) and
   the checks are shared. `checkSuggestions` recounts every suggestion with the phonetic engine and drops those that
   do not rhyme like the verse or are more than one syllable away.
-- [ ] **Next tickets:** GRI-34/35 (AI panel, offline rhymes); GRI-27 (Drive: needs a Google Cloud OAuth client), then
-  GRI-10 and GRI-30; GRI-32/33 (models: need setup).
+- [x] **GRI-35** — `PhoneticEngine.rhymingWords(verse)`: the dictionary words with the verse's rhyming ending (the
+  engine of its last word's language), at most 12 per syllable count from 1 to 4 (`chooseRhymes`), the most frequent
+  first: `fr-frequent.txt.gz` (Lexique films + books) and `en-frequent.txt.gz` (FrequencyWords, OpenSubtitles 2018,
+  CC BY-SA 4.0; only these English words are offered, the CMU dictionary is full of names), built by
+  `build_tables.py`. Listed in the settings' licences.
+- [ ] **Next tickets:** GRI-34 (AI panel); GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30;
+  GRI-32/33 (models: need setup).
 
 Update this section at the end of each ticket.
 
