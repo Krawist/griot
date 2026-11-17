@@ -173,8 +173,16 @@ private fun AiGroup(
             label = stringResource(R.string.settings_ai_preferred),
             sub = stringResource(R.string.settings_ai_preferred_sub),
             first = true,
+            enabled = uiState.usableAi.size > 1,
             onClick = { onSheet(SettingsSheet.PREFERRED_AI) },
-        ) { SettingsValue(value = stringResource(uiState.preferredAi.labelRes())) }
+        ) {
+            // The preferred one among two, else the only one, else none.
+            val shown = if (uiState.usableAi.size > 1) uiState.preferredAi else uiState.usableAi.firstOrNull()
+            SettingsValue(
+                value = stringResource(shown?.labelRes() ?: R.string.settings_ai_preferred_none),
+                chevron = uiState.usableAi.size > 1,
+            )
+        }
         DeviceAiRow(uiState = uiState, onChange = onOnDeviceAiChange)
         SettingsRow(
             letter = "",

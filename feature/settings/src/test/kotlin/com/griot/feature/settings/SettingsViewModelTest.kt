@@ -285,6 +285,73 @@ internal class SettingsViewModelTest {
     }
 
     @Nested
+    inner class UsableAi {
+        @Test
+        fun `should offer both AIs when the phone has its model and a key is saved`() {
+            // when
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(deviceStatus = AiStatus.READY),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(key = "my-key"),
+            )
+
+            // then
+            viewModel.uiState.value.usableAi shouldContainExactly listOf(PreferredAi.DEVICE, PreferredAi.ONLINE)
+        }
+
+        @Test
+        fun `should offer only the online AI when the phone cannot have its model`() {
+            // when
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(deviceStatus = AiStatus.UNAVAILABLE),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(key = "my-key"),
+            )
+
+            // then
+            viewModel.uiState.value.usableAi shouldContainExactly listOf(PreferredAi.ONLINE)
+        }
+
+        @Test
+        fun `should leave out an AI the settings forbid`() {
+            // when
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(onlineAi = false),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(deviceStatus = AiStatus.READY),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(key = "my-key"),
+            )
+
+            // then
+            viewModel.uiState.value.usableAi shouldContainExactly listOf(PreferredAi.DEVICE)
+        }
+
+        @Test
+        fun `should offer none without a model or a key`() {
+            // when
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(deviceStatus = AiStatus.UNAVAILABLE),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
+            )
+
+            // then
+            viewModel.uiState.value.usableAi shouldBe emptyList()
+        }
+    }
+
+    @Nested
     inner class OnPreferredAiChange {
         @Test
         fun `should save the model the AI help asks first`() = runTest {

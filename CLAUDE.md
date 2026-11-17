@@ -396,7 +396,8 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   then a real key: « Reformuler » and « Critiquer » answered by Claude). Use a key scoped to a workspace: an
   organisation key needs an `anthropic-workspace-id` header Griot does not send.
   « IA préférée » (`PreferredAi`, the phone's by default) picks the model asked first; `AiAssistantImpl` asks the
-  other one when it cannot answer or fails, and fails only when both do.
+  other one when it cannot answer or fails, and fails only when both do. The choice opens only when both AIs are usable (allowed, and the
+  phone's model or a key there); otherwise the row shows the only one, or « Aucune », dimmed.
   A proxy is still needed before any public release.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.

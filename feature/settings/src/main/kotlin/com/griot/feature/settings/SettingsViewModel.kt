@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.ai.AiAssistant
 import com.griot.core.ai.AiLocation
+import com.griot.core.ai.AiStatus
 import com.griot.core.ai.online.ApiKeyRepository
 import com.griot.core.data.audio.ExternalMusic
 import com.griot.core.data.export.MarkdownExporter
@@ -37,14 +38,14 @@ internal class SettingsViewModel @Inject constructor(
 
     init {
         combine(preferences.authorName, preferences.editorFontSize, preferences.onDeviceAi) { name, size, onDevice ->
-            state.update { it.copy(authorName = name.orEmpty(), fontSize = size, onDeviceAi = onDevice) }
+            state.update { it.copy(authorName = name.orEmpty(), fontSize = size, onDeviceAi = onDevice).withUsableAi() }
         }.launchIn(viewModelScope)
         combine(preferences.onlineAi, preferences.preferredAi, apiKeys.isSet) { online, preferred, keySet ->
-            state.update { it.copy(onlineAi = online, preferredAi = preferred, apiKeySet = keySet) }
+            state.update { it.copy(onlineAi = online, preferredAi = preferred, apiKeySet = keySet).withUsableAi() }
         }.launchIn(viewModelScope)
         viewModelScope.launch {
             val status = assistant.status(AiLocation.DEVICE)
-            state.update { it.copy(onDeviceStatus = status) }
+            state.update { it.copy(onDeviceStatus = status).withUsableAi() }
         }
     }
 
@@ -128,4 +129,12 @@ internal class SettingsViewModel @Inject constructor(
     fun onExportClosed() {
         state.update { it.copy(export = null) }
     }
+
+    // The AIs the help can use: allowed by the settings, and the phone able to have its model or a key saved.
+    private fun SettingsUiState.withUsableAi() = copy(
+        usableAi = buildList {
+            if (onDeviceAi && onDeviceStatus != AiStatus.UNAVAILABLE) add(PreferredAi.DEVICE)
+            if (onlineAi && apiKeySet) add(PreferredAi.ONLINE)
+        },
+    )
 }

@@ -12,6 +12,7 @@
     <string name="settings_ai_preferred">IA préférée</string>
     <string name="settings_ai_preferred_device">Sur le téléphone</string>
     <string name="settings_ai_preferred_hint">L\'autre répond quand celle-ci ne peut pas : pas de modèle sur le téléphone, pas de clé ou pas de réseau.</string>
+    <string name="settings_ai_preferred_none">Aucune</string>
     <string name="settings_ai_preferred_online">En ligne</string>
     <string name="settings_ai_preferred_sub">Celle qui répond en premier</string>
     <string name="settings_appearance">Apparence</string>
