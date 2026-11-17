@@ -246,8 +246,14 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   shows `ConflictNotice` under its top bar: « Voir » opens the history of the first verse and forgets its notice,
   « Ignorer » forgets the song's notices (`VersionRepository.observeConflicts`, `dismissVerseConflicts`,
   `dismissSongConflicts`). Checked on the phone with a hand-made conflict; no real two-device sync until GRI-27.
-- [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-31 (AI
-  interface).
+- [x] **GRI-31** — `:core:ai`: `AiAssistant` (`rephrase`, `critique`, `location`) picks the phone's model first, then
+  the online one, among the `AiProvider`s bound into a set (empty until GRI-32/33: no model, `null` answers). A
+  provider only runs its model (`generate(AiPrompt)`); prompts (`rephrasePrompt`, `critiquePrompt`: language,
+  section, neighbouring verses, target count, the section's counts for the rhythm), the parsing (`answerLines`) and
+  the checks are shared. `checkSuggestions` recounts every suggestion with the phonetic engine and drops those that
+  do not rhyme like the verse or are more than one syllable away.
+- [ ] **Next tickets:** GRI-34/35 (AI panel, offline rhymes); GRI-27 (Drive: needs a Google Cloud OAuth client), then
+  GRI-10 and GRI-30; GRI-32/33 (models: need setup).
 
 Update this section at the end of each ticket.
 

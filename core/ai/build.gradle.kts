@@ -10,4 +10,6 @@ android {
 dependencies {
     implementation(projects.core.phonetics)
     implementation(libs.kotlinx.coroutines.core)
+
+    testImplementation(libs.kotlinx.coroutines.test)
 }

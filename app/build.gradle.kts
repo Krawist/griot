@@ -59,6 +59,7 @@ android {
 
 dependencies {
     implementation(projects.core.design)
+    implementation(projects.core.ai)
     implementation(projects.core.data)
     implementation(projects.core.phonetics)
     implementation(projects.core.sync)
