@@ -28,11 +28,23 @@
     <string name="folder_empty_favorites">Ajoute une chanson aux favoris d\'un appui long.</string>
     <string name="folder_empty_title">Pas encore de chanson ici</string>
     <string name="folder_file">Ranger (%1$d)</string>
+    <string name="folder_filter_folder">Dossier</string>
+    <string name="folder_filter_genres">Genre · plusieurs choix</string>
+    <string name="folder_filter_state">État</string>
+    <string name="folder_filters">Filtres et tri</string>
+    <string name="folder_filters_reset">Réinitialiser</string>
+    <string name="folder_include_archives">Inclure les archives</string>
     <string name="folder_language">Langue</string>
-    <string name="folder_language_filter">Filtrer par langue</string>
     <string name="folder_menu">Options du dossier</string>
     <string name="folder_rename">Renommer</string>
     <string name="folder_select">Sélectionner</string>
+    <string name="folder_show_none">Aucun texte avec ces filtres</string>
+    <string name="folder_sort">Trier par</string>
+    <string name="folder_sort_created">Créés</string>
+    <string name="folder_sort_modified">Modifiés</string>
+    <string name="folder_sort_title">Titre A → Z</string>
+    <string name="folder_state_draft">Brouillon</string>
+    <string name="folder_state_in_progress">En cours</string>
     <string name="folder_subtitle">%1$s · dossier</string>
     <string name="genre_afro">Afro</string>
     <string name="genre_gospel">Gospel</string>
@@ -115,15 +127,30 @@
     <string name="trash_meta">Supprimée %1$s · %2$s</string>
     <string name="trash_restore">Restaurer</string>
     <string name="trash_title">Corbeille</string>
+    <plurals name="folder_archives_count">
+        <item quantity="one">%1$d texte rangé dans « Archives »</item>
+        <item quantity="many">%1$d textes rangés dans « Archives »</item>
+        <item quantity="other">%1$d textes rangés dans « Archives »</item>
+    </plurals>
     <plurals name="folder_delete_body">
         <item quantity="one">Son texte va dans « Sans dossier » : il n\'est pas supprimé.</item>
         <item quantity="many">Ses %1$d textes vont dans « Sans dossier » : ils ne sont pas supprimés.</item>
         <item quantity="other">Ses %1$d textes vont dans « Sans dossier » : ils ne sont pas supprimés.</item>
     </plurals>
+    <plurals name="folder_filters_button">
+        <item quantity="one">Filtres et tri, %1$d actif</item>
+        <item quantity="many">Filtres et tri, %1$d actifs</item>
+        <item quantity="other">Filtres et tri, %1$d actifs</item>
+    </plurals>
     <plurals name="folder_selected">
         <item quantity="one">%1$d sélectionné</item>
         <item quantity="many">%1$d sélectionnés</item>
         <item quantity="other">%1$d sélectionnés</item>
+    </plurals>
+    <plurals name="folder_show">
+        <item quantity="one">Voir %1$d texte</item>
+        <item quantity="many">Voir %1$d textes</item>
+        <item quantity="other">Voir %1$d textes</item>
     </plurals>
     <plurals name="library_texts">
         <item quantity="one">%1$d texte</item>

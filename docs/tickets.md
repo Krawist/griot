@@ -639,6 +639,17 @@ A long press on a song opens « Feuille d'actions d'un texte »: its title, then
 
 Size: M. Dependencies: GRI-13, GRI-25, GRI-58, GRI-62, GRI-63. Mockup: « Feuille d'actions d'un texte ».
 
+### GRI-65 · Filters and order of a folder
+
+The filter button of a folder opens « Filtres et tri »: the order (« Modifiés », « Créés », « Titre A → Z »), the genres (several), the language, the folder (where songs of several folders mix: « Tous », « Sans dossier », each folder), the states (« Brouillon », « En cours », « Sans titre », several) and « Inclure les archives » with their count. « Réinitialiser » clears them.
+
+- Nothing applies before « Voir N textes », which counts the songs kept as the author chooses; with none it reads « Aucun texte avec ces filtres » and does nothing. Closing the sheet keeps the filters applied before.
+- The button shows how many filters are on, the order included. The genre chips over the list keep several genres too.
+- The songs in « Archives » are left out until included, but in « Archives » itself.
+- Other filters or another order show the list from its top.
+
+Size: M. Dependencies: GRI-57, GRI-62. Mockup: « Filtres et tri ».
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style

@@ -432,6 +432,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `SongActions` archives and exports (`SongExport`, `SongExportHost`: `shareFile` straight away, or `FileShareSheet`).
   The song's language sheet is public in the editor (`SongLanguageSheet`, `SongLanguageViewModel`), shown by `:app`
   for the library (`libraryGraph(onSongLanguage)`). `GriotSheet` opens whole (`skipPartiallyExpanded`).
+- [x] **GRI-65** — « Filtres et tri » (`FiltersSheet`, `FilterControls`): `FolderFilters` (sort `SongSort`, genres,
+  language, folder or `NO_FOLDER`, `SongState`s, `includeArchives`), applied by `filteredBy` (`SongFiltering.kt`,
+  titles by a French `Collator`); a draft while the sheet is open (`FilterSheetState`, count for « Voir N textes »),
+  `activeCount()` on the button. `LibrarySong.createdAt`. `GriotButton(enabled)`, `FilterChip(accent)`.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 

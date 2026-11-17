@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.model.FolderColor
-import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.organisation.FolderRepository
 import com.griot.core.data.organisation.GenreRepository
 import com.griot.core.data.song.SongRepository
@@ -34,7 +33,7 @@ import kotlinx.coroutines.launch
  * The songs of the folder [folderId], of « Récents » ([RECENT_FOLDER_ID]: the songs changed in the last 24 hours), of
  * « Favoris » ([FAVORITES_FOLDER_ID]), or of the whole library when it is `null`, with their filters.
  */
-@Suppress("LongParameterList") // The folder, its songs, folders and genres, their cards, and the export.
+@Suppress("LongParameterList", "TooManyFunctions") // The folder, its songs and filters, their cards, the export.
 @HiltViewModel(assistedFactory = FolderViewModel.Factory::class)
 internal class FolderViewModel @AssistedInject constructor(
     @Assisted private val folderId: String?,
@@ -46,6 +45,9 @@ internal class FolderViewModel @AssistedInject constructor(
     private val clock: Clock,
 ) : ViewModel() {
     private val filters = MutableStateFlow(FolderFilters())
+
+    // The filters being chosen in « Filtres et tri »; `null` while it is closed.
+    private val draft = MutableStateFlow<FolderFilters?>(null)
     private val selection = MutableStateFlow<Set<String>?>(null)
 
     /** Rename, duplicate or delete a song long pressed. */
@@ -59,9 +61,10 @@ internal class FolderViewModel @AssistedInject constructor(
         Triple(library, folders, genres)
     }
 
-    val uiState: StateFlow<FolderUiState> = combine(library, filters, selection, actions.deleted) {
+    val uiState: StateFlow<FolderUiState> = combine(library, filters, draft, selection, actions.deleted) {
             (library, folders, genres),
             filters,
+            draft,
             selection,
             deleted,
         ->
@@ -76,15 +79,30 @@ internal class FolderViewModel @AssistedInject constructor(
             }
         }
         val present = inFolder.flatMap { it.genreIds }.toSet()
+        val archives = folderId == FolderRepository.ARCHIVES_ID
         FolderUiState(
             folder = folder,
             songCount = inFolder.size,
             genres = genres.filter { it.id in present },
-            genre = filters.genre,
-            language = filters.language,
-            items = inFolder
-                .filter { filters.genre == null || filters.genre in it.genreIds }
-                .filter { filters.language == null || it.language == filters.language }
+            filters = filters,
+            filterCount = filters.activeCount(),
+            filterSheet = draft?.let {
+                FilterSheetState(
+                    draft = it,
+                    count = inFolder.filteredBy(it, archives = archives).size,
+                    genres = genres,
+                    folders = if (folder ==
+                        null
+                    ) {
+                        folders.filter { f -> f.id != FolderRepository.ARCHIVES_ID }
+                    } else {
+                        emptyList()
+                    },
+                    archivesCount = inFolder.count { song -> FolderRepository.ARCHIVES_ID in song.folderIds },
+                    showArchives = !archives,
+                )
+            },
+            items = inFolder.filteredBy(filters, archives = archives)
                 .map { items.itemOf(song = it, folders = folders, genres = genres, now = now) },
             selecting = selection != null,
             selected = selection.orEmpty(),
@@ -98,14 +116,41 @@ internal class FolderViewModel @AssistedInject constructor(
         .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), FolderUiState())
 
-    /** Keeps the songs of the genre [genreId], or of every genre when `null` (« Tous »). */
+    /** Keeps every genre when [genreId] is `null` (« Tous »); otherwise keeps the genre too, or no longer. */
     fun onGenreSelected(genreId: String?) {
-        filters.update { it.copy(genre = genreId) }
+        filters.update { current ->
+            when (genreId) {
+                null -> current.copy(genres = emptySet())
+                in current.genres -> current.copy(genres = current.genres - genreId)
+                else -> current.copy(genres = current.genres + genreId)
+            }
+        }
     }
 
-    /** Keeps the songs in [language], or in both when `null` (« Toutes »). */
-    fun onLanguageSelected(language: SongLanguage?) {
-        filters.update { it.copy(language = language) }
+    /** Opens « Filtres et tri » on the filters applied. */
+    fun onFiltersOpened() {
+        draft.value = filters.value
+    }
+
+    /** The author changed the filters being chosen to [filters]. */
+    fun onFiltersChanged(filters: FolderFilters) {
+        if (draft.value != null) draft.value = filters
+    }
+
+    /** « Réinitialiser »: no filter, the last changed first. */
+    fun onFiltersReset() {
+        if (draft.value != null) draft.value = FolderFilters()
+    }
+
+    /** « Voir N textes »: applies the filters chosen and closes the sheet. */
+    fun onFiltersApplied() {
+        draft.value?.let { filters.value = it }
+        draft.value = null
+    }
+
+    /** The sheet closed without applying: the filters stay as they were. */
+    fun onFiltersClosed() {
+        draft.value = null
     }
 
     /** Turns the multiple selection on, with nothing selected, or off. */

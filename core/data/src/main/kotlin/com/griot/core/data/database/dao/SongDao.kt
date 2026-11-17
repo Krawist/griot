@@ -44,7 +44,7 @@ internal interface SongDao {
     /** The songs out of the trash with what the library shows of them, last changed first. */
     @Query(
         """
-        SELECT s.id, s.title, s.language, s.status, s.updatedAt,
+        SELECT s.id, s.title, s.language, s.status, s.createdAt, s.updatedAt,
             (SELECT GROUP_CONCAT(f.folderId) FROM song_folders f WHERE f.songId = s.id AND f.deleted = 0) AS folderIds,
             (SELECT GROUP_CONCAT(g.genreId) FROM song_genres g WHERE g.songId = s.id AND g.deleted = 0) AS genreIds,
             EXISTS (SELECT 1 FROM favorites h WHERE h.songId = s.id AND h.deleted = 0) AS favorite,

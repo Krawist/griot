@@ -13,6 +13,7 @@ import java.time.Instant
  * @property genreIds Its genres; empty without one.
  * @property favorite Whether it is in the author's favourites (« Favoris », a heart on its card).
  * @property updatedAt Last change of the song.
+ * @property createdAt When the song was created; its last change when not given.
  * @property sectionCount Number of sections, repeats included.
  * @property firstVerse First verse that is not empty; `null` for a song with no text yet.
  * @property lyrics Every verse, one per line, for the search; empty for a song with no text yet.
@@ -27,6 +28,7 @@ data class LibrarySong(
     val genreIds: List<String> = emptyList(),
     val favorite: Boolean = false,
     val updatedAt: Instant,
+    val createdAt: Instant = updatedAt,
     val sectionCount: Int,
     val firstVerse: String?,
     val lyrics: String,

@@ -25,18 +25,33 @@ private val ChipHeight = 34.dp
  * A chip of a filter or a choice, filled when [selected].
  *
  * @param mixed Whether it holds for some of the songs selected only: outlined in magenta.
+ * @param accent Whether it fills in magenta when selected, as in « Filtres et tri », rather than in ink.
  */
 @Composable
-internal fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit, mixed: Boolean = false) {
+internal fun FilterChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    mixed: Boolean = false,
+    accent: Boolean = false,
+) {
     val palette = GriotTheme.palette
     val motion = GriotTheme.motion
     val fill by animateColorAsState(
-        targetValue = if (selected) palette.inverse else palette.glass,
+        targetValue = when {
+            selected && accent -> palette.accentFill
+            selected -> palette.inverse
+            else -> palette.glass
+        },
         animationSpec = motion.colorChange(),
         label = "chip fill",
     )
     val content by animateColorAsState(
-        targetValue = if (selected) palette.onInverse else palette.ink2,
+        targetValue = when {
+            selected && accent -> palette.onAccent
+            selected -> palette.onInverse
+            else -> palette.ink2
+        },
         animationSpec = motion.colorChange(),
         label = "chip text",
     )

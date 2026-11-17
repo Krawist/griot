@@ -28,11 +28,23 @@
     <string name="folder_empty_favorites">Add a song to your favourites with a long press.</string>
     <string name="folder_empty_title">No song here yet</string>
     <string name="folder_file">File (%1$d)</string>
+    <string name="folder_filter_folder">Folder</string>
+    <string name="folder_filter_genres">Genre · several choices</string>
+    <string name="folder_filter_state">State</string>
+    <string name="folder_filters">Filters and order</string>
+    <string name="folder_filters_reset">Reset</string>
+    <string name="folder_include_archives">Include the archives</string>
     <string name="folder_language">Language</string>
-    <string name="folder_language_filter">Filter by language</string>
     <string name="folder_menu">Folder options</string>
     <string name="folder_rename">Rename</string>
     <string name="folder_select">Select</string>
+    <string name="folder_show_none">No text with these filters</string>
+    <string name="folder_sort">Sort by</string>
+    <string name="folder_sort_created">Created</string>
+    <string name="folder_sort_modified">Changed</string>
+    <string name="folder_sort_title">Title A → Z</string>
+    <string name="folder_state_draft">Draft</string>
+    <string name="folder_state_in_progress">In progress</string>
     <string name="folder_subtitle">%1$s · folder</string>
     <string name="genre_afro">Afro</string>
     <string name="genre_gospel">Gospel</string>
@@ -110,13 +122,25 @@
     <string name="trash_meta">Deleted %1$s · %2$s</string>
     <string name="trash_restore">Restore</string>
     <string name="trash_title">Trash</string>
+    <plurals name="folder_archives_count">
+        <item quantity="one">%1$d text in “Archives”</item>
+        <item quantity="other">%1$d texts in “Archives”</item>
+    </plurals>
     <plurals name="folder_delete_body">
         <item quantity="one">Its text goes to « No folder »: it is not deleted.</item>
         <item quantity="other">Its %1$d texts go to « No folder »: they are not deleted.</item>
     </plurals>
+    <plurals name="folder_filters_button">
+        <item quantity="one">Filters and order, %1$d on</item>
+        <item quantity="other">Filters and order, %1$d on</item>
+    </plurals>
     <plurals name="folder_selected">
         <item quantity="one">%1$d selected</item>
         <item quantity="other">%1$d selected</item>
+    </plurals>
+    <plurals name="folder_show">
+        <item quantity="one">Show %1$d text</item>
+        <item quantity="other">Show %1$d texts</item>
     </plurals>
     <plurals name="library_texts">
         <item quantity="one">%1$d text</item>

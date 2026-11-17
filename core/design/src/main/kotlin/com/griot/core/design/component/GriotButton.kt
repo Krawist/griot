@@ -12,10 +12,19 @@ import com.griot.core.design.theme.GriotTheme
 
 private val ButtonHeight = 56.dp
 
-/** Main action of a screen: a full-width magenta pill, such as « Commencer » or « Continuer ». */
+/**
+ * Main action of a screen: a full-width magenta pill, such as « Commencer » or « Continuer ».
+ *
+ * @param enabled Whether it can be tapped; a disabled button is drawn muted.
+ */
 @Composable
-fun GriotButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(onClick = onClick, shape = CircleShape, modifier = modifier.fillMaxWidth().height(ButtonHeight)) {
+fun GriotButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = CircleShape,
+        modifier = modifier.fillMaxWidth().height(ButtonHeight),
+    ) {
         Text(text = text, style = GriotTheme.type.button)
     }
 }

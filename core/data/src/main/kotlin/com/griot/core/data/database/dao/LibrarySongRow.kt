@@ -14,6 +14,7 @@ import java.time.Instant
  * @property folderIds The ids of the folders it is in, separated by commas; `null` when it is in none.
  * @property genreIds The ids of its genres, separated by commas; `null` when it has none.
  * @property favorite Whether it is in the author's favourites.
+ * @property createdAt When the song was created.
  * @property updatedAt Last change of the song.
  * @property sectionCount Number of sections that are not deleted, repeats included.
  * @property firstVerse First verse that is not empty, in the order of the song; `null` when there is none.
@@ -27,6 +28,7 @@ internal data class LibrarySongRow(
     val folderIds: String? = null,
     val genreIds: String? = null,
     val favorite: Boolean = false,
+    val createdAt: Instant,
     val updatedAt: Instant,
     val sectionCount: Int,
     val firstVerse: String?,

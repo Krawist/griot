@@ -2,7 +2,6 @@ package com.griot.feature.library.folder
 
 import com.griot.core.data.model.Folder
 import com.griot.core.data.model.Genre
-import com.griot.core.data.model.SongLanguage
 import com.griot.feature.library.DeletedSong
 import com.griot.feature.library.LibraryItem
 
@@ -14,9 +13,10 @@ import com.griot.feature.library.LibraryItem
  *   for « Récents » (the songs changed in the last 24 hours) or « Favoris »; `null` otherwise.
  * @property songCount How many songs the folder (or the library) holds, before the filters.
  * @property genres The genres its songs have, in the genres' order: the chips after « Tous ».
- * @property genre The id of the genre chip selected; `null` for « Tous ».
- * @property language The language filter; `null` for « Toutes ».
- * @property items The songs under the filters, last changed first.
+ * @property filters The filters and the order applied.
+ * @property filterCount How many filters are on: the count on the filter button.
+ * @property filterSheet « Filtres et tri », while it is open; `null` otherwise.
+ * @property items The songs under the filters, in their order.
  * @property selecting Whether the multiple selection is on.
  * @property selected The ids of the songs selected.
  * @property loading Whether the songs are still being read.
@@ -28,8 +28,9 @@ internal data class FolderUiState(
     val virtual: String? = null,
     val songCount: Int = 0,
     val genres: List<Genre> = emptyList(),
-    val genre: String? = null,
-    val language: SongLanguage? = null,
+    val filters: FolderFilters = FolderFilters(),
+    val filterCount: Int = 0,
+    val filterSheet: FilterSheetState? = null,
     val items: List<LibraryItem> = emptyList(),
     val selecting: Boolean = false,
     val selected: Set<String> = emptySet(),

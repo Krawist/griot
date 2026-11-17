@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -84,7 +85,7 @@ internal fun FolderScreen(
             FolderFilterBar(
                 uiState = uiState,
                 onGenreSelected = viewModel::onGenreSelected,
-                onLanguageSelected = viewModel::onLanguageSelected,
+                onOpenFilters = viewModel::onFiltersOpened,
             )
             SongList(
                 uiState = uiState,
@@ -110,6 +111,15 @@ internal fun FolderScreen(
         )
     }
     SongExportHost(actions = viewModel.actions)
+    uiState.filterSheet?.let { state ->
+        FiltersSheet(
+            state = state,
+            onChange = viewModel::onFiltersChanged,
+            onReset = viewModel::onFiltersReset,
+            onApply = viewModel::onFiltersApplied,
+            onDismiss = viewModel::onFiltersClosed,
+        )
+    }
     filing?.let { songIds ->
         FilingSheet(
             songIds = songIds,
@@ -124,12 +134,16 @@ internal fun FolderScreen(
     }
 }
 
-// The songs; in the multiple selection, the selected ones are circled.
+// The songs; in the multiple selection, the selected ones are circled. Other filters or another order show the list
+// from its top.
 @Composable
 private fun SongList(uiState: FolderUiState, onOpenSong: (String) -> Unit, onSongActions: (String) -> Unit) {
     val palette = GriotTheme.palette
     val shape = remember { RoundedCornerShape(GriotRadius.card) }
+    val list = rememberLazyListState()
+    LaunchedEffect(uiState.filters) { list.scrollToItem(0) }
     LazyColumn(
+        state = list,
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = ListBottom),
         verticalArrangement = Arrangement.spacedBy(GriotSpacing.m - 2.dp),

@@ -401,15 +401,15 @@ internal class FolderViewModelTest {
             viewModel.onGenreSelected("rap")
 
             // then
-            viewModel.uiState.first { it.genre == "rap" }.items.map { it.song.id } shouldContainExactly
+            viewModel.uiState.first { it.filters.genres == setOf("rap") }.items.map { it.song.id } shouldContainExactly
                 listOf("my-song-id-2")
         }
     }
 
     @Nested
-    inner class OnLanguageSelected {
+    inner class OnFiltersApplied {
         @Test
-        fun `should keep the songs in the language`() = runTest {
+        fun `should keep the songs in the language chosen in the filters`() = runTest {
             // given
             val folder = Folder(
                 id = "my-folder-id",
@@ -467,12 +467,132 @@ internal class FolderViewModelTest {
             )
             viewModel.uiState.launchIn(backgroundScope)
 
+            viewModel.onFiltersOpened()
+            viewModel.onFiltersChanged(FolderFilters(language = SongLanguage.FRENCH))
+
             // when
-            viewModel.onLanguageSelected(SongLanguage.FRENCH)
+            viewModel.onFiltersApplied()
 
             // then
-            viewModel.uiState.first { it.language != null }.items.map { it.song.id } shouldContainExactly
+            viewModel.uiState.first { it.filters.language != null }.items.map { it.song.id } shouldContainExactly
                 listOf("my-song-id-1")
+        }
+    }
+
+    @Nested
+    inner class OnFiltersChanged {
+        @Test
+        fun `should count the songs the filters being chosen keep`() = runTest {
+            // given
+            val library = listOf(SongLanguage.FRENCH, SongLanguage.ENGLISH).mapIndexed { index, language ->
+                LibrarySong(
+                    id = "my-song-id-${index + 1}",
+                    title = "my-title",
+                    language = language,
+                    status = SongStatus.DRAFT,
+                    updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "",
+                )
+            }
+            val viewModel = FolderViewModel(
+                folderId = null,
+                songs = FakeSongRepository(library = library),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onFiltersOpened()
+
+            // when
+            viewModel.onFiltersChanged(FolderFilters(language = SongLanguage.ENGLISH))
+
+            // then
+            val state = viewModel.uiState.first { it.filterSheet?.draft?.language != null }
+            state.filterSheet?.count shouldBe 1
+            state.items.size shouldBe 2
+        }
+    }
+
+    @Nested
+    inner class OnFiltersClosed {
+        @Test
+        fun `should keep the filters applied when the sheet closes`() = runTest {
+            // given
+            val library = listOf(SongLanguage.FRENCH, SongLanguage.ENGLISH).mapIndexed { index, language ->
+                LibrarySong(
+                    id = "my-song-id-${index + 1}",
+                    title = "my-title",
+                    language = language,
+                    status = SongStatus.DRAFT,
+                    updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "",
+                )
+            }
+            val viewModel = FolderViewModel(
+                folderId = null,
+                songs = FakeSongRepository(library = library),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onFiltersOpened()
+
+            // when
+            viewModel.onFiltersChanged(FolderFilters(language = SongLanguage.ENGLISH))
+            viewModel.onFiltersClosed()
+
+            // then
+            val state = viewModel.uiState.first { !it.loading && it.filterSheet == null }
+            state.filters shouldBe FolderFilters()
+            state.items.size shouldBe 2
+        }
+    }
+
+    @Nested
+    inner class OnFiltersReset {
+        @Test
+        fun `should clear the filters being chosen`() = runTest {
+            // given
+            val library = listOf(SongLanguage.FRENCH, SongLanguage.ENGLISH).mapIndexed { index, language ->
+                LibrarySong(
+                    id = "my-song-id-${index + 1}",
+                    title = "my-title",
+                    language = language,
+                    status = SongStatus.DRAFT,
+                    updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "",
+                )
+            }
+            val viewModel = FolderViewModel(
+                folderId = null,
+                songs = FakeSongRepository(library = library),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onFiltersOpened()
+
+            // when
+            viewModel.onFiltersChanged(FolderFilters(language = SongLanguage.ENGLISH, includeArchives = true))
+            viewModel.onFiltersReset()
+
+            // then
+            viewModel.uiState.first { it.filterSheet != null }.filterSheet?.draft shouldBe FolderFilters()
         }
     }
 

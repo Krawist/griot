@@ -177,6 +177,7 @@ internal class SongRepositoryImpl @Inject constructor(
         genreIds = genreIds?.split(',').orEmpty(),
         favorite = favorite,
         updatedAt = updatedAt,
+        createdAt = createdAt,
         sectionCount = sectionCount,
         firstVerse = firstVerse,
         lyrics = lyrics.orEmpty(),
