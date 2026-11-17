@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,9 +90,15 @@ internal fun SearchField(query: String, onQueryChange: (String) -> Unit) {
     val shape = RoundedCornerShape(GriotRadius.field)
     val placeholder = stringResource(R.string.library_search)
     val textStyle = GriotTheme.type.body.copy(color = palette.ink)
+    // The field keeps what is typed: the query comes back from the songs' search a moment later, and showing that
+    // one would move the cursor back while typing.
+    var text by rememberSaveable { mutableStateOf(query) }
     BasicTextField(
-        value = query,
-        onValueChange = onQueryChange,
+        value = text,
+        onValueChange = {
+            text = it
+            onQueryChange(it)
+        },
         singleLine = true,
         textStyle = textStyle,
         cursorBrush = SolidColor(palette.accent),
@@ -112,7 +120,7 @@ internal fun SearchField(query: String, onQueryChange: (String) -> Unit) {
                     tint = palette.muted,
                 )
                 Box(modifier = Modifier.weight(1f)) {
-                    if (query.isEmpty()) Text(text = placeholder, style = textStyle, color = palette.muted)
+                    if (text.isEmpty()) Text(text = placeholder, style = textStyle, color = palette.muted)
                     field()
                 }
             }
