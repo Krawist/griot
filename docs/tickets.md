@@ -2,7 +2,7 @@
 
 > Reference documents kept in Claude (November 16, 2026): the vision and features document, https://claude.ai/artifact/TFJQahYirQ72jEVJMs1Xoy, and the design canvas, https://claude.ai/artifact/GtB94FRDSFC6mVmKKVfCfq. If this file and the vision document differ on scope, the vision document prevails. Update this copy when they change.
 
-This document splits the Griot MVP into 46 tickets over three phases. Phase 1 gives an app usable every day that replaces Samsung Notes for songwriting: a structured editor, live syllables and rhymes in French and English, version history and Google Drive sync. Phase 2 adds the AI panel and the ideas box. Phase 3 adds the features listed under "Ensuite" in the vision document.
+This document splits the Griot MVP into 53 tickets over three phases. Phase 1 gives an app usable every day that replaces Samsung Notes for songwriting: a structured editor, live syllables and rhymes in French and English, version history and Google Drive sync. Phase 2 adds the AI panel, the ideas box and audio: voice memos, beats attached to a song and a player to write over them. Phase 3 adds the features listed under "Ensuite" in the vision document.
 
 Indicative sizes: S for a day at most, M for two or three days, L for about a week.
 
@@ -35,6 +35,21 @@ Turn the mockups into a Compose theme: the Wax palette (magenta `#E0287D`, orang
 - A catalogue of previews shows every token and component.
 
 Size: M. Dependencies: GRI-01. Mockups: all screens.
+
+### GRI-47 · Match the typography of the mockups
+
+The type on the phone does not match the mockups yet: weights, sizes and spacing differ, so screens look flatter than designed. Align `GriotTypography` with the mockups and make every screen read its styles from it.
+
+- Screen titles (« Tes chansons », « Boîte à idées », « Réglages », onboarding titles): Outfit Bold, 32 sp, letter spacing −0.5 sp.
+- Song title in the editor's top bar: Outfit Bold, 20 sp; the line under it (sync state, language): Inter Regular, 12 sp.
+- Lyrics: Outfit Regular, 18 sp by default (GRI-16 scales it), line height 1.5.
+- Section labels: Inter SemiBold, 12 sp, upper case, letter spacing 0.4 sp, in the accent text colour; the rhyme scheme next to them: Inter Regular, 12 sp, muted.
+- Rhyme letter in the margin: Inter SemiBold, 12 sp, in the rhyme colour; syllable count: Inter Regular, 12 sp, muted, right-aligned.
+- Song titles in the library and card titles: Outfit SemiBold, 18 sp; body and descriptions: Inter Regular, 14 to 16 sp; chips: Inter, 14 sp, SemiBold when selected, Medium otherwise.
+- Main buttons: Inter SemiBold, 17 sp; text buttons and links: Inter Medium, 15 sp.
+- No screen sets a font size or weight directly: everything goes through the theme. Checked by comparing each screen with its mockup, light and dark.
+
+Size: S. Dependencies: GRI-02. Mockups: all screens.
 
 ### GRI-03 · Add the app logo and launch screen
 
@@ -233,6 +248,30 @@ An imported text often comes split into more sections than the song has. A secti
 
 Size: S. Dependencies: GRI-14, GRI-15, GRI-24. Mockup: « Éditeur ».
 
+### GRI-48 · Rework the editor's bars and menus
+
+The lyrics get the screen: the toolbar at the bottom of the editor goes away, its actions move to the top bar, to the section menus and to the verse sheet (GRI-49), and the bottom only holds the audio player (GRI-52).
+
+- Top bar: back, the song title with the sync state and the language under it, then three buttons: the microphone (GRI-50), the audios with their count (GRI-51), and « ⋯ ».
+- The « ⋯ » menu of the song: « Versions » (the history, GRI-24), « Langue » (the choice of GRI-18, which leaves its chip), « Taille du texte » (the slider of GRI-16, which leaves its « Aa » menu), « Exporter en Markdown », « Renommer la chanson ».
+- Each section label has its own « ⋯ » menu: « Ajouter une section en dessous », « Renommer », « Répéter cette section », « Fusionner avec la section du dessus » (GRI-46), « Supprimer ». The « Ajouter une section » button at the end of the song stays.
+- One menu is open at a time; opening one closes the other.
+- The top bar still hides while scrolling down (GRI-45).
+
+Size: M. Dependencies: GRI-14, GRI-16, GRI-18, GRI-24, GRI-46. Mockup: « Éditeur ».
+
+### GRI-49 · Select a verse and open its options sheet
+
+To act on a verse, the author selects it. A tap anywhere on the verse's row selects it: on the rhyme letter, on the text or on the syllable count. A tap on the text also puts the cursor there; a tap on the letter or the count selects without opening the keyboard. The verse being edited is always the selected one.
+
+- The selected verse is circled as in the mockup: the whole row, letter and count included, gets a rounded outline (12 dp radius, 1.5 dp magenta line at 45 % opacity) and a light magenta background (8 % in light mode, 16 % in dark mode). One verse is selected at a time.
+- Selecting a verse brings up a sheet from the bottom, above the player, almost entirely hidden: only its handle and a summary line show, with the rhyme letter in its colour (« Couplet 1 · vers 2 · 9 syllabes »).
+- The author drags the sheet up (or taps its handle) to see the options: « Rimes », « Aide IA », « Mémo sur ce vers », « Versions du vers ». « Rimes » and « Aide IA » open the AI panel (GRI-34) on the matching tab; « Mémo sur ce vers » starts a recording attached to the verse (GRI-50); « Versions du vers » opens the history on that verse (GRI-24).
+- Dragging the sheet down collapses it to its handle; it disappears when no verse is selected.
+- The editor scrolls so that the selected verse is never hidden by the sheet or the player.
+
+Size: M. Dependencies: GRI-21, GRI-48. Mockup: « Éditeur ».
+
 ## Phase 1 · Phonetics
 
 ### GRI-19 · Define the phonetic engine interface
@@ -427,6 +466,56 @@ Size: M. Dependencies: GRI-04, GRI-05. Mockup: « Boîte à idées ».
 
 Size: S. Dependencies: GRI-38. Mockup: « Boîte à idées ».
 
+## Phase 2 · Audio
+
+### GRI-50 · Record voice memos
+
+The author records a melody, a flow or an idea of placement, from the microphone of the editor's top bar or from « Mémo sur ce vers ». The recording sheet shows the time, the live waveform, what the memo is attached to (« Couplet 1 », « Refrain », « Toute la chanson », or the selected verse), and « Jouer le beat pendant l'enregistrement ».
+
+- The microphone permission is asked the first time, after a short explanation; a refusal never blocks writing.
+- « Arrêter » saves the memo (AAC, in the app's storage) and adds it to the song's audios; « Annuler » discards it; « Pause » pauses and resumes.
+- When the beat plays during the recording, the sheet reminds that headphones keep it out of the memo.
+- Memos sync with the song (GRI-27) and play back from the audios screen.
+- This ticket replaces GRI-43.
+
+Size: M. Dependencies: GRI-48, GRI-51. Mockup: « Enregistrer sa voix ».
+
+### GRI-51 · Attach audio files and links to a song
+
+A song keeps its audios: voice memos, files from the phone (a beat in MP3, for example) and links (Spotify, YouTube, SoundCloud or any address). The audios screen lists them in two groups, « Beats et musique » and « Mémos vocaux », with « Enregistrer », « Fichier » and « Lien » at the bottom.
+
+- An attachment belongs to the song and, optionally, to a section or a verse; it has a kind (memo, file, link), a URI, a title, a duration and a creation date.
+- A file is never copied: the app keeps its URI with a persistable permission (`ACTION_OPEN_DOCUMENT`). A file that has been moved or deleted shows « Fichier introuvable » and can be relinked.
+- File references sync as references only: on another phone they show « Sur un autre téléphone ». Links and memos sync fully.
+- A link opens in its app when it is installed (Spotify, YouTube), otherwise in the browser.
+- The count of audios shows on the editor's top bar.
+
+Size: M. Dependencies: GRI-05, GRI-27. Mockup: « Audios de la chanson ».
+
+### GRI-52 · Play an attached beat under the lyrics
+
+The beat attached to a song plays inside the app, so the author writes over it without switching to a music app. The player sits alone at the bottom of the editor: the cover, the title, the position, « Reculer de 15 secondes » and the play/pause button.
+
+- Playback runs on Media3 (ExoPlayer) with a media session: it keeps playing while the author types, shows on the lock screen and in the notification shade, and respects audio focus (a call pauses it).
+- The cover comes from the file's embedded artwork; without one, Griot generates a cover in its own colours.
+- The player's background and accents come from the cover (AndroidX Palette): a dark swatch of the cover as background, its lighter colours as soft glows. White text and controls keep a contrast of at least 4.5:1 whatever the cover; the player looks the same in light and dark modes.
+- The play/pause button is a square whose corner radius follows the player's (player radius minus its padding); the cover uses the same radius.
+- « Reculer de 15 secondes » never goes before the start.
+
+Size: M. Dependencies: GRI-48, GRI-51. Mockups: « Éditeur » (the player), « Audios de la chanson ».
+
+### GRI-53 · Control the music of other apps
+
+When the beat plays in another app (Spotify, YouTube, Audiomack…), the same player controls it. Without any permission, Griot sends play and pause to the active player. With the notification access, it also shows the title, the cover and the progress, and goes back 15 seconds.
+
+- Play and pause without permission go through the system media keys.
+- With the access, Griot reads the active media sessions (`MediaSessionManager`, through a notification listener that never reads notifications) and uses their transport controls for the title, the progress and the 15 seconds back.
+- The explanation sheet « Contrôler la musique des autres apps » shows the first time the player meets music from another app, never during the onboarding. « Autoriser dans les réglages » opens the system setting; « Plus tard » keeps play and pause only.
+- The settings get a « Musique » group with « Contrôle des autres apps » and its status.
+- A note in the code records the Play Store declaration this access will need before any public release.
+
+Size: M. Dependencies: GRI-29, GRI-52. Mockups: « Musique des autres apps », « Réglages ».
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style
@@ -451,6 +540,4 @@ Size: M. Dependencies: GRI-38. Mockup: « Boîte à idées » (micro button).
 
 ### GRI-43 · Attach a hummed melody to a section
 
-The author records a melody and attaches it to a section; it plays from the editor. The audio syncs with the song.
-
-Size: M. Dependencies: GRI-14, GRI-27.
+Replaced by GRI-50: voice memos can be attached to a section or a verse.
