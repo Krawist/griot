@@ -1,10 +1,10 @@
 package com.griot.core.data.model
 
-/** Writing language of a song: it picks the phonetic engine and the language the AI answers in. */
+/**
+ * Language a song is written in: it picks the phonetic engine and the language the AI answers in. A song always has
+ * one; in automatic mode it is the detected one (GRI-54).
+ */
 enum class SongLanguage {
     FRENCH,
     ENGLISH,
-
-    /** The dominant language of the song decides (GRI-18). */
-    AUTOMATIC,
 }

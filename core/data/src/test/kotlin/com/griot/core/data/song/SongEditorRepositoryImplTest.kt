@@ -995,13 +995,13 @@ internal class SongEditorRepositoryImplTest {
     @Nested
     inner class SetLanguage {
         @Test
-        fun `should set the language and date the song`() = runTest {
+        fun `should set the language, how it was set, and date the song`() = runTest {
             // given
             database.songDao().insert(
                 SongEntity(
                     id = "my-song-id",
                     title = "my-title",
-                    language = SongLanguage.AUTOMATIC,
+                    language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     createdAt = Instant.parse("2026-11-01T10:00:00Z"),
                     updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
@@ -1009,11 +1009,13 @@ internal class SongEditorRepositoryImplTest {
             )
 
             // when
-            repository.setLanguage(songId = "my-song-id", language = SongLanguage.ENGLISH)
+            repository.setLanguage(songId = "my-song-id", language = SongLanguage.ENGLISH, detected = true)
 
             // then
-            database.songDao().getById("my-song-id")?.let { it.language to it.updatedAt } shouldBe
-                (SongLanguage.ENGLISH to Instant.parse("2026-11-16T10:00:00Z"))
+            database.songDao().getById("my-song-id")?.let {
+                Triple(it.language, it.languageDetected, it.updatedAt)
+            } shouldBe
+                Triple(SongLanguage.ENGLISH, true, Instant.parse("2026-11-16T10:00:00Z"))
         }
     }
 

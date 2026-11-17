@@ -106,8 +106,10 @@ internal class LocalSyncSourceImplTest {
                     id = "my-song-id",
                     updatedAt = Instant.parse("2026-11-17T01:30:00Z"),
                     deleted = false,
-                    payload = """{"id":"my-song-id","title":"my-title","language":"FRENCH","status":"DRAFT",""" +
-                        """"createdAt":"2026-11-17T01:00:00Z","updatedAt":"2026-11-17T01:30:00Z","deleted":false}""",
+                    payload =
+                    """{"id":"my-song-id","title":"my-title","language":"FRENCH","languageDetected":false,""" +
+                        """"status":"DRAFT","createdAt":"2026-11-17T01:00:00Z","updatedAt":"2026-11-17T01:30:00Z",""" +
+                        """"deleted":false}""",
                 ),
             )
         }

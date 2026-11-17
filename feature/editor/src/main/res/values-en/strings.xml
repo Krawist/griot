@@ -44,7 +44,6 @@
     <string name="editor_ideas">IDEAS OF THIS SONG · TAP TO ADD</string>
     <string name="editor_jump_to_top">Top of the song</string>
     <string name="editor_language_auto_detected">Auto · %1$s</string>
-    <string name="editor_language_automatic">Auto</string>
     <string name="editor_language_automatic_hint">In automatic mode, Griot spots the dominant language of the whole song to count its syllables and find its rhymes.</string>
     <string name="editor_language_automatic_name">Automatic</string>
     <string name="editor_language_label">Song language: %1$s</string>

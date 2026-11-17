@@ -82,10 +82,8 @@ internal class SongSearchTest {
         @ParameterizedTest
         @CsvSource(
             "ALL, FRENCH, true",
-            "ALL, AUTOMATIC, true",
             "FRENCH, FRENCH, true",
             "FRENCH, ENGLISH, false",
-            "FRENCH, AUTOMATIC, false",
             "ENGLISH, ENGLISH, true",
             "ENGLISH, FRENCH, false",
         )

@@ -32,6 +32,10 @@ class FakeSongRepository(library: List<LibrarySong> = emptyList(), trash: List<T
         return "imported-song-id"
     }
 
+    override suspend fun detectLanguages() {
+        calls += "detect languages"
+    }
+
     override suspend fun renameSong(id: String, title: String) {
         calls += "rename $id $title"
     }

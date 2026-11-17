@@ -26,6 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -100,7 +101,6 @@ internal class EditorViewModelTest {
                 loading = false,
                 title = "my-title",
                 language = SongLanguage.FRENCH,
-                writingLanguage = SongLanguage.FRENCH,
                 sections = listOf(
                     EditorSection(
                         section = verse,
@@ -891,30 +891,32 @@ internal class EditorViewModelTest {
     @Nested
     inner class Languages {
         @Test
-        fun `should write an automatic song in the language detected in its lyrics`() = runTest {
+        fun `should detect again the language of an automatic song 2 s after a change`() = runTest {
             // given
             val detector = FakeSongLanguageDetector(language = SongLanguage.ENGLISH)
-            val viewModel = EditorViewModel(
-                songId = "my-song-id",
-                editor = FakeSongEditorRepository(
-                    document = SongDocument(
-                        id = "my-song-id",
-                        title = "my-title",
-                        language = SongLanguage.AUTOMATIC,
-                        sections = listOf(
-                            SongSection(
-                                id = "my-section-id",
-                                kind = SectionKind.VERSE,
-                                name = null,
-                                repeatOf = null,
-                                verses = listOf(
-                                    SongVerse(id = "my-verse-id-1", text = "my-text-1"),
-                                    SongVerse(id = "my-verse-id-2", text = "my-text-2"),
-                                ),
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    languageDetected = true,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
                             ),
                         ),
                     ),
                 ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
                 songs = FakeSongRepository(),
                 preferences = FakeUserPreferencesRepository(),
                 detector = detector,
@@ -924,18 +926,107 @@ internal class EditorViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
             )
-            viewModel.uiState.launchIn(backgroundScope)
 
             // when
-            val state = viewModel.uiState.first { it.detectedLanguage != null }
+            advanceTimeBy(2_001)
 
             // then
-            state.writingLanguage shouldBe SongLanguage.ENGLISH
+            editor.calls shouldContainExactly listOf("detected language my-song-id ENGLISH")
             detector.texts shouldContainExactly listOf("my-text-1\nmy-text-2")
         }
 
         @Test
-        fun `should set the language chosen`() = runTest {
+        fun `should not detect the language of a song before the author pauses`() = runTest {
+            // given
+            val detector = FakeSongLanguageDetector(language = SongLanguage.ENGLISH)
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    languageDetected = true,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = detector,
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            advanceTimeBy(1_999)
+
+            // then
+            editor.calls.shouldBeEmpty()
+            detector.texts.shouldBeEmpty()
+        }
+
+        @Test
+        fun `should not detect the language of a song whose language was chosen`() = runTest {
+            // given
+            val detector = FakeSongLanguageDetector(language = SongLanguage.ENGLISH)
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    languageDetected = false,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = detector,
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            advanceTimeBy(2_001)
+
+            // then
+            editor.calls.shouldBeEmpty()
+            detector.texts.shouldBeEmpty()
+        }
+
+        @Test
+        fun `should set the language chosen by hand`() = runTest {
             // given
             val editor = FakeSongEditorRepository()
             val viewModel = EditorViewModel(
@@ -952,10 +1043,99 @@ internal class EditorViewModelTest {
             )
 
             // when
-            viewModel.onLanguageSelected(SongLanguage.ENGLISH)
+            viewModel.onLanguageSelected(LanguageChoice.ENGLISH)
 
             // then
             editor.calls shouldContainExactly listOf("language my-song-id ENGLISH")
+        }
+
+        @Test
+        fun `should detect the language at once when the automatic mode is chosen`() = runTest {
+            // given
+            val detector = FakeSongLanguageDetector(language = SongLanguage.ENGLISH)
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    languageDetected = false,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = detector,
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            viewModel.onLanguageSelected(LanguageChoice.AUTOMATIC)
+
+            // then
+            editor.calls shouldContainExactly listOf("detected language my-song-id ENGLISH")
+            detector.texts shouldContainExactly listOf("my-text-1\nmy-text-2")
+        }
+
+        @Test
+        fun `should keep the language when the automatic mode is chosen for lyrics too short to tell`() = runTest {
+            // given
+            val detector = FakeSongLanguageDetector(language = null)
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.ENGLISH,
+                    languageDetected = false,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(
+                                SongVerse(id = "my-verse-id-1", text = "my-text-1"),
+                                SongVerse(id = "my-verse-id-2", text = "my-text-2"),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = detector,
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            viewModel.onLanguageSelected(LanguageChoice.AUTOMATIC)
+
+            // then
+            editor.calls shouldContainExactly listOf("detected language my-song-id ENGLISH")
         }
     }
 

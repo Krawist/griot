@@ -10,6 +10,7 @@ import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.database.inMemoryDatabase
+import com.griot.core.data.language.SongLanguageDetector
 import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.SectionKind
@@ -20,11 +21,14 @@ import com.griot.core.data.preferences.UserPreferencesRepository
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.mockk.Called
+import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerifySequence
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import io.mockk.verifySequence
 import java.time.Clock
 import java.time.Instant
@@ -41,12 +45,14 @@ internal class SongRepositoryImplTest {
     private val sectionDao = mockk<SectionDao>()
     private val verseDao = mockk<VerseDao>()
     private val preferences = mockk<UserPreferencesRepository>()
+    private val detector = mockk<SongLanguageDetector>()
     private val clock = Clock.fixed(Instant.parse("2026-11-16T10:00:00Z"), ZoneOffset.UTC)
     private val repository = SongRepositoryImpl(
         songDao = songDao,
         sectionDao = sectionDao,
         verseDao = verseDao,
         preferences = preferences,
+        detector = detector,
         clock = clock,
     )
 
@@ -276,6 +282,7 @@ internal class SongRepositoryImplTest {
             sectionDao = database.sectionDao(),
             verseDao = database.verseDao(),
             preferences = preferences,
+            detector = detector,
             clock = clock,
         )
 
@@ -375,6 +382,7 @@ internal class SongRepositoryImplTest {
             sectionDao = database.sectionDao(),
             verseDao = database.verseDao(),
             preferences = preferences,
+            detector = detector,
             clock = clock,
         )
 
@@ -384,7 +392,10 @@ internal class SongRepositoryImplTest {
         }
 
         @Test
-        fun `should create a song in progress, in automatic language, with its sections and repeats`() = runTest {
+        fun `should create a song in progress with its sections and repeats`() = runTest {
+            // given
+            coEvery { detector.detect(any()) } returns SongLanguage.ENGLISH
+
             // when
             val id = repository.importSong(
                 title = "my-title",
@@ -396,8 +407,8 @@ internal class SongRepositoryImplTest {
             )
 
             // then
-            database.songDao().getById(id)?.let { Triple(it.title, it.status, it.language) } shouldBe
-                Triple("my-title", SongStatus.IN_PROGRESS, SongLanguage.AUTOMATIC)
+            database.songDao().getById(id)?.let { it.title to it.status } shouldBe
+                ("my-title" to SongStatus.IN_PROGRESS)
             val sections = database.sectionDao().getBySong(id)
             sections.map { it.kind to it.name } shouldContainExactly listOf(
                 SectionKind.CHORUS to null,
@@ -406,6 +417,163 @@ internal class SongRepositoryImplTest {
             )
             sections[2].repeatOfSectionId shouldBe sections[0].id
             database.verseDao().getBySong(id).map { it.text } shouldContainExactly listOf("a", "b", "c")
+            coVerifySequence { detector.detect("a\nb\nc") }
+        }
+
+        @Test
+        fun `should give the song the language detected in its lyrics`() = runTest {
+            // given
+            coEvery { detector.detect(any()) } returns SongLanguage.ENGLISH
+
+            // when
+            val id = repository.importSong(
+                title = "my-title",
+                sections = listOf(
+                    NewSection(kind = SectionKind.VERSE, name = null, lines = listOf("my-line"), repeatOf = null),
+                ),
+            )
+
+            // then
+            database.songDao().getById(id)?.let { it.language to it.languageDetected } shouldBe
+                (SongLanguage.ENGLISH to true)
+            coVerifySequence { detector.detect("my-line") }
+        }
+
+        @Test
+        fun `should give the song the language of new songs when its lyrics are too short to tell`() = runTest {
+            // given
+            coEvery { detector.detect(any()) } returns null
+            every { preferences.defaultSongLanguage } returns flowOf(SongLanguage.ENGLISH)
+
+            // when
+            val id = repository.importSong(
+                title = "my-title",
+                sections = listOf(
+                    NewSection(kind = SectionKind.VERSE, name = null, lines = listOf("my-line"), repeatOf = null),
+                ),
+            )
+
+            // then
+            database.songDao().getById(id)?.let { it.language to it.languageDetected } shouldBe
+                (SongLanguage.ENGLISH to true)
+            coVerifySequence { detector.detect("my-line") }
+            verifySequence { preferences.defaultSongLanguage }
+        }
+    }
+
+    // On an in-memory database: the songs are read back.
+    @Nested
+    inner class DetectLanguages {
+        private val database = inMemoryDatabase()
+        private val repository = SongRepositoryImpl(
+            songDao = database.songDao(),
+            sectionDao = database.sectionDao(),
+            verseDao = database.verseDao(),
+            preferences = preferences,
+            detector = detector,
+            clock = clock,
+        )
+
+        @AfterEach
+        fun tearDown() {
+            database.close()
+        }
+
+        @Test
+        fun `should store the language detected in the lyrics of a song in automatic mode`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    languageDetected = true,
+                    status = SongStatus.IN_PROGRESS,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id-1",
+                        sectionId = "my-section-id",
+                        text = "my-text-1",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-2",
+                        sectionId = "my-section-id",
+                        text = "my-text-2",
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+            coEvery { detector.detect(any()) } returns SongLanguage.ENGLISH
+
+            // when
+            repository.detectLanguages()
+
+            // then
+            database.songDao().getById("my-song-id")?.let {
+                Triple(it.language, it.languageDetected, it.updatedAt)
+            } shouldBe
+                Triple(SongLanguage.ENGLISH, true, Instant.parse("2026-11-16T10:00:00Z"))
+            coVerifySequence { detector.detect("my-text-1\nmy-text-2") }
+        }
+
+        @Test
+        fun `should keep the language of a song too short to tell`() = runTest {
+            // given
+            val song = SongEntity(
+                id = "my-song-id",
+                title = "my-title",
+                language = SongLanguage.ENGLISH,
+                languageDetected = true,
+                status = SongStatus.IN_PROGRESS,
+                createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+            )
+            database.songDao().insert(song)
+            coEvery { detector.detect(any()) } returns null
+
+            // when
+            repository.detectLanguages()
+
+            // then
+            database.songDao().getById("my-song-id") shouldBe song
+            coVerifySequence { detector.detect("") }
+        }
+
+        @Test
+        fun `should leave the songs whose language was chosen by hand`() = runTest {
+            // given
+            val song = SongEntity(
+                id = "my-song-id",
+                title = "my-title",
+                language = SongLanguage.FRENCH,
+                languageDetected = false,
+                status = SongStatus.IN_PROGRESS,
+                createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+            )
+            database.songDao().insert(song)
+
+            // when
+            repository.detectLanguages()
+
+            // then
+            database.songDao().getById("my-song-id") shouldBe song
+            verify { detector wasNot Called }
         }
     }
 }

@@ -7,6 +7,7 @@ import com.griot.core.data.idea.IdeaRepository
 import com.griot.core.data.language.SongLanguageDetector
 import com.griot.core.data.model.ExportFile
 import com.griot.core.data.model.SectionKind
+import com.griot.core.data.model.SongDocument
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.VersionSource
@@ -33,13 +34,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -79,15 +82,6 @@ internal class EditorViewModel @AssistedInject constructor(
     // The verse's saves, one after the other in the order typed.
     private val writes = Mutex()
 
-    // The whole song, detected again 1 s after the last change: a few English words do not switch a French song.
-    private val detectedLanguage = editor.observeDocument(songId)
-        .map { document -> document?.sections.orEmpty().filter { it.repeatOf == null }.flatMap { it.verses } }
-        .map { verses -> verses.joinToString(separator = "\n") { it.text } }
-        .distinctUntilChanged()
-        .debounce(DETECTION_DELAY_MILLIS)
-        .mapLatest { lyrics -> detector.detect(lyrics) }
-        .onStart { emit(null) }
-
     val uiState: StateFlow<EditorUiState> = editor.observeDocument(songId)
         .map { document ->
             if (document == null) {
@@ -98,6 +92,12 @@ internal class EditorViewModel @AssistedInject constructor(
                     loading = false,
                     title = document.title,
                     language = document.language,
+                    languageDetected = document.languageDetected,
+                    languageChoice = when {
+                        document.languageDetected -> LanguageChoice.AUTOMATIC
+                        document.language == SongLanguage.ENGLISH -> LanguageChoice.ENGLISH
+                        else -> LanguageChoice.FRENCH
+                    },
                     sections = document.sections.mapIndexed { index, section ->
                         EditorSection(
                             section = section,
@@ -118,12 +118,6 @@ internal class EditorViewModel @AssistedInject constructor(
         .combine(export) { state, file -> state.copy(export = file) }
         .combine(ideas.observeSongIdeas(songId)) { state, linked -> state.copy(ideas = linked) }
         .combine(versions.observeConflicts(songId)) { state, verses -> state.copy(conflicts = verses) }
-        .combine(detectedLanguage) { state, detected ->
-            state.copy(
-                detectedLanguage = detected,
-                writingLanguage = if (state.language == SongLanguage.AUTOMATIC) detected else state.language,
-            )
-        }
         .combine(preferences.showRhymes) { state, show -> state.copy(showRhymes = show) }
         .combine(corrections.observeCorrections(SongLanguage.FRENCH)) { state, words ->
             engines.french.setCorrections(words)
@@ -133,10 +127,29 @@ internal class EditorViewModel @AssistedInject constructor(
             engines.english.setCorrections(words)
             state
         }
-        .combine(preferences.defaultSongLanguage) { state, default -> state.withSounds(default) }
+        .map { state -> state.withSounds() }
         // The phonetics read their dictionaries and count every verse: never on the main thread.
         .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), EditorUiState())
+
+    init {
+        // In automatic mode, the language is detected again 2 s after the last change, never while the author types;
+        // the whole song is read, so a few English words do not switch a French song.
+        viewModelScope.launch {
+            editor.observeDocument(songId)
+                .filterNotNull()
+                .filter { it.languageDetected }
+                .map { it.language to it.lyrics() }
+                .distinctUntilChanged { old, new -> old.second == new.second }
+                .debounce(DETECTION_DELAY_MILLIS)
+                .collectLatest { (language, lyrics) ->
+                    val detected = detector.detect(lyrics)
+                    if (detected != null && detected != language) {
+                        editor.setLanguage(songId = songId, language = detected, detected = true)
+                    }
+                }
+        }
+    }
 
     /** The history of the conflict on the verse [verseId] is opened: its notice goes. */
     fun onConflictShown(verseId: String) {
@@ -148,8 +161,22 @@ internal class EditorViewModel @AssistedInject constructor(
         viewModelScope.launch { versions.dismissSongConflicts(songId) }
     }
 
-    fun onLanguageSelected(language: SongLanguage) {
-        viewModelScope.launch { editor.setLanguage(songId = songId, language = language) }
+    /**
+     * The author chose a language, or the automatic mode: the language is then detected at once, and kept when the
+     * lyrics are too short to tell.
+     */
+    fun onLanguageSelected(choice: LanguageChoice) {
+        viewModelScope.launch {
+            when (choice) {
+                LanguageChoice.FRENCH -> editor.setLanguage(songId, language = SongLanguage.FRENCH, detected = false)
+                LanguageChoice.ENGLISH -> editor.setLanguage(songId, language = SongLanguage.ENGLISH, detected = false)
+                LanguageChoice.AUTOMATIC -> {
+                    val document = editor.observeDocument(songId).first() ?: return@launch
+                    val language = detector.detect(document.lyrics()) ?: document.language
+                    editor.setLanguage(songId = songId, language = language, detected = true)
+                }
+            }
+        }
     }
 
     fun onShowRhymesChange(show: Boolean) {
@@ -353,19 +380,9 @@ internal class EditorViewModel @AssistedInject constructor(
         focus.value = null
     }
 
-    // The syllables and rhymes of every section, in the song's language; an automatic song not detected yet is read
-    // in the language of new songs, French when that is automatic too.
-    private fun EditorUiState.withSounds(default: SongLanguage): EditorUiState {
-        val language = writingLanguage ?: default.takeUnless { it == SongLanguage.AUTOMATIC } ?: SongLanguage.FRENCH
-        val engine = engines.of(
-            if (language ==
-                SongLanguage.ENGLISH
-            ) {
-                PhoneticLanguage.ENGLISH
-            } else {
-                PhoneticLanguage.FRENCH
-            },
-        )
+    // The syllables and rhymes of every section, in the song's language.
+    private fun EditorUiState.withSounds(): EditorUiState {
+        val engine = engineOf(language)
         return copy(
             sections = sections.map {
                 it.copy(sounds = sectionSounds(verses = it.section.verses, engine = engine))
@@ -381,12 +398,16 @@ internal class EditorViewModel @AssistedInject constructor(
         val state = uiState.value
         val sound = state.sections.firstNotNullOfOrNull { it.sounds.verses[verseId] } ?: return
         val word = sound.count.guessedWords.firstOrNull() ?: return
-        val now = engineOf(state.soundLanguage).countSyllables(word).syllables
+        val now = engineOf(state.language).countSyllables(word).syllables
         val corrected = (now + syllables - sound.count.syllables).coerceAtLeast(1)
         viewModelScope.launch {
-            corrections.correct(language = state.soundLanguage, word = word, syllables = corrected)
+            corrections.correct(language = state.language, word = word, syllables = corrected)
         }
     }
+
+    // The text of the song, each verse once: the repeats show their source's verses.
+    private fun SongDocument.lyrics() =
+        sections.filter { it.repeatOf == null }.flatMap { it.verses }.joinToString(separator = "\n") { it.text }
 
     private fun engineOf(language: SongLanguage) =
         engines.of(if (language == SongLanguage.ENGLISH) PhoneticLanguage.ENGLISH else PhoneticLanguage.FRENCH)
@@ -421,7 +442,7 @@ internal class EditorViewModel @AssistedInject constructor(
         const val MAX_FONT_SIZE = 28
 
         private const val STOP_TIMEOUT_MILLIS = 5_000L
-        private const val DETECTION_DELAY_MILLIS = 1_000L
+        private const val DETECTION_DELAY_MILLIS = 2_000L
         private const val VERSION_PAUSE_MILLIS = 2_000L
     }
 }

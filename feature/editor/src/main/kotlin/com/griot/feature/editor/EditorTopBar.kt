@@ -38,7 +38,7 @@ private val ChipHeight = 32.dp
 internal fun EditorTopBar(
     title: String,
     language: SongLanguage,
-    detectedLanguage: SongLanguage?,
+    languageDetected: Boolean,
     onBack: () -> Unit,
     onTitleChange: (String) -> Unit,
     onFontSize: () -> Unit,
@@ -66,7 +66,7 @@ internal fun EditorTopBar(
             modifier = Modifier.weight(1f),
         )
         FontSizeButton(onClick = onFontSize)
-        LanguageChip(language = language, detectedLanguage = detectedLanguage, onClick = onLanguage)
+        LanguageChip(language = language, detected = languageDetected, onClick = onLanguage)
         IconButton(onClick = onMenu, modifier = Modifier.size(GriotSpacing.touchTarget)) {
             Icon(
                 painter = painterResource(DesignR.drawable.ic_more),
@@ -97,17 +97,13 @@ private fun FontSizeButton(onClick: () -> Unit) {
     }
 }
 
-// « FR », « EN », or « Auto · FR » once the language of an automatic song is detected.
+// « FR », « EN », or « Auto · FR » when the language is detected from the lyrics.
 @Composable
-private fun LanguageChip(language: SongLanguage, detectedLanguage: SongLanguage?, onClick: () -> Unit) {
+private fun LanguageChip(language: SongLanguage, detected: Boolean, onClick: () -> Unit) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(GriotRadius.control)
     val code = stringResource(language.codeRes())
-    val text = if (language == SongLanguage.AUTOMATIC && detectedLanguage != null) {
-        stringResource(R.string.editor_language_auto_detected, stringResource(detectedLanguage.codeRes()))
-    } else {
-        code
-    }
+    val text = if (detected) stringResource(R.string.editor_language_auto_detected, code) else code
     val description = stringResource(R.string.editor_language_label, text)
     Box(
         modifier = Modifier
@@ -128,9 +124,8 @@ private fun LanguageChip(language: SongLanguage, detectedLanguage: SongLanguage?
     }
 }
 
-/** The short code of a language: « FR », « EN », « Auto ». */
-internal fun SongLanguage.codeRes(): Int = when (this) {
+/** The short code of a language: « FR », « EN ». */
+private fun SongLanguage.codeRes(): Int = when (this) {
     SongLanguage.FRENCH -> R.string.editor_language_french
     SongLanguage.ENGLISH -> R.string.editor_language_english
-    SongLanguage.AUTOMATIC -> R.string.editor_language_automatic
 }

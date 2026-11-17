@@ -138,10 +138,14 @@ internal class SettingsViewModelTest {
         }
 
         @ParameterizedTest
-        @CsvSource("FRENCH, FRENCH", "ENGLISH, ENGLISH")
-        fun `should make the language the one of new songs`(language: AppLanguage, songLanguage: SongLanguage) {
+        @CsvSource("FRENCH, ENGLISH, FRENCH", "ENGLISH, FRENCH, ENGLISH")
+        fun `should make the language the one of new songs`(
+            language: AppLanguage,
+            before: SongLanguage,
+            songLanguage: SongLanguage,
+        ) {
             // given
-            val preferences = FakeUserPreferencesRepository(defaultSongLanguage = SongLanguage.AUTOMATIC)
+            val preferences = FakeUserPreferencesRepository(defaultSongLanguage = before)
             val viewModel = SettingsViewModel(
                 appLanguage = FakeAppLanguageRepository(),
                 preferences = preferences,

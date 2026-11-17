@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.griot.core.data.model.SongLanguage
 import java.time.Instant
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -22,10 +23,13 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
 
     override val authorName: Flow<String?> = dataStore.data.map { it[AuthorName] }
 
-    // Stored by name; an unknown name, from a newer version, falls back to automatic.
+    // Stored by name; until the onboarding saves one (or for « AUTOMATIC », stored before GRI-54), the phone's.
     override val defaultSongLanguage: Flow<SongLanguage> = dataStore.data.map { preferences ->
-        SongLanguage.entries.firstOrNull { it.name == preferences[DefaultSongLanguage] } ?: SongLanguage.AUTOMATIC
+        SongLanguage.entries.firstOrNull { it.name == preferences[DefaultSongLanguage] } ?: phoneLanguage()
     }
+
+    private fun phoneLanguage() =
+        if (Locale.getDefault().language == Locale.ENGLISH.language) SongLanguage.ENGLISH else SongLanguage.FRENCH
 
     override val editorFontSize: Flow<Int> =
         dataStore.data.map { it[EditorFontSize] ?: UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE }

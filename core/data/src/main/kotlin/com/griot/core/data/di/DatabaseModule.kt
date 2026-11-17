@@ -3,6 +3,7 @@ package com.griot.core.data.di
 import android.content.Context
 import androidx.room.Room
 import com.griot.core.data.database.GriotDatabase
+import com.griot.core.data.database.LanguageMigration
 import com.griot.core.data.database.dao.ConflictDao
 import com.griot.core.data.database.dao.IdeaDao
 import com.griot.core.data.database.dao.SectionDao
@@ -25,7 +26,9 @@ internal object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): GriotDatabase =
-        Room.databaseBuilder(context, GriotDatabase::class.java, "griot.db").build()
+        Room.databaseBuilder(context, GriotDatabase::class.java, "griot.db")
+            .addMigrations(LanguageMigration)
+            .build()
 
     @Provides
     fun provideSongDao(database: GriotDatabase): SongDao = database.songDao()

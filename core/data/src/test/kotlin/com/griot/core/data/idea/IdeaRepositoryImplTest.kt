@@ -2,6 +2,7 @@ package com.griot.core.data.idea
 
 import android.content.ContextWrapper
 import com.griot.core.data.database.inMemoryDatabase
+import com.griot.core.data.language.FakeSongLanguageDetector
 import com.griot.core.data.model.Idea
 import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.data.song.SongEditorRepositoryImpl
@@ -27,6 +28,7 @@ internal class IdeaRepositoryImplTest {
         sectionDao = database.sectionDao(),
         verseDao = database.verseDao(),
         preferences = FakeUserPreferencesRepository(),
+        detector = FakeSongLanguageDetector(),
         clock = clock,
     )
     private val repository = IdeaRepositoryImpl(

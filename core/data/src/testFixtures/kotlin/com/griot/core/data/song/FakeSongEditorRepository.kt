@@ -18,8 +18,8 @@ class FakeSongEditorRepository(document: SongDocument? = null) : SongEditorRepos
 
     override fun observeDocument(songId: String) = document
 
-    override suspend fun setLanguage(songId: String, language: SongLanguage) {
-        calls += "language $songId $language"
+    override suspend fun setLanguage(songId: String, language: SongLanguage, detected: Boolean) {
+        calls += if (detected) "detected language $songId $language" else "language $songId $language"
     }
 
     override suspend fun addSection(songId: String, kind: SectionKind): String {

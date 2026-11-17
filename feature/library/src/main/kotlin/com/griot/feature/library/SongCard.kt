@@ -117,5 +117,4 @@ private fun LibrarySong.meta(scheme: String, updated: String): String {
 private fun SongLanguage.badgeRes(): Int = when (this) {
     SongLanguage.FRENCH -> R.string.library_language_french
     SongLanguage.ENGLISH -> R.string.library_language_english
-    SongLanguage.AUTOMATIC -> R.string.library_language_automatic
 }

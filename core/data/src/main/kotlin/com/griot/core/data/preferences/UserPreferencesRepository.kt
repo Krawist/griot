@@ -12,7 +12,7 @@ interface UserPreferencesRepository {
     /** First name or artist name signing the exported texts; `null` until the user gives one. */
     val authorName: Flow<String?>
 
-    /** Writing language of new songs, chosen in the onboarding; [SongLanguage.AUTOMATIC] until then. */
+    /** Writing language of new songs, chosen in the onboarding; the phone's language until then. */
     val defaultSongLanguage: Flow<SongLanguage>
 
     /** Size of the lyrics in the editor, in sp, for every song; [DEFAULT_EDITOR_FONT_SIZE] until it is changed. */

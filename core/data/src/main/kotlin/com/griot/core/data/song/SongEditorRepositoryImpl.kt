@@ -45,6 +45,7 @@ internal class SongEditorRepositoryImpl @Inject constructor(
                 id = it.id,
                 title = it.title,
                 language = it.language,
+                languageDetected = it.languageDetected,
                 sections = sections.map { section ->
                     SongSection(
                         id = section.id,
@@ -59,8 +60,8 @@ internal class SongEditorRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun setLanguage(songId: String, language: SongLanguage) = write { now ->
-        songDao.setLanguage(id = songId, language = language, at = now)
+    override suspend fun setLanguage(songId: String, language: SongLanguage, detected: Boolean) = write { now ->
+        songDao.setLanguage(id = songId, language = language, detected = detected, at = now)
     }
 
     override suspend fun addSection(songId: String, kind: SectionKind): String = write { now ->

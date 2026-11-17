@@ -20,10 +20,17 @@ interface SongRepository {
     suspend fun createSong(firstVerse: String = ""): String
 
     /**
-     * Creates a song in progress named [title], in automatic language, holding [sections] (a repeat pointing to its
-     * source by index), and returns its id.
+     * Creates a song in progress named [title], holding [sections] (a repeat pointing to its source by index), and
+     * returns its id. Its language is detected from its lyrics, or is the language of new songs when they are too
+     * short to tell.
      */
     suspend fun importSong(title: String, sections: List<NewSection>): String
+
+    /**
+     * Detects again the language of every song in automatic mode, from its lyrics: at launch, so that songs stored
+     * before GRI-54 or changed on another device get theirs. A song too short to tell keeps its language.
+     */
+    suspend fun detectLanguages()
 
     /** Gives the song [id] the [title]. */
     suspend fun renameSong(id: String, title: String)

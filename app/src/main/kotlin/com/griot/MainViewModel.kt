@@ -26,11 +26,13 @@ internal class MainViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), MainUiState.Loading)
 
     init {
-        // Once per launch: the songs in the trash for more than 30 days are removed for good, and the old versions
-        // are thinned out to one per day.
+        // Once per launch: the songs in the trash for more than 30 days are removed for good, the old versions are
+        // thinned out to one per day, and the songs in automatic mode get their language from their lyrics (the songs
+        // imported before GRI-54 among them).
         viewModelScope.launch {
             songs.purgeTrash()
             versions.thin()
+            songs.detectLanguages()
         }
         // The AI models are checked at launch: a phone that can have Gemini Nano starts downloading it.
         viewModelScope.launch { assistant.availability() }

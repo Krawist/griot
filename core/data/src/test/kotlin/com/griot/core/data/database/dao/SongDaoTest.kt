@@ -77,7 +77,7 @@ internal class SongDaoTest {
             val song = SongEntity(
                 id = "my-song-id",
                 title = "my-title-1",
-                language = SongLanguage.AUTOMATIC,
+                language = SongLanguage.FRENCH,
                 status = SongStatus.DRAFT,
                 createdAt = Instant.parse("2026-11-16T10:00:00Z"),
                 updatedAt = Instant.parse("2026-11-16T10:00:00Z"),

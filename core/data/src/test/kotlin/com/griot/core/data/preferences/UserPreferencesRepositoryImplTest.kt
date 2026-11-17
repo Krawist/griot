@@ -8,6 +8,7 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import java.io.File
 import java.time.Instant
+import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -83,12 +84,37 @@ internal class UserPreferencesRepositoryImplTest {
     @Nested
     inner class DefaultSongLanguage {
         @Test
-        fun `should write new songs in the automatic language on a new install`() = runTest {
+        fun `should write new songs in French on a new install of a French phone`() = runTest {
+            // given
+            val locale = Locale.getDefault()
+            Locale.setDefault(Locale.FRANCE)
+
             // when
-            val language = repository.defaultSongLanguage.first()
+            val language = try {
+                repository.defaultSongLanguage.first()
+            } finally {
+                Locale.setDefault(locale)
+            }
 
             // then
-            language shouldBe SongLanguage.AUTOMATIC
+            language shouldBe SongLanguage.FRENCH
+        }
+
+        @Test
+        fun `should write new songs in English on a new install of a phone in another language`() = runTest {
+            // given
+            val locale = Locale.getDefault()
+            Locale.setDefault(Locale.US)
+
+            // when
+            val language = try {
+                repository.defaultSongLanguage.first()
+            } finally {
+                Locale.setDefault(locale)
+            }
+
+            // then
+            language shouldBe SongLanguage.ENGLISH
         }
 
         @Test

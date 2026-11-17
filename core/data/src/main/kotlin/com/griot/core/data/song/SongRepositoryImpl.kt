@@ -7,10 +7,10 @@ import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
+import com.griot.core.data.language.SongLanguageDetector
 import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.SectionKind
-import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
 import com.griot.core.data.model.TrashedSong
 import com.griot.core.data.preferences.UserPreferencesRepository
@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /** Default implementation for [SongRepository], on the Room database. */
-// One function per change of the library: create, import, rename, duplicate, delete, restore, purge.
+// One function per change of the library: create, import, detect, rename, duplicate, delete, restore, purge.
 @Suppress("TooManyFunctions")
 @Singleton
 internal class SongRepositoryImpl @Inject constructor(
@@ -35,6 +35,7 @@ internal class SongRepositoryImpl @Inject constructor(
     private val sectionDao: SectionDao,
     private val verseDao: VerseDao,
     private val preferences: UserPreferencesRepository,
+    private val detector: SongLanguageDetector,
     private val clock: Clock,
 ) : SongRepository {
     override fun observeLibrary(): Flow<List<LibrarySong>> =
@@ -77,10 +78,12 @@ internal class SongRepositoryImpl @Inject constructor(
 
     override suspend fun importSong(title: String, sections: List<NewSection>): String {
         val now = Instant.now(clock)
+        val lyrics = sections.flatMap { it.lines }.joinToString(separator = "\n")
         val song = SongEntity(
             id = newId(),
             title = title,
-            language = SongLanguage.AUTOMATIC,
+            language = detector.detect(lyrics) ?: preferences.defaultSongLanguage.first(),
+            languageDetected = true,
             status = SongStatus.IN_PROGRESS,
             createdAt = now,
             updatedAt = now,
@@ -89,6 +92,16 @@ internal class SongRepositoryImpl @Inject constructor(
         // A repeat always points to a section before it: inserted in order, its source already exists.
         songDao.insertWithContent(song = song, sections = entities, verses = verses)
         return song.id
+    }
+
+    override suspend fun detectLanguages() {
+        songDao.getDetected().forEach { song ->
+            val lyrics = verseDao.getBySong(song.id).joinToString(separator = "\n") { it.text }
+            val language = detector.detect(lyrics)
+            if (language != null && language != song.language) {
+                songDao.setLanguage(id = song.id, language = language, detected = true, at = Instant.now(clock))
+            }
+        }
     }
 
     override suspend fun renameSong(id: String, title: String) {

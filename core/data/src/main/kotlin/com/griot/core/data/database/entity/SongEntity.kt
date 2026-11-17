@@ -18,7 +18,9 @@ import kotlinx.serialization.UseSerializers
  *
  * @property id Stable UUID, the same on every device.
  * @property title Title shown in the library; empty for a song not named yet.
- * @property language Writing language: French, English or automatic.
+ * @property language Writing language, always resolved: French or English.
+ * @property languageDetected Whether [language] is detected from the lyrics (automatic mode) rather than chosen by
+ * hand.
  * @property status Draft or in progress.
  * @property createdAt When the song was created.
  * @property updatedAt Last change of this row, on any device; sync keeps the most recent.
@@ -30,6 +32,7 @@ internal data class SongEntity(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val title: String,
     val language: SongLanguage,
+    val languageDetected: Boolean = false,
     val status: SongStatus,
     val createdAt: Instant,
     val updatedAt: Instant,

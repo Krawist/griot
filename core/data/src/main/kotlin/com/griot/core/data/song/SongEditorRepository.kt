@@ -14,8 +14,10 @@ interface SongEditorRepository {
     /** The song [songId] with its sections and verses; `null` when it does not exist or is in the trash. */
     fun observeDocument(songId: String): Flow<SongDocument?>
 
-    /** Sets the writing [language] of the song [songId]: French, English, or automatic. */
-    suspend fun setLanguage(songId: String, language: SongLanguage)
+    /**
+     * Sets the writing [language] of the song [songId], [detected] from its lyrics (automatic mode) or chosen by hand.
+     */
+    suspend fun setLanguage(songId: String, language: SongLanguage, detected: Boolean)
 
     /** Adds a section of [kind] at the end of the song [songId], holding one empty verse, and returns its id. */
     suspend fun addSection(songId: String, kind: SectionKind): String

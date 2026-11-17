@@ -124,7 +124,7 @@ private fun EditorHeader(
             EditorTopBar(
                 title = uiState.title,
                 language = uiState.language,
-                detectedLanguage = uiState.detectedLanguage,
+                languageDetected = uiState.languageDetected,
                 onBack = onBack,
                 onTitleChange = onTitleChange,
                 onFontSize = onFontSize,

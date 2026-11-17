@@ -124,7 +124,7 @@ private fun AiPanel(
     AiPanelSheet(
         songId = songId,
         verseId = verseId,
-        language = uiState.soundLanguage,
+        language = uiState.language,
         onInsertWord = { word ->
             onClosed()
             viewModel.onInsertWord(verseId = verseId, word = word)
@@ -208,9 +208,9 @@ private fun OpenSheet(sheet: EditorSheet?, uiState: EditorUiState, viewModel: Ed
             onDismiss = onClosed,
         )
         EditorSheet.LANGUAGE -> LanguageSheet(
-            language = uiState.language,
-            onSelect = { language ->
-                viewModel.onLanguageSelected(language)
+            choice = uiState.languageChoice,
+            onSelect = { choice ->
+                viewModel.onLanguageSelected(choice)
                 onClosed()
             },
             onDismiss = onClosed,

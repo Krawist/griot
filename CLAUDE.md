@@ -124,7 +124,8 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `kotlinScriptAdditionalPaths` (the plugin does not see AGP 9's built-in Kotlin). CI workflow ready; the repository
   has no GitHub remote yet.
 - [x] **GRI-02** — Griot theme: palette (light and dark), eight rhyme colours (`RhymeColor`,
-  `GriotTheme.rhymeColor(index)`), Outfit and Inter embedded (OFL, `core/design/licenses/`), type scale (now `GriotType`, GRI-47), radii and spacing, contrast test, preview catalogue (`catalog/ThemeCatalog.kt`).
+  `GriotTheme.rhymeColor(index)`), Outfit and Inter embedded (OFL, `core/design/licenses/`), type scale (now
+  `GriotType`, GRI-47), radii and spacing, contrast test, preview catalogue (`catalog/ThemeCatalog.kt`).
 - [x] **GRI-03** — logo masters in `core/design/logo/` (SVG), `logo_quill` (light and night), silhouette and
   notification icon; `LogoTile` and the `backdrop` modifier (blurred shapes as radial gradients) in `:core:design`;
   system splash (`splash_icon`, one vector per mode) handed off to `LaunchScreen` (2 s) at the same place; frosted
@@ -289,6 +290,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   card titles, lyrics scaled by `lyrics(size)`, margins by `rhymeLetter`/`syllableCount`, body, captions, section
   labels, `chip(selected)`, `tab(selected)`, `emphasis`…); Material's slots are filled from it. No screen sets a
   size or a weight; `LyricTextStyle` is gone.
+- [x] **GRI-54** — `SongLanguage` is French or English only; a song stores `languageDetected` (automatic mode).
+  Database version 4 (`LanguageMigration`: songs stored as « AUTOMATIC » become detected, in French), then
+  `SongRepository.detectLanguages()` at each launch reads the lyrics of every automatic song. The import detects
+  each text's language (the language of new songs when too short to tell); the editor detects again 2 s after the
+  last change, and at once when « Automatique » is chosen (`LanguageChoice`). New songs default to the phone's
+  language until the onboarding saves one. « Auto » is no longer a badge or a filter value.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 

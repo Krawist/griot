@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class FakeUserPreferencesRepository(
     onboardingCompleted: Boolean = false,
     authorName: String? = null,
-    defaultSongLanguage: SongLanguage = SongLanguage.AUTOMATIC,
+    defaultSongLanguage: SongLanguage = SongLanguage.FRENCH,
     editorFontSize: Int = UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE,
     showRhymes: Boolean = true,
     onDeviceAi: Boolean = true,

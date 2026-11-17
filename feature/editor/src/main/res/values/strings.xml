@@ -46,7 +46,6 @@
     <string name="editor_ideas">IDÉES DE CETTE CHANSON · TOUCHE POUR AJOUTER</string>
     <string name="editor_jump_to_top">Haut de la chanson</string>
     <string name="editor_language_auto_detected">Auto · %1$s</string>
-    <string name="editor_language_automatic">Auto</string>
     <string name="editor_language_automatic_hint">En automatique, Griot repère la langue dominante de toute la chanson pour compter les syllabes et trouver les rimes.</string>
     <string name="editor_language_automatic_name">Automatique</string>
     <string name="editor_language_english" translatable="false">EN</string>

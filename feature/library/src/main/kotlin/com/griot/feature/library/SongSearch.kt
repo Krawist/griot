@@ -17,7 +17,7 @@ internal fun LibrarySong.matches(query: String): Boolean {
     return wanted.isEmpty() || wanted in title.loose() || wanted in lyrics.loose()
 }
 
-/** Whether the song shows under [filter]. A song in automatic language only shows under « Toutes » and drafts. */
+/** Whether the song shows under [filter]: its language, chosen or detected, or its status. */
 internal fun LibrarySong.isIn(filter: LibraryFilter): Boolean = when (filter) {
     LibraryFilter.ALL -> true
     LibraryFilter.FRENCH -> language == SongLanguage.FRENCH

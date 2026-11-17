@@ -13,7 +13,6 @@
     <string name="library_filter_french">Français</string>
     <string name="library_greeting">Hi %1$s</string>
     <string name="library_jump_to_top">Top of the list</string>
-    <string name="library_language_automatic">Auto</string>
     <string name="library_new_song">New song</string>
     <string name="library_no_result_body">Try another word or another filter.</string>
     <string name="library_no_result_title">No song matches</string>

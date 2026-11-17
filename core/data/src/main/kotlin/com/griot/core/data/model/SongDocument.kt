@@ -5,7 +5,14 @@ package com.griot.core.data.model
  *
  * @property id UUID of the song.
  * @property title Title; empty for a song not named yet.
- * @property language Writing language.
+ * @property language Writing language, French or English.
+ * @property languageDetected Whether [language] is detected from the lyrics (automatic mode).
  * @property sections Sections that are not deleted, in order.
  */
-data class SongDocument(val id: String, val title: String, val language: SongLanguage, val sections: List<SongSection>)
+data class SongDocument(
+    val id: String,
+    val title: String,
+    val language: SongLanguage,
+    val languageDetected: Boolean = false,
+    val sections: List<SongSection>,
+)

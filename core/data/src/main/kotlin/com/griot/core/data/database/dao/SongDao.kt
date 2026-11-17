@@ -87,8 +87,12 @@ internal interface SongDao {
     suspend fun rename(id: String, title: String, at: Instant)
 
     /** Sets the writing language of the song at [at]. */
-    @Query("UPDATE songs SET language = :language, updatedAt = :at WHERE id = :id")
-    suspend fun setLanguage(id: String, language: SongLanguage, at: Instant)
+    @Query("UPDATE songs SET language = :language, languageDetected = :detected, updatedAt = :at WHERE id = :id")
+    suspend fun setLanguage(id: String, language: SongLanguage, detected: Boolean, at: Instant)
+
+    /** The songs out of the trash whose language is detected from their lyrics. */
+    @Query("SELECT * FROM songs WHERE languageDetected = 1 AND deleted = 0")
+    suspend fun getDetected(): List<SongEntity>
 
     /** Takes the song out of the trash at [at]. */
     @Query("UPDATE songs SET deleted = 0, updatedAt = :at WHERE id = :id")
