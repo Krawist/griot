@@ -78,6 +78,10 @@ internal interface VerseDao {
     suspend fun updateText(id: String, text: String, at: Instant)
 
     /** Marks the verse deleted at [at]; the row stays so that the delete travels to other devices. */
+    /** Moves the verse [id] to the section [sectionId], at [position]. */
+    @Query("UPDATE verses SET sectionId = :sectionId, position = :position, updatedAt = :at WHERE id = :id")
+    suspend fun moveTo(id: String, sectionId: String, position: Int, at: Instant)
+
     @Query("UPDATE verses SET deleted = 1, updatedAt = :at WHERE id = :id")
     suspend fun markDeleted(id: String, at: Instant)
 }

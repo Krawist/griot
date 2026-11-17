@@ -435,6 +435,216 @@ internal class SongEditorRepositoryImplTest {
     }
 
     @Nested
+    inner class MergeSection {
+        @Test
+        fun `should move the verses to the end of the section above and delete the section`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id-1",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-1",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-2",
+                        sectionId = "my-section-id-2",
+                        text = "my-text-2",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-3",
+                        sectionId = "my-section-id-2",
+                        text = "my-text-3",
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            repository.mergeSection("my-section-id-2")
+
+            // then
+            val sections = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections
+            sections.map { it.id } shouldContainExactly listOf("my-section-id-1")
+            sections.single().verses.map { it.text } shouldContainExactly listOf("my-text-1", "my-text-2", "my-text-3")
+            database.songDao().getById("my-song-id")?.updatedAt shouldBe Instant.parse("2026-11-16T10:00:00Z")
+        }
+
+        @Test
+        fun `should make the repeats of the section repeat the section above`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-3",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 2,
+                        repeatOfSectionId = "my-section-id-2",
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id-1",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-1",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-2",
+                        sectionId = "my-section-id-2",
+                        text = "my-text-2",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            repository.mergeSection("my-section-id-2")
+
+            // then
+            val sections = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections
+            sections.map { it.id to it.repeatOf } shouldContainExactly listOf(
+                "my-section-id-1" to null,
+                "my-section-id-3" to "my-section-id-1",
+            )
+        }
+
+        @Test
+        fun `should leave the first section as it is`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = emptyList(),
+            )
+
+            // when
+            repository.mergeSection("my-section-id-1")
+
+            // then
+            val sections = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections
+            sections.map { it.id } shouldContainExactly listOf("my-section-id-1", "my-section-id-2")
+        }
+
+        @Test
+        fun `should leave a repeat as it is`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        repeatOfSectionId = "my-section-id-1",
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = emptyList(),
+            )
+
+            // when
+            repository.mergeSection("my-section-id-2")
+
+            // then
+            val sections = repository.observeDocument("my-song-id").first().shouldNotBeNull().sections
+            sections.map { it.id } shouldContainExactly listOf("my-section-id-1", "my-section-id-2")
+        }
+    }
+
+    @Nested
     inner class UpdateVerse {
         @Test
         fun `should save the text and date the song`() = runTest {

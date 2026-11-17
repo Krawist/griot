@@ -52,6 +52,7 @@
     <string name="editor_language_label">Langue de la chanson : %1$s</string>
     <string name="editor_language_title">Langue de la chanson</string>
     <string name="editor_menu">Plus d\'options</string>
+    <string name="editor_merge">Fusionner avec la section du dessus</string>
     <string name="editor_move_down">Descendre</string>
     <string name="editor_move_up">Monter</string>
     <string name="editor_rename">Renommer</string>

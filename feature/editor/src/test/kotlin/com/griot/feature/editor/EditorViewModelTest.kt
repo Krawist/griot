@@ -113,6 +113,7 @@ internal class EditorViewModelTest {
                         label = SectionLabel(kind = SectionKind.CHORUS, number = null, name = null),
                         first = false,
                         last = true,
+                        mergeable = true,
                     ),
                 ),
             )
@@ -452,7 +453,7 @@ internal class EditorViewModelTest {
         }
 
         @Test
-        fun `should leave the first verse of a section as it is`() = runTest {
+        fun `should leave the first verse of the song as it is`() = runTest {
             // given
             val editor = FakeSongEditorRepository(
                 document = SongDocument(
@@ -495,6 +496,199 @@ internal class EditorViewModelTest {
             // then
             viewModel.uiState.value.focus.shouldBeNull()
             editor.calls.shouldBeEmpty()
+        }
+
+        @Test
+        fun `should merge the section into the one above at the start of its first verse`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id-1",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(SongVerse(id = "my-verse-id-1", text = "my-text-1")),
+                        ),
+                        SongSection(
+                            id = "my-section-id-2",
+                            kind = SectionKind.CHORUS,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(SongVerse(id = "my-verse-id-2", text = "my-text-2")),
+                        ),
+                    ),
+                ),
+            )
+            val versions = FakeVersionRepository()
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = versions,
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onVerseBackspaceAtStart(verseId = "my-verse-id-2", text = "my-text-2")
+
+            // then
+            viewModel.uiState.first { it.focus != null }.focus shouldBe
+                VerseFocus(verseId = "my-verse-id-2", text = "my-text-2", cursor = 0)
+            editor.calls shouldContainExactly listOf("merge section my-section-id-2")
+        }
+
+        @Test
+        fun `should leave the first verse of a repeat as it is`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id-1",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = listOf(SongVerse(id = "my-verse-id-1", text = "my-text-1")),
+                        ),
+                        SongSection(
+                            id = "my-section-id-2",
+                            kind = SectionKind.CHORUS,
+                            name = null,
+                            repeatOf = "my-section-id-1",
+                            verses = listOf(SongVerse(id = "my-verse-id-1", text = "my-text-1")),
+                        ),
+                    ),
+                ),
+            )
+            val versions = FakeVersionRepository()
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = versions,
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onVerseBackspaceAtStart(verseId = "my-verse-id-1", text = "my-text-1")
+
+            // then
+            viewModel.uiState.value.focus.shouldBeNull()
+            editor.calls.shouldBeEmpty()
+        }
+    }
+
+    @Nested
+    inner class OnMergeSection {
+        @Test
+        fun `should keep the song in its history, then merge the section`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository()
+            val versions = FakeVersionRepository()
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = versions,
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            viewModel.onMergeSection("my-section-id")
+
+            // then
+            versions.calls shouldContainExactly listOf("record song my-song-id")
+            editor.calls shouldContainExactly listOf("merge section my-section-id")
+        }
+
+        @Test
+        fun `should let a section merge only when neither it nor the one above is a repeat`() = runTest {
+            // given
+            val editor = FakeSongEditorRepository(
+                document = SongDocument(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    sections = listOf(
+                        SongSection(
+                            id = "my-section-id-1",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = emptyList(),
+                        ),
+                        SongSection(
+                            id = "my-section-id-2",
+                            kind = SectionKind.CHORUS,
+                            name = null,
+                            repeatOf = null,
+                            verses = emptyList(),
+                        ),
+                        SongSection(
+                            id = "my-section-id-3",
+                            kind = SectionKind.CHORUS,
+                            name = null,
+                            repeatOf = "my-section-id-2",
+                            verses = emptyList(),
+                        ),
+                        SongSection(
+                            id = "my-section-id-4",
+                            kind = SectionKind.VERSE,
+                            name = null,
+                            repeatOf = null,
+                            verses = emptyList(),
+                        ),
+                    ),
+                ),
+            )
+            val versions = FakeVersionRepository()
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = editor,
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = versions,
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            val sections = viewModel.uiState.value.sections
+
+            // then
+            sections.map { it.mergeable } shouldContainExactly listOf(false, true, false, false)
         }
     }
 

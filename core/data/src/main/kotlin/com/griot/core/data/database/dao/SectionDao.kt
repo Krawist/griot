@@ -8,6 +8,8 @@ import com.griot.core.data.database.entity.SectionEntity
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
+// One query per way the sections change.
+@Suppress("TooManyFunctions")
 @Dao
 internal interface SectionDao {
     @Insert
@@ -46,6 +48,12 @@ internal interface SectionDao {
     suspend fun markRepeatsDeleted(id: String, at: Instant)
 
     /** Moves the section to [position] at [at]. */
+    /** Makes the repeats of the section [from] repeat the section [to]. */
+    @Query(
+        "UPDATE sections SET repeatOfSectionId = :to, updatedAt = :at WHERE repeatOfSectionId = :from AND deleted = 0",
+    )
+    suspend fun repointRepeats(from: String, to: String, at: Instant)
+
     @Query("UPDATE sections SET position = :position, updatedAt = :at WHERE id = :id")
     suspend fun move(id: String, position: Int, at: Instant)
 

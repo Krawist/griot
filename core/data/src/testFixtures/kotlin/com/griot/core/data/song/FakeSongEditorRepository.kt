@@ -48,6 +48,10 @@ class FakeSongEditorRepository(document: SongDocument? = null) : SongEditorRepos
         calls += "append $songId $text"
     }
 
+    override suspend fun mergeSection(sectionId: String) {
+        calls += "merge section $sectionId"
+    }
+
     override suspend fun updateVerse(verseId: String, text: String) {
         calls += "verse $verseId $text"
     }

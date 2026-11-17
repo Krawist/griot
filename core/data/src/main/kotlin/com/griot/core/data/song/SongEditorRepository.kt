@@ -36,6 +36,13 @@ interface SongEditorRepository {
     suspend fun deleteSection(sectionId: String)
 
     /**
+     * Merges the section [sectionId] into the one above it: its verses go to the end of that section, its repeats now
+     * repeat that section, and it is deleted. Nothing happens for the first section, or when one of the two is a
+     * repeat.
+     */
+    suspend fun mergeSection(sectionId: String)
+
+    /**
      * Adds [text] as a new verse at the end of the song [songId], in its last section with verses of its own (a new
      * verse section when it has none).
      */

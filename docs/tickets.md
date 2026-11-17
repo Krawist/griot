@@ -2,7 +2,7 @@
 
 > Reference documents kept in Claude (November 16, 2026): the vision and features document, https://claude.ai/artifact/TFJQahYirQ72jEVJMs1Xoy, and the design canvas, https://claude.ai/artifact/GtB94FRDSFC6mVmKKVfCfq. If this file and the vision document differ on scope, the vision document prevails. Update this copy when they change.
 
-This document splits the Griot MVP into 45 tickets over three phases. Phase 1 gives an app usable every day that replaces Samsung Notes for songwriting: a structured editor, live syllables and rhymes in French and English, version history and Google Drive sync. Phase 2 adds the AI panel and the ideas box. Phase 3 adds the features listed under "Ensuite" in the vision document.
+This document splits the Griot MVP into 46 tickets over three phases. Phase 1 gives an app usable every day that replaces Samsung Notes for songwriting: a structured editor, live syllables and rhymes in French and English, version history and Google Drive sync. Phase 2 adds the AI panel and the ideas box. Phase 3 adds the features listed under "Ensuite" in the vision document.
 
 Indicative sizes: S for a day at most, M for two or three days, L for about a week.
 
@@ -221,6 +221,17 @@ Once many songs are imported, the song list scrolls with stutters, and its heade
 - Scrolling and the jump to the top behave the same on both screens: one shared implementation.
 
 Size: S. Dependencies: GRI-04, GRI-12, GRI-14, GRI-44. Mockups: « Bibliothèque », « Éditeur ».
+
+### GRI-46 · Merge two sections
+
+An imported text often comes split into more sections than the song has. A section can be merged into the one above it: its verses go to the end of that section, in order, and the section disappears.
+
+- « Fusionner avec la section du dessus » in the section's « ⋯ » menu, for every section but the first.
+- Backspace at the start of a section's first verse does the same, as in a text editor: the verse keeps its text and the focus.
+- A repeat cannot merge nor be merged into: it holds no verses of its own. The repeats of a merged section repeat the section it merged into.
+- No text is lost: the song as it was is kept in its history first.
+
+Size: S. Dependencies: GRI-14, GRI-15, GRI-24. Mockup: « Éditeur ».
 
 ## Phase 1 · Phonetics
 

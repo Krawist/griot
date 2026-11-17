@@ -180,6 +180,10 @@ private fun EditorSheets(
                 viewModel.onMoveSection(sectionId = section.section.id, offset = offset)
                 close()
             },
+            onMerge = {
+                viewModel.onMergeSection(section.section.id)
+                close()
+            },
             onDelete = {
                 viewModel.onDeleteSection(section.section.id)
                 close()

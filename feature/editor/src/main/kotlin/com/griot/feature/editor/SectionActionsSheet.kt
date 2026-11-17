@@ -28,7 +28,8 @@ private enum class SectionSheetStep {
 }
 
 /**
- * The actions of a section: rename, repeat further on, move up or down, delete after a confirmation.
+ * The actions of a section: rename, repeat further on, move up or down, merge into the section above, delete after a
+ * confirmation.
  *
  * @param label The section's label as shown.
  */
@@ -40,6 +41,7 @@ internal fun SectionActionsSheet(
     onRename: (String) -> Unit,
     onRepeat: () -> Unit,
     onMove: (Int) -> Unit,
+    onMerge: () -> Unit,
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -53,7 +55,7 @@ internal fun SectionActionsSheet(
                         Text(text = label, style = MaterialTheme.typography.titleMedium, color = palette.ink)
                         Actions(section = section, onRename = {
                             step = SectionSheetStep.RENAME
-                        }, onRepeat = onRepeat, onMove = onMove) {
+                        }, onRepeat = onRepeat, onMove = onMove, onMerge = onMerge) {
                             step = SectionSheetStep.DELETE
                         }
                     }
@@ -71,12 +73,14 @@ internal fun SectionActionsSheet(
     }
 }
 
+@Suppress("LongParameterList") // The section and one callback per action.
 @Composable
 private fun Actions(
     section: EditorSection,
     onRename: () -> Unit,
     onRepeat: () -> Unit,
     onMove: (Int) -> Unit,
+    onMerge: () -> Unit,
     onDelete: () -> Unit,
 ) {
     // A repeat has no name of its own: it shows the label of the section it repeats.
@@ -96,6 +100,9 @@ private fun Actions(
         onClick = { onMove(1) },
         enabled = !section.last,
     )
+    if (section.mergeable) {
+        SheetAction(icon = DesignR.drawable.ic_merge, label = stringResource(R.string.editor_merge), onClick = onMerge)
+    }
     SheetAction(
         icon = DesignR.drawable.ic_trash,
         label = stringResource(R.string.editor_delete),

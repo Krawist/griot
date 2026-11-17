@@ -46,6 +46,7 @@
     <string name="editor_language_label">Song language: %1$s</string>
     <string name="editor_language_title">Song language</string>
     <string name="editor_menu">More options</string>
+    <string name="editor_merge">Merge into the section above</string>
     <string name="editor_move_down">Move down</string>
     <string name="editor_move_up">Move up</string>
     <string name="editor_rename">Rename</string>

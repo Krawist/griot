@@ -19,7 +19,7 @@ The documents kept in Claude are the reference; they are written in French.
 | Document                                   | Local copy        | Reference                                         |
 |--------------------------------------------|-------------------|---------------------------------------------------|
 | Vision and features (what and why)         | —                 | https://claude.ai/artifact/TFJQahYirQ72jEVJMs1Xoy |
-| MVP tickets (GRI-01 to GRI-45, 3 phases)   | `docs/tickets.md` | —                                                 |
+| MVP tickets (GRI-01 to GRI-46, 3 phases)   | `docs/tickets.md` | —                                                 |
 | Logo and mockups, light and dark (canvas)  | —                 | https://claude.ai/artifact/GtB94FRDSFC6mVmKKVfCfq |
 
 `docs/tickets.md` is the detailed English working copy: acceptance criteria, dependencies and the mockup of each
@@ -271,6 +271,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   « Nouvelle chanson » and the bottom bar (`libraryGraph(onControlsShownChange)`, `TabsOverlay(hidden)`); the editor
   its top bar and toolbar (a verse taking the focus brings them back), and lays out each verse as its own list item.
   Cards of scrolling lists are tinted without blur (`GlassSurface(blur = false)`): songs and trash; ideas still blur.
+- [x] **GRI-46** — `SongEditorRepository.mergeSection`: the verses of a section go to the end of the one above, its
+  repeats now repeat that section, and it is deleted; not for the first section nor when one of the two is a repeat
+  (`EditorSection.mergeable`). « Fusionner avec la section du dessus » in the section's « ⋯ » menu, and Backspace at
+  the start of a section's first verse (the verse keeps its text and the focus); the song is recorded first.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-32/33 (models:
   need setup), then GRI-36/37 to check with a real model.
 

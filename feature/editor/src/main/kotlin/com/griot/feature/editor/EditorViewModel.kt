@@ -104,6 +104,8 @@ internal class EditorViewModel @AssistedInject constructor(
                             label = labels[index],
                             first = index == 0,
                             last = index == document.sections.lastIndex,
+                            mergeable = section.repeatOf == null &&
+                                document.sections.getOrNull(index - 1)?.let { it.repeatOf == null } == true,
                         )
                     },
                 )
@@ -172,6 +174,16 @@ internal class EditorViewModel @AssistedInject constructor(
 
     fun onMoveSection(sectionId: String, offset: Int) {
         viewModelScope.launch { editor.moveSection(sectionId = sectionId, offset = offset) }
+    }
+
+    /** Merges the section [sectionId] into the one above it; the song as it was is kept in its history first. */
+    fun onMergeSection(sectionId: String) {
+        viewModelScope.launch {
+            writes.withLock {
+                versions.recordSong(songId)
+                editor.mergeSection(sectionId)
+            }
+        }
     }
 
     fun onDeleteSection(sectionId: String) {
@@ -320,7 +332,11 @@ internal class EditorViewModel @AssistedInject constructor(
     /** Backspace at the start of the verse [verseId], holding [text]: it joins the previous verse of its section. */
     fun onVerseBackspaceAtStart(verseId: String, text: String) {
         val verses = sectionOf(verseId)?.verses ?: return
-        val previous = verses.getOrNull(verses.indexOfFirst { it.id == verseId } - 1) ?: return
+        val previous = verses.getOrNull(verses.indexOfFirst { it.id == verseId } - 1)
+        if (previous == null) {
+            mergeIntoSectionAbove(verseId = verseId, text = text)
+            return
+        }
         viewModelScope.launch {
             editor.mergeVerses(previousId = previous.id, verseId = verseId)
             focus.value = VerseFocus(verseId = previous.id, text = previous.text + text, cursor = previous.text.length)
@@ -378,6 +394,15 @@ internal class EditorViewModel @AssistedInject constructor(
     // The first section showing the verse: the source of a repeat, or the repeat, hold the same verses.
     private fun sectionOf(verseId: String): SongSection? =
         uiState.value.sections.map { it.section }.firstOrNull { section -> section.verses.any { it.id == verseId } }
+
+    // Backspace at the start of a section's first verse: the section merges into the one above, the verse keeping the
+    // focus and its text.
+    private fun mergeIntoSectionAbove(verseId: String, text: String) {
+        val section = uiState.value.sections.firstOrNull { it.section.verses.firstOrNull()?.id == verseId } ?: return
+        if (!section.mergeable) return
+        onMergeSection(section.section.id)
+        focus.value = VerseFocus(verseId = verseId, text = text, cursor = 0)
+    }
 
     private fun verseText(verseId: String): String? = sectionOf(verseId)?.verses?.firstOrNull { it.id == verseId }?.text
 

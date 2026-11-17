@@ -225,6 +225,20 @@ internal class SongEditorRepositoryImpl @Inject constructor(
         return added.map { it.id }
     }
 
+    override suspend fun mergeSection(sectionId: String) = write { now ->
+        val section = requireSection(sectionId)
+        val sections = sectionDao.getBySong(section.songId)
+        val previous = sections.getOrNull(sections.indexOfFirst { it.id == sectionId } - 1)
+        if (previous == null || previous.repeatOfSectionId != null || section.repeatOfSectionId != null) return@write
+        val start = (verseDao.getBySection(previous.id).maxOfOrNull { it.position } ?: -1) + 1
+        verseDao.getBySection(sectionId).forEachIndexed { index, verse ->
+            verseDao.moveTo(id = verse.id, sectionId = previous.id, position = start + index, at = now)
+        }
+        sectionDao.repointRepeats(from = sectionId, to = previous.id, at = now)
+        sectionDao.markDeleted(id = sectionId, at = now)
+        songDao.touch(id = section.songId, at = now)
+    }
+
     override suspend fun mergeVerses(previousId: String, verseId: String) = write { now ->
         val previous = requireVerse(previousId)
         val verse = requireVerse(verseId)
