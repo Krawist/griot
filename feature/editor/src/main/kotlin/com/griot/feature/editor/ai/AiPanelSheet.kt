@@ -84,7 +84,12 @@ internal fun AiPanelSheet(
                     preparing = uiState.preparing,
                     onRetry = viewModel::onMoreIdeas,
                 ) { suggestion ->
-                    SuggestionCard(suggestion = suggestion, onUse = { onUseSuggestion(suggestion.text) })
+                    SuggestionCard(
+                        suggestion = suggestion,
+                        verse = uiState.verse,
+                        syllables = uiState.syllables,
+                        onUse = { onUseSuggestion(suggestion.text) },
+                    )
                 }
                 AiTab.CRITIQUE -> ModelTab(
                     content = uiState.critique,

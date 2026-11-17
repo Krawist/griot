@@ -282,6 +282,8 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (`UserPreferencesRepository.onDeviceAi`, on by default); the panel says when the model downloads. Prompts put the
   context first, marked « do not rewrite », the verse last, and name the rhyme word: Gemini Nano otherwise rewrote the
   whole section. Checked on the Galaxy S25.
+- [x] **GRI-36** — each rephrased verse shows the words it changes in the AI colour (`changedWords` of the history)
+  and « N syllabes · autant que le vers / N de plus / N de moins · garde la rime », all read by Griot, not the model.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup), then GRI-36/37 to check with a real model.
 

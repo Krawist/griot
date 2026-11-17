@@ -12,11 +12,13 @@
     <string name="ai_rhymes_empty">No rhyme found in the dictionary for this verse.</string>
     <string name="ai_rhymes_title">Rhymes in « -%1$s », by number of syllables</string>
     <string name="ai_rhymes_used">Crossed out: already in this song.</string>
+    <string name="ai_same_count">as many as the verse</string>
     <string name="ai_source_device">AI · on your phone, your text stays there</string>
     <string name="ai_source_dictionary">Rhyme dictionary · on your phone</string>
     <string name="ai_source_none">No AI available yet</string>
     <string name="ai_source_online">AI · online</string>
     <string name="ai_source_preparing">AI · the model is downloading on your phone</string>
+    <string name="ai_suggestion_note">%1$s · %2$s · keeps the rhyme</string>
     <string name="ai_tab_critique">Critique</string>
     <string name="ai_tab_rephrase">Rephrase</string>
     <string name="ai_tab_rhymes">Rhymes</string>
@@ -75,6 +77,14 @@
     <string name="history_subtitle_verse">%1$s · %2$s, verse %3$d</string>
     <string name="history_title">Versions</string>
     <string name="history_when">%1$s, %2$s</string>
+    <plurals name="ai_fewer_syllables">
+        <item quantity="one">%1$d fewer</item>
+        <item quantity="other">%1$d fewer</item>
+    </plurals>
+    <plurals name="ai_more_syllables">
+        <item quantity="one">%1$d more</item>
+        <item quantity="other">%1$d more</item>
+    </plurals>
     <plurals name="ai_syllables">
         <item quantity="one">%1$d syllable</item>
         <item quantity="other">%1$d syllables</item>

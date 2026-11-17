@@ -21,6 +21,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -28,8 +29,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.griot.core.ai.CheckedSuggestion
@@ -38,6 +42,7 @@ import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.core.design.theme.LyricTextStyle
 import com.griot.feature.editor.R
+import com.griot.feature.editor.history.changedWords
 
 private val ChipHeight = 40.dp
 private const val USED_ALPHA = 0.55f
@@ -122,15 +127,34 @@ internal fun <T> ModelTab(
     }
 }
 
-/** A version of the verse proposed by a model, its count from the phonetic engine, and « Utiliser ». */
+/**
+ * A version of the verse proposed by a model, and « Utiliser »: what it changes is read by Griot, not the model. The
+ * words that differ from [verse] are in the AI colour, and its count from the phonetic engine is compared with the
+ * verse's [syllables].
+ */
 @Composable
-internal fun SuggestionCard(suggestion: CheckedSuggestion, onUse: () -> Unit) {
+internal fun SuggestionCard(suggestion: CheckedSuggestion, verse: String, syllables: Int, onUse: () -> Unit) {
     val palette = GriotTheme.palette
+    val changed = SpanStyle(color = palette.aiText, fontWeight = FontWeight.SemiBold)
+    val text = remember(suggestion.text, verse, changed) {
+        buildAnnotatedString {
+            changedWords(text = suggestion.text, other = verse).forEach { segment ->
+                if (segment.changed) withStyle(changed) { append(segment.text) } else append(segment.text)
+            }
+        }
+    }
+    val count = pluralStringResource(R.plurals.ai_syllables, suggestion.syllables, suggestion.syllables)
+    val difference = suggestion.syllables - syllables
+    val rhythm = when {
+        difference == 0 -> stringResource(R.string.ai_same_count)
+        difference > 0 -> pluralStringResource(R.plurals.ai_more_syllables, difference, difference)
+        else -> pluralStringResource(R.plurals.ai_fewer_syllables, -difference, -difference)
+    }
     Card {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(GriotSpacing.xs)) {
-            Text(text = suggestion.text, style = LyricTextStyle.copy(fontSize = 17.sp), color = palette.ink)
+            Text(text = text, style = LyricTextStyle.copy(fontSize = 17.sp), color = palette.ink)
             Text(
-                text = pluralStringResource(R.plurals.ai_syllables, suggestion.syllables, suggestion.syllables),
+                text = stringResource(R.string.ai_suggestion_note, count, rhythm),
                 style = MaterialTheme.typography.bodySmall,
                 color = if (suggestion.guessed) palette.muted.copy(alpha = USED_ALPHA) else palette.muted,
             )
