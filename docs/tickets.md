@@ -2,7 +2,7 @@
 
 > Reference documents kept in Claude (November 16, 2026): the vision and features document, https://claude.ai/artifact/TFJQahYirQ72jEVJMs1Xoy, and the design canvas, https://claude.ai/artifact/GtB94FRDSFC6mVmKKVfCfq. If this file and the vision document differ on scope, the vision document prevails. Update this copy when they change.
 
-This document splits the Griot MVP into 53 tickets over three phases. Phase 1 gives an app usable every day that replaces Samsung Notes for songwriting: a structured editor, live syllables and rhymes in French and English, version history and Google Drive sync. Phase 2 adds the AI panel, the ideas box and audio: voice memos, beats attached to a song and a player to write over them. Phase 3 adds the features listed under "Ensuite" in the vision document.
+This document splits the Griot MVP into 59 tickets over three phases. Phase 1 gives an app usable every day that replaces Samsung Notes for songwriting: a structured editor, live syllables and rhymes in French and English, version history and Google Drive sync. Phase 2 adds the AI panel, the ideas box, audio (voice memos, beats attached to a song and a player to write over them) and the organisation of songs in folders and genres. Phase 3 adds the features listed under "Ensuite" in the vision document.
 
 Indicative sizes: S for a day at most, M for two or three days, L for about a week.
 
@@ -169,6 +169,17 @@ Long press on a song opens rename, duplicate and delete. A deleted song goes to 
 - The trash is reachable from the settings and can restore a song.
 
 Size: S. Dependencies: GRI-12.
+
+### GRI-54 · Give every song a real language
+
+Imported songs end up with the language « auto », which makes the language filters almost useless. « Automatique » is a mode, not a language: every song must always have a resolved language, French or English, that the filters, the phonetic engines and the AI read.
+
+- A song stores its resolved language and whether it was chosen by hand or detected. In automatic mode, the language is detected again when the text changes enough, never while the author types.
+- The import (GRI-11) detects the dominant language of each text and stores it. A text too short to decide takes the author's preferred language (GRI-09).
+- A migration resolves every song stored as « auto » today, with the same rules.
+- The language filters and the « FR » or « EN » chip on each song show the resolved language; « auto » never appears as a value.
+
+Size: S. Dependencies: GRI-11, GRI-18.
 
 ## Phase 1 · Editor
 
@@ -515,6 +526,65 @@ When the beat plays in another app (Spotify, YouTube, Audiomack…), the same pl
 - A note in the code records the Play Store declaration this access will need before any public release.
 
 Size: M. Dependencies: GRI-29, GRI-52. Mockups: « Musique des autres apps », « Réglages ».
+
+## Phase 2 · Organisation
+
+### GRI-55 · Organise songs in folders and genres
+
+Songs can be organised in folders (a project, an EP, « Brouillons ») and tagged with a genre. A song is in one folder at most and has one genre at most.
+
+- Folders: a name, a colour among the theme's accents and an order. One level only, no sub-folders. « Archives » is a built-in folder that cannot be renamed or deleted.
+- Genres: a short default list (Afro, Rap, R&B, Gospel, Pop, Autre) that the author can extend; a custom genre can be renamed or deleted.
+- Deleting a folder never deletes its songs: they go back to « Aucun dossier ». Deleting a genre removes it from its songs.
+- Folders, genres and the songs' choices sync like the songs (GRI-27).
+
+Size: M. Dependencies: GRI-05, GRI-27.
+
+### GRI-56 · Rework the home screen around recent songs and folders
+
+The home screen no longer lists every song. It shows, from top to bottom: the search on all texts, the tidy-up card when there are proposals (GRI-59), the songs changed in the last 24 hours under « Aujourd'hui », then the folders.
+
+- « Aujourd'hui » is a rolling window: a song changed 25 hours ago leaves it. Each song shows its title, first verse, rhyme dots, folder, genre, language and time of change.
+- With nothing changed in the last 24 hours, a « Reprendre » card shows the last song touched, its first two verses and « Continuer à écrire », so the screen is never empty.
+- « Dossiers » shows the folders as a grid with their song count, ends with a « Nouveau dossier » card, and links « Tous les textes · 43 ».
+- The floating « Nouvelle chanson » button becomes a « + » button in the header, next to the sync state.
+- Scrolling keeps the behaviour of GRI-45.
+
+Size: M. Dependencies: GRI-12, GRI-45, GRI-55. Mockup: « Accueil » (and its « rienAujourdhui » tweak for « Reprendre »).
+
+### GRI-57 · Build the folder and all-texts screen
+
+One screen shows a folder's songs, or all the songs from « Tous les textes ». Genre chips filter the list (« Tous », then the genres present); a filter button opens the language choice (« Toutes », « Français », « English ») and shows « FR » or « EN » when active.
+
+- Songs are sorted by last change, newest first, with their genre, language and time of change.
+- The folder's « ⋯ » menu: « Renommer », « Changer la couleur », « Supprimer le dossier » (GRI-55 rules).
+- A long press on a song, here or on the home screen, opens the « Dossier et genre » sheet (GRI-58) for that song.
+- « Sélectionner » turns on multiple selection; « Ranger » then opens the same sheet for all the selected songs, useful after a large import.
+
+Size: M. Dependencies: GRI-54, GRI-55. Mockup: « Dossier et tous les textes ».
+
+### GRI-58 · File a song in a folder and a genre
+
+A sheet « Dossier et genre » files one song, or several selected songs, in one go: the list of folders (« Aucun dossier » first, one choice), then the genres as chips (one at most, a tap on the chosen one clears it), then « Valider ».
+
+- It opens from the editor's « ⋯ » menu (« Dossier et genre »), from a long press on a song and from « Ranger » in multiple selection.
+- « Nouveau dossier » at the end of the list opens a name field with « Créer »: the folder is created and chosen at once.
+- « + » after the genres adds a custom genre.
+- With several songs selected, folders and genres they do not share show no choice until the author picks one.
+
+Size: S. Dependencies: GRI-55. Mockup: « Dossier et genre d'un texte ».
+
+### GRI-59 · Propose a tidy-up
+
+So that the library never turns into a pile, Griot sometimes proposes a tidy-up: after an import, and otherwise at most once a week. A card on the home screen (« Griot propose de ranger 12 textes ») opens the proposals; nothing moves without the author's consent.
+
+- Four kinds of proposals: « Classer » (a folder or a genre for a song, from its themes and style), « Donner un titre » (for « Sans titre », from its first verse or its chorus), « Doublons » (songs imported twice), « Archiver » (drafts untouched for more than 30 days, moved to « Archives »).
+- Classifying and titles come from the AI (GRI-31), on the device when possible, online if the settings allow it; they are marked « Suggestion IA ». Duplicates are found by code, on the normalised text, never by a model, and are marked « Détecté par Griot ».
+- Each proposal is accepted (✓) or refused (✕) on its own; « Accepter les N restantes » accepts the rest. A refused proposal is never proposed again for the same song.
+- Without any available model, only duplicates are proposed. With no proposal, the card does not show.
+- Nothing is ever deleted: archiving moves songs, a duplicate is merged into the song kept with its history (GRI-24).
+
+Size: L. Dependencies: GRI-31, GRI-55, GRI-56, GRI-58. Mockup: « Propositions de rangement ».
 
 ## Phase 3 · After the MVP
 
