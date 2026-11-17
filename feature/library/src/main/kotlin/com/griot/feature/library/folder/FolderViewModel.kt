@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = FolderViewModel.Factory::class)
 internal class FolderViewModel @AssistedInject constructor(
     @Assisted private val folderId: String?,
-    songs: SongRepository,
+    private val songs: SongRepository,
     private val folders: FolderRepository,
     genres: GenreRepository,
     private val items: LibraryItems,
@@ -104,6 +104,10 @@ internal class FolderViewModel @AssistedInject constructor(
             },
             items = inFolder.filteredBy(filters, archives = archives)
                 .map { items.itemOf(song = it, folders = folders, genres = genres, now = now) },
+            moreInArchives = !archives &&
+                !filters.includeArchives &&
+                inFolder.filteredBy(filters.copy(includeArchives = true)).size >
+                inFolder.filteredBy(filters).size,
             selecting = selection != null,
             selected = selection.orEmpty(),
             loading = false,
@@ -124,6 +128,26 @@ internal class FolderViewModel @AssistedInject constructor(
                 in current.genres -> current.copy(genres = current.genres - genreId)
                 else -> current.copy(genres = current.genres + genreId)
             }
+        }
+    }
+
+    /** « Effacer les filtres »: every song of the folder, the last changed first. */
+    fun onFiltersCleared() {
+        filters.value = FolderFilters()
+    }
+
+    /** « Chercher dans les archives »: the filters applied, the archived songs included. */
+    fun onArchivesIncluded() {
+        filters.update { it.copy(includeArchives = true) }
+    }
+
+    /** « Nouvelle chanson ici »: a new song, filed in this folder, then [onCreated] with its id. */
+    fun onNewSongHere(onCreated: (String) -> Unit) {
+        val id = folderId?.takeUnless(::isVirtualFolder) ?: return
+        viewModelScope.launch {
+            val songId = songs.createSong()
+            folders.fileSongs(songIds = listOf(songId), add = setOf(id), remove = emptySet())
+            onCreated(songId)
         }
     }
 

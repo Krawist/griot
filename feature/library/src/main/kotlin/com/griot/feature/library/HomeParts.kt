@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.format.text
@@ -91,8 +91,10 @@ internal fun SearchField(query: String, onQueryChange: (String) -> Unit) {
     val placeholder = stringResource(R.string.library_search)
     val textStyle = GriotTheme.type.body.copy(color = palette.ink)
     // The field keeps what is typed: the query comes back from the songs' search a moment later, and showing that
-    // one would move the cursor back while typing.
+    // one would move the cursor back while typing. A query that becomes empty, as « Effacer la recherche » does, clears
+    // it: only the change, never the query lagging behind what is typed.
     var text by rememberSaveable { mutableStateOf(query) }
+    LaunchedEffect(query) { if (query.isEmpty()) text = "" }
     BasicTextField(
         value = text,
         onValueChange = {
@@ -212,24 +214,6 @@ internal fun ResumeCard(resume: ResumeSong, onClick: () -> Unit) {
                 color = palette.onAccent,
             )
         }
-    }
-}
-
-@Composable
-internal fun EmptyState(title: String, body: String) {
-    val palette = GriotTheme.palette
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(
-            top = GriotSpacing.xxl * 2,
-            start = GriotSpacing.xl,
-            end = GriotSpacing.xl,
-            bottom = GriotSpacing.xxl,
-        ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(GriotSpacing.s),
-    ) {
-        Text(text = title, style = GriotTheme.type.cardTitle, color = palette.ink, textAlign = TextAlign.Center)
-        Text(text = body, style = GriotTheme.type.body, color = palette.muted, textAlign = TextAlign.Center)
     }
 }
 

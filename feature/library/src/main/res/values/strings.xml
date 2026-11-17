@@ -16,6 +16,7 @@
     <string name="folder_back">Retour à l\'accueil</string>
     <string name="folder_cancel">Annuler</string>
     <string name="folder_checked">%1$s ✓</string>
+    <string name="folder_clear_filters">Effacer les filtres</string>
     <string name="folder_color">Changer la couleur</string>
     <string name="folder_color_magenta">Magenta</string>
     <string name="folder_color_neutral">Gris</string>
@@ -24,10 +25,13 @@
     <string name="folder_color_yellow">Jaune</string>
     <string name="folder_delete">Supprimer le dossier</string>
     <string name="folder_delete_title">Supprimer « %1$s » ?</string>
-    <string name="folder_empty_body">Range une chanson ici d\'un appui long, avec « Dossier et genre ».</string>
+    <string name="folder_empty_body">Range ici des textes existants, ou commence une chanson directement dans ce dossier.</string>
     <string name="folder_empty_favorites">Ajoute une chanson aux favoris d\'un appui long.</string>
+    <string name="folder_empty_plain">Les textes rangés ici apparaîtront dans ce dossier.</string>
     <string name="folder_empty_title">Pas encore de chanson ici</string>
+    <string name="folder_empty_waiting">Ce dossier attend ses textes</string>
     <string name="folder_file">Ranger (%1$d)</string>
+    <string name="folder_file_here">Ranger des textes ici</string>
     <string name="folder_filter_folder">Dossier</string>
     <string name="folder_filter_genres">Genre · plusieurs choix</string>
     <string name="folder_filter_state">État</string>
@@ -36,7 +40,10 @@
     <string name="folder_include_archives">Inclure les archives</string>
     <string name="folder_language">Langue</string>
     <string name="folder_menu">Options du dossier</string>
+    <string name="folder_new_song_here">Nouvelle chanson ici</string>
+    <string name="folder_no_result_body">Aucun texte avec ces filtres. Retire un filtre, ou cherche aussi dans les archives.</string>
     <string name="folder_rename">Renommer</string>
+    <string name="folder_search_archives">Chercher dans les archives</string>
     <string name="folder_select">Sélectionner</string>
     <string name="folder_show_none">Aucun texte avec ces filtres</string>
     <string name="folder_sort">Trier par</string>
@@ -56,13 +63,16 @@
     <string name="library_all_texts">Tous les textes · %1$d</string>
     <string name="library_archive">Déplacer dans Archives</string>
     <string name="library_archives">Archives</string>
+    <string name="library_clear_search">Effacer la recherche</string>
     <string name="library_copy_title">%1$s (copie)</string>
     <string name="library_create">Créer</string>
     <string name="library_delete_recoverable">Supprimer · récupérable 30 jours</string>
     <string name="library_deleted">« %1$s » est dans la corbeille</string>
     <string name="library_duplicate">Dupliquer</string>
-    <string name="library_empty_body">Touche « + » pour écrire ta première chanson.</string>
-    <string name="library_empty_title">Pas encore de chanson</string>
+    <string name="library_empty_body">Écris ta première chanson, ou importe les textes que tu gardes déjà dans Samsung Notes ou ailleurs.</string>
+    <string name="library_empty_import">Importer des textes</string>
+    <string name="library_empty_title">Ton carnet est vide</string>
+    <string name="library_empty_write">Écrire une chanson</string>
     <string name="library_export">Exporter en Markdown</string>
     <string name="library_export_hint" translatable="false">.md</string>
     <string name="library_favorite">Favori</string>
@@ -84,8 +94,8 @@
     <string name="library_new_folder_label">Nom du dossier</string>
     <string name="library_new_song">Nouvelle chanson</string>
     <string name="library_no_folder">Sans dossier</string>
-    <string name="library_no_result_body">Essaie un autre mot ou un autre filtre.</string>
-    <string name="library_no_result_title">Aucune chanson ne correspond</string>
+    <string name="library_no_result_search">Aucun texte avec ces mots. Essaie un autre mot, un bout de vers ou un titre.</string>
+    <string name="library_no_result_title">Aucun texte ne correspond</string>
     <string name="library_no_text">Pas encore de texte</string>
     <string name="library_open">Ouvrir</string>
     <string name="library_recent">Récents</string>

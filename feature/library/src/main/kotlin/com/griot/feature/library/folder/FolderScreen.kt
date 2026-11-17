@@ -33,8 +33,6 @@ import com.griot.core.design.component.UndoBar
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
-import com.griot.feature.library.EmptyState
-import com.griot.feature.library.FAVORITES_FOLDER_ID
 import com.griot.feature.library.R
 import com.griot.feature.library.SongActionsHost
 import com.griot.feature.library.SongCard
@@ -56,6 +54,7 @@ internal fun FolderScreen(
     onBack: () -> Unit,
     onOpenSong: (String) -> Unit,
     onSongLanguage: (String) -> Unit,
+    onOpenAll: () -> Unit,
     viewModel: FolderViewModel = hiltViewModel<FolderViewModel, FolderViewModel.Factory>(
         key = folderId ?: "all",
         creationCallback = { factory -> factory.create(folderId) },
@@ -91,6 +90,12 @@ internal fun FolderScreen(
                 uiState = uiState,
                 onOpenSong = { id -> if (uiState.selecting) viewModel.onToggleSelected(id) else onOpenSong(id) },
                 onSongActions = { id -> if (uiState.selecting) viewModel.onToggleSelected(id) else actionsFor = id },
+                emptyActions = FolderEmptyActions(
+                    onClearFilters = viewModel::onFiltersCleared,
+                    onSearchArchives = viewModel::onArchivesIncluded,
+                    onNewSongHere = { viewModel.onNewSongHere(onCreated = onOpenSong) },
+                    onOpenAll = onOpenAll,
+                ),
             )
         }
         BottomActions(
@@ -137,7 +142,12 @@ internal fun FolderScreen(
 // The songs; in the multiple selection, the selected ones are circled. Other filters or another order show the list
 // from its top.
 @Composable
-private fun SongList(uiState: FolderUiState, onOpenSong: (String) -> Unit, onSongActions: (String) -> Unit) {
+private fun SongList(
+    uiState: FolderUiState,
+    onOpenSong: (String) -> Unit,
+    onSongActions: (String) -> Unit,
+    emptyActions: FolderEmptyActions,
+) {
     val palette = GriotTheme.palette
     val shape = remember { RoundedCornerShape(GriotRadius.card) }
     val list = rememberLazyListState()
@@ -149,23 +159,7 @@ private fun SongList(uiState: FolderUiState, onOpenSong: (String) -> Unit, onSon
         verticalArrangement = Arrangement.spacedBy(GriotSpacing.m - 2.dp),
     ) {
         if (!uiState.loading && uiState.items.isEmpty()) {
-            item(key = "empty") {
-                // An empty folder says how to fill it; one emptied by the filters, to change them.
-                when {
-                    uiState.songCount > 0 -> EmptyState(
-                        title = stringResource(R.string.library_no_result_title),
-                        body = stringResource(R.string.library_no_result_body),
-                    )
-                    uiState.virtual == FAVORITES_FOLDER_ID -> EmptyState(
-                        title = stringResource(R.string.folder_empty_title),
-                        body = stringResource(R.string.folder_empty_favorites),
-                    )
-                    else -> EmptyState(
-                        title = stringResource(R.string.folder_empty_title),
-                        body = stringResource(R.string.folder_empty_body),
-                    )
-                }
-            }
+            item(key = "empty") { FolderEmptyState(uiState = uiState, actions = emptyActions) }
         }
         items(items = uiState.items, key = { it.song.id }) { item ->
             val selected = item.song.id in uiState.selected

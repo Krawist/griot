@@ -650,6 +650,17 @@ The filter button of a folder opens « Filtres et tri »: the order (« Modifié
 
 Size: M. Dependencies: GRI-57, GRI-62. Mockup: « Filtres et tri ».
 
+### GRI-66 · Empty states
+
+Every list with nothing to show follows « Vide »: an illustration in a glass tile, a title, what to do, and up to two buttons.
+
+- An empty library: the logo, « Ton carnet est vide », « Écrire une chanson » and « Importer des textes ».
+- An empty folder of the author: « Ce dossier attend ses textes », « Nouvelle chanson ici » (a new song filed in the folder, opened) and « Ranger des textes ici » (every text, to select and file). « Favoris » says how to add one and offers « Tous les textes ».
+- A search or filters finding nothing: « Aucun texte ne correspond », « Effacer la recherche » or « Effacer les filtres », and « Chercher dans les archives » when archived songs would show.
+- The search icon is magenta, not orange as drawn: orange is for the AI.
+
+Size: S. Dependencies: GRI-11, GRI-56, GRI-57, GRI-65. Mockups: « Vide · premier lancement », « Vide · dossier », « Vide · aucun résultat ».
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style

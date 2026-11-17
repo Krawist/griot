@@ -125,6 +125,7 @@ private fun GriotNavHost(
                 onOpenSong = { songId -> navController.navigateToEditor(songId) },
                 onBack = { navController.popBackStack() },
                 onSongLanguage = { songId -> language = songId },
+                onImport = { navController.navigateToImport() },
                 onControlsShownChange = { shown -> barHidden = !shown },
             )
             ideasGraph(onOpenSong = { songId -> navController.navigateToEditor(songId) })

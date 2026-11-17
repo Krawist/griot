@@ -436,6 +436,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   language, folder or `NO_FOLDER`, `SongState`s, `includeArchives`), applied by `filteredBy` (`SongFiltering.kt`,
   titles by a French `Collator`); a draft while the sheet is open (`FilterSheetState`, count for « Voir N textes »),
   `activeCount()` on the button. `LibrarySong.createdAt`. `GriotButton(enabled)`, `FilterChip(accent)`.
+- [x] **GRI-66** — `EmptyState` (icon tile, title, body, `EmptyAction` primary and secondary): empty library
+  (write, import: `libraryGraph(onImport)`), `FolderEmptyState` (`FolderEmptyActions`: clear filters, include archives,
+  « Nouvelle chanson ici » `onNewSongHere`, every text), search with no result (clears the query; `SearchField`
+  clears its text when the query becomes empty).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 

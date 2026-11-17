@@ -16,6 +16,7 @@ import com.griot.feature.library.LibraryItem
  * @property filters The filters and the order applied.
  * @property filterCount How many filters are on: the count on the filter button.
  * @property filterSheet « Filtres et tri », while it is open; `null` otherwise.
+ * @property moreInArchives Whether songs in « Archives » would show if the archives were included.
  * @property items The songs under the filters, in their order.
  * @property selecting Whether the multiple selection is on.
  * @property selected The ids of the songs selected.
@@ -31,6 +32,7 @@ internal data class FolderUiState(
     val filters: FolderFilters = FolderFilters(),
     val filterCount: Int = 0,
     val filterSheet: FilterSheetState? = null,
+    val moreInArchives: Boolean = false,
     val items: List<LibraryItem> = emptyList(),
     val selecting: Boolean = false,
     val selected: Set<String> = emptySet(),

@@ -597,6 +597,72 @@ internal class FolderViewModelTest {
     }
 
     @Nested
+    inner class OnNewSongHere {
+        @Test
+        fun `should create a song filed in the folder, then open it`() = runTest {
+            // given
+            val songs = FakeSongRepository()
+            val folders = FakeFolderRepository()
+            val viewModel = FolderViewModel(
+                folderId = "my-folder-id",
+                songs = songs,
+                folders = folders,
+                genres = FakeGenreRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
+                clock = clock,
+            )
+            var opened: String? = null
+
+            // when
+            viewModel.onNewSongHere(onCreated = { opened = it })
+
+            // then
+            opened shouldBe "created-song-id-1"
+            folders.calls shouldContainExactly listOf("file created-song-id-1 +my-folder-id -")
+        }
+    }
+
+    @Nested
+    inner class OnArchivesIncluded {
+        @Test
+        fun `should show the archived songs too`() = runTest {
+            // given
+            val library = listOf(listOf("archives"), emptyList()).mapIndexed { index, folderIds ->
+                LibrarySong(
+                    id = "my-song-id-${index + 1}",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    folderIds = folderIds,
+                    updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "",
+                )
+            }
+            val viewModel = FolderViewModel(
+                folderId = null,
+                songs = FakeSongRepository(library = library),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                exporter = FakeMarkdownExporter(),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            val before = viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onArchivesIncluded()
+
+            // then
+            before.moreInArchives shouldBe true
+            viewModel.uiState.first { it.filters.includeArchives }.items.size shouldBe 2
+        }
+    }
+
+    @Nested
     inner class OnToggleSelected {
         @Test
         fun `should select the songs tapped in the multiple selection`() = runTest {

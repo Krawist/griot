@@ -42,6 +42,7 @@ import com.griot.core.data.model.FolderKind
 import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
+import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.DashedAddButton
 import com.griot.core.design.component.GriotSheet
@@ -72,12 +73,14 @@ private val ListBottom = 140.dp
  * @param onControlsShownChange Whether the controls show, for the app's bottom bar to follow them; `true` again when
  * the screen leaves.
  */
+@Suppress("LongParameterList") // Where the home screen leads: songs, folders, the tidy-up, a language, the import.
 @Composable
 internal fun LibraryScreen(
     onOpenSong: (String) -> Unit,
     onOpenFolder: (String?) -> Unit,
     onTidyUp: () -> Unit,
     onSongLanguage: (String) -> Unit,
+    onImport: () -> Unit,
     onControlsShownChange: (Boolean) -> Unit,
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
@@ -101,6 +104,7 @@ internal fun LibraryScreen(
         onNewSong = { viewModel.onNewSong(onCreated = onOpenSong) },
         onOpenFolder = onOpenFolder,
         onTidyUp = onTidyUp,
+        onImport = onImport,
         onNewFolder = { newFolder = true },
         onUndoDelete = viewModel.actions::onUndoDelete,
         onUndoDismissed = viewModel.actions::onUndoDismissed,
@@ -147,6 +151,7 @@ private fun LibraryContent(
     onNewSong: () -> Unit,
     onOpenFolder: (String?) -> Unit,
     onTidyUp: () -> Unit,
+    onImport: () -> Unit,
     onNewFolder: () -> Unit,
     onUndoDelete: () -> Unit,
     onUndoDismissed: () -> Unit,
@@ -179,6 +184,8 @@ private fun LibraryContent(
                     onOpenFolder = onOpenFolder,
                     onTidyUp = onTidyUp,
                     onNewFolder = onNewFolder,
+                    emptyLibrary = { EmptyLibrary(onNewSong = onNewSong, onImport = onImport) },
+                    noResult = { NoResult(onClear = { onQueryChange("") }) },
                 )
             }
         }
@@ -195,6 +202,31 @@ private fun LibraryContent(
     }
 }
 
+// « Ton carnet est vide »: write a song, or import texts.
+@Composable
+private fun EmptyLibrary(onNewSong: () -> Unit, onImport: () -> Unit) {
+    EmptyState(
+        icon = DesignR.drawable.logo_quill,
+        title = stringResource(R.string.library_empty_title),
+        body = stringResource(R.string.library_empty_body),
+        primary = EmptyAction(label = stringResource(R.string.library_empty_write), onClick = onNewSong),
+        secondary = EmptyAction(label = stringResource(R.string.library_empty_import), onClick = onImport),
+    )
+}
+
+// A search finding nothing: « Effacer la recherche ».
+@Composable
+private fun NoResult(onClear: () -> Unit) {
+    EmptyState(
+        icon = DesignR.drawable.ic_search,
+        tint = GriotTheme.palette.accent,
+        title = stringResource(R.string.library_no_result_title),
+        body = stringResource(R.string.library_no_result_search),
+        primary = EmptyAction(label = stringResource(R.string.library_clear_search), onClick = onClear),
+        top = GriotSpacing.xl,
+    )
+}
+
 // The search's results while a text is typed; otherwise today's songs or « Reprendre », then the folders.
 @Suppress("LongParameterList") // The screen, its list, and one callback per action.
 @Composable
@@ -207,6 +239,8 @@ private fun HomeList(
     onOpenFolder: (String?) -> Unit,
     onTidyUp: () -> Unit,
     onNewFolder: () -> Unit,
+    emptyLibrary: @Composable () -> Unit,
+    noResult: @Composable () -> Unit,
 ) {
     // A song changed, or the tidy-up card, comes at the top. The list keeps the item it showed first, now just below:
     // when it was at the top, it goes back up to show what came.
@@ -223,13 +257,8 @@ private fun HomeList(
             item(key = "tidy-up") { TidyUpCard(count = uiState.tidyUpCount, onClick = onTidyUp) }
         }
         when {
-            uiState.query.isNotBlank() -> results(uiState.results, onOpenSong, onSongActions)
-            uiState.songCount == 0 -> item(key = "empty") {
-                EmptyState(
-                    title = stringResource(R.string.library_empty_title),
-                    body = stringResource(R.string.library_empty_body),
-                )
-            }
+            uiState.query.isNotBlank() -> results(uiState.results, onOpenSong, onSongActions, noResult)
+            uiState.songCount == 0 -> item(key = "empty") { emptyLibrary() }
             uiState.today.isNotEmpty() -> {
                 item(key = "today") { SectionLabel(text = stringResource(R.string.library_today)) }
                 songs(uiState.today, onOpenSong, onSongActions)
@@ -267,14 +296,10 @@ private fun LazyListScope.results(
     items: List<LibraryItem>,
     onOpenSong: (String) -> Unit,
     onSongActions: (String) -> Unit,
+    noResult: @Composable () -> Unit,
 ) {
     if (items.isEmpty()) {
-        item(key = "no-result") {
-            EmptyState(
-                title = stringResource(R.string.library_no_result_title),
-                body = stringResource(R.string.library_no_result_body),
-            )
-        }
+        item(key = "no-result") { noResult() }
     } else {
         songs(items, onOpenSong, onSongActions)
     }
@@ -381,6 +406,7 @@ private fun LibraryScreenPreview() {
                 onNewSong = {},
                 onOpenFolder = {},
                 onTidyUp = {},
+                onImport = {},
                 onNewFolder = {},
                 onUndoDelete = {},
                 onUndoDismissed = {},
