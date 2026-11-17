@@ -8,13 +8,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import com.griot.core.design.theme.GriotTheme
 
-// Shapes behind the screens, as on the library mockup: magenta at the top right, turquoise on the left.
+// Shapes behind the screens, as on the library mockup: magenta at the top right, turquoise on the left, and a warm
+// yellow low on the right, so that the middle of a screen has colour too.
 private const val MAGENTA_X = 0.92f
 private const val MAGENTA_Y = 0.08f
 private const val MAGENTA_RADIUS = 0.6f
 private const val TURQUOISE_X = 0.03f
 private const val TURQUOISE_Y = 0.6f
 private const val TURQUOISE_RADIUS = 0.55f
+private const val YELLOW_X = 0.85f
+private const val YELLOW_Y = 0.78f
+private const val YELLOW_RADIUS = 0.5f
 
 /**
  * Draws the blurred [shapes] behind the content. They are radial gradients, so they look the same on every phone,
@@ -53,6 +57,12 @@ fun screenBackdropShapes(): List<BackdropShape> {
             x = TURQUOISE_X,
             y = TURQUOISE_Y,
             radius = TURQUOISE_RADIUS,
+        ),
+        BackdropShape(
+            color = palette.yellow.copy(alpha = palette.blobAlpha),
+            x = YELLOW_X,
+            y = YELLOW_Y,
+            radius = YELLOW_RADIUS,
         ),
     )
 }

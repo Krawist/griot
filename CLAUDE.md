@@ -442,6 +442,9 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   clears its text when the query becomes empty).
 - [x] **GRI-67** — the folder screen has the home's `SearchField` (with a `placeholder`), `FolderViewModel.onQueryChange`
   (`LibrarySong.matches`) before the filters; `onFiltersCleared` clears it too.
+- [x] **GRI-04 (follow-up)** — richer backdrop: `blobAlpha` 0.22 light, 0.28 dark (mockups 0.16/0.22 looked faint on
+  the phone though measured equal), and a third, yellow blob low on the right in `screenBackdropShapes()`. The glass
+  stays at 68 %.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 
