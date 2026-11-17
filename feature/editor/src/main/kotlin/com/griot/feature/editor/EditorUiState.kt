@@ -25,6 +25,8 @@ import com.griot.core.data.preferences.UserPreferencesRepository
  * @property ideas The ideas linked to the song, newest first, which its « ⋯ » menu offers to add as verses.
  * @property editedVerse The verse being edited, whose history « Versions » opens; `null` when none is.
  * @property pasteUndo The last paste split into sections, while its undo bar shows; `null` otherwise.
+ * @property conflicts The ids of the verses changed on two devices whose conflict the author did not look at, oldest
+ * first; a notice opens the history of the first one.
  */
 internal data class EditorUiState(
     val loading: Boolean = true,
@@ -42,4 +44,5 @@ internal data class EditorUiState(
     val editedVerse: String? = null,
     val export: ExportFile? = null,
     val ideas: List<Idea> = emptyList(),
+    val conflicts: List<String> = emptyList(),
 )

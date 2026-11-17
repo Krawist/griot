@@ -111,6 +111,7 @@ internal class EditorViewModel @AssistedInject constructor(
         .combine(editedVerse) { state, verse -> state.copy(editedVerse = verse) }
         .combine(export) { state, file -> state.copy(export = file) }
         .combine(ideas.observeSongIdeas(songId)) { state, linked -> state.copy(ideas = linked) }
+        .combine(versions.observeConflicts(songId)) { state, verses -> state.copy(conflicts = verses) }
         .combine(detectedLanguage) { state, detected ->
             state.copy(
                 detectedLanguage = detected,
@@ -130,6 +131,16 @@ internal class EditorViewModel @AssistedInject constructor(
         // The phonetics read their dictionaries and count every verse: never on the main thread.
         .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), EditorUiState())
+
+    /** The history of the conflict on the verse [verseId] is opened: its notice goes. */
+    fun onConflictShown(verseId: String) {
+        viewModelScope.launch { versions.dismissVerseConflicts(verseId) }
+    }
+
+    /** Hides the notices of every conflict of the song; the versions stay in the history. */
+    fun onConflictsDismissed() {
+        viewModelScope.launch { versions.dismissSongConflicts(songId) }
+    }
 
     fun onLanguageSelected(language: SongLanguage) {
         viewModelScope.launch { editor.setLanguage(songId = songId, language = language) }

@@ -13,6 +13,18 @@ interface VersionRepository {
     /** The versions of the whole song [songId], newest first. */
     fun observeSongHistory(songId: String): Flow<List<SongVersion>>
 
+    /**
+     * The ids of the verses of the song [songId] changed on two devices whose conflict the author did not look at,
+     * oldest first (GRI-28).
+     */
+    fun observeConflicts(songId: String): Flow<List<String>>
+
+    /** Forgets the conflict notices of the verse [verseId], once the author opened its history. */
+    suspend fun dismissVerseConflicts(verseId: String)
+
+    /** Forgets every conflict notice of the song [songId]. */
+    suspend fun dismissSongConflicts(songId: String)
+
     /** Records the text of the verse [verseId] as a version from [source], unless it is the last version already. */
     suspend fun recordVerse(verseId: String, source: VersionSource = VersionSource.AUTHOR)
 

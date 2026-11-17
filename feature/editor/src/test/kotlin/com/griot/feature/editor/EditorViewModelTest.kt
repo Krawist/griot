@@ -917,4 +917,78 @@ internal class EditorViewModelTest {
             exporter.calls shouldContainExactly listOf("song my-song-id")
         }
     }
+
+    @Nested
+    inner class Conflicts {
+        @Test
+        fun `should show the verses with a conflict`() = runTest {
+            // given
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = FakeSongEditorRepository(),
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = FakeVersionRepository(conflicts = listOf("my-verse-id-1", "my-verse-id-2")),
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            val uiState = viewModel.uiState.first { !it.loading }
+
+            // then
+            uiState.conflicts shouldContainExactly listOf("my-verse-id-1", "my-verse-id-2")
+        }
+
+        @Test
+        fun `should forget the conflict of a verse once its history is opened`() = runTest {
+            // given
+            val versions = FakeVersionRepository(conflicts = listOf("my-verse-id"))
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = FakeSongEditorRepository(),
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = versions,
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            viewModel.onConflictShown("my-verse-id")
+
+            // then
+            versions.calls shouldContainExactly listOf("dismiss verse conflicts my-verse-id")
+        }
+
+        @Test
+        fun `should forget every conflict of the song when dismissed`() = runTest {
+            // given
+            val versions = FakeVersionRepository(conflicts = listOf("my-verse-id"))
+            val viewModel = EditorViewModel(
+                songId = "my-song-id",
+                editor = FakeSongEditorRepository(),
+                songs = FakeSongRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                detector = FakeSongLanguageDetector(),
+                engines = engines,
+                corrections = FakeWordCorrectionRepository(),
+                versions = versions,
+                exporter = FakeMarkdownExporter(),
+                ideas = FakeIdeaRepository(),
+            )
+
+            // when
+            viewModel.onConflictsDismissed()
+
+            // then
+            versions.calls shouldContainExactly listOf("dismiss song conflicts my-song-id")
+        }
+    }
 }

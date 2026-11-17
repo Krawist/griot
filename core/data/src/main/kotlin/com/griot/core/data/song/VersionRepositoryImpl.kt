@@ -1,5 +1,6 @@
 package com.griot.core.data.song
 
+import com.griot.core.data.database.dao.ConflictDao
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.dao.VersionDao
@@ -29,6 +30,7 @@ internal class VersionRepositoryImpl @Inject constructor(
     private val versionDao: VersionDao,
     private val sectionDao: SectionDao,
     private val verseDao: VerseDao,
+    private val conflictDao: ConflictDao,
     private val editor: SongEditorRepository,
     private val clock: Clock,
 ) : VersionRepository {
@@ -43,6 +45,12 @@ internal class VersionRepositoryImpl @Inject constructor(
                 SongVersion(id = it.id, snapshot = decode(it.text), source = it.source, createdAt = it.createdAt)
             }
         }
+
+    override fun observeConflicts(songId: String): Flow<List<String>> = conflictDao.observeVersesBySong(songId)
+
+    override suspend fun dismissVerseConflicts(verseId: String) = conflictDao.deleteByVerse(verseId)
+
+    override suspend fun dismissSongConflicts(songId: String) = conflictDao.deleteBySong(songId)
 
     override suspend fun recordVerse(verseId: String, source: VersionSource) {
         val verse = verseDao.getById(verseId) ?: return

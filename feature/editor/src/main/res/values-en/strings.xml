@@ -2,6 +2,8 @@
 <resources>
     <string name="editor_add_section">Add a section</string>
     <string name="editor_back">Back to the songs</string>
+    <string name="editor_conflicts_dismiss">Dismiss</string>
+    <string name="editor_conflicts_show">Show</string>
     <string name="editor_count_body">“%1$s” is not in the dictionary. Give the syllables of this verse: Griot will remember them for this word.</string>
     <string name="editor_count_less">One syllable less</string>
     <string name="editor_count_more">One syllable more</string>
@@ -47,6 +49,10 @@
     <string name="history_subtitle_verse">%1$s · %2$s, verse %3$d</string>
     <string name="history_title">Versions</string>
     <string name="history_when">%1$s, %2$s</string>
+    <plurals name="editor_conflicts">
+        <item quantity="one">A verse changed on two devices: both texts are kept.</item>
+        <item quantity="other">%1$d verses changed on two devices: both texts are kept.</item>
+    </plurals>
     <plurals name="editor_delete_verses">
         <item quantity="one">Its verse will be deleted, with its repeats.</item>
         <item quantity="other">Its %1$d verses will be deleted, with its repeats.</item>

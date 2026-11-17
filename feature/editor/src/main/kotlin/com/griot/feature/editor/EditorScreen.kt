@@ -50,6 +50,7 @@ import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.SongVerse
 import com.griot.core.data.song.SectionLabel
 import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.FileShareSheet
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
@@ -96,6 +97,13 @@ internal fun EditorScreen(
         onMenu = { sheet = EditorSheet.MENU },
         onShowRhymesChange = viewModel::onShowRhymesChange,
         onOpenHistory = { onOpenHistory(uiState.editedVerse) },
+        onShowConflict = {
+            uiState.conflicts.firstOrNull()?.let { verseId ->
+                viewModel.onConflictShown(verseId)
+                onOpenHistory(verseId)
+            }
+        },
+        onDismissConflicts = viewModel::onConflictsDismissed,
     )
     EditorSheets(
         uiState = uiState,
@@ -240,7 +248,10 @@ private fun EditorContent(
     onMenu: () -> Unit,
     onShowRhymesChange: (Boolean) -> Unit,
     onOpenHistory: () -> Unit,
+    onShowConflict: () -> Unit,
+    onDismissConflicts: () -> Unit,
 ) {
+    val motion = GriotTheme.motion
     Box(modifier = Modifier.fillMaxSize().safeDrawingPadding().imePadding()) {
         Column(modifier = Modifier.fillMaxSize()) {
             EditorTopBar(
@@ -253,6 +264,14 @@ private fun EditorContent(
                 onLanguage = onLanguage,
                 onMenu = onMenu,
             )
+            AnimatedPresence(
+                value = uiState.conflicts.size.takeIf { it > 0 },
+                enter = motion.itemEnter(),
+                exit = motion.itemExit(),
+                modifier = Modifier.padding(start = GriotSpacing.l, top = GriotSpacing.s, end = GriotSpacing.l),
+            ) { count ->
+                ConflictNotice(count = count, onShow = onShowConflict, onDismiss = onDismissConflicts)
+            }
             if (!uiState.loading) {
                 LazyColumn(
                     modifier = Modifier
@@ -386,6 +405,8 @@ private fun EditorScreenPreview() {
                 onMenu = {},
                 onShowRhymesChange = {},
                 onOpenHistory = {},
+                onShowConflict = {},
+                onDismissConflicts = {},
             )
         }
     }

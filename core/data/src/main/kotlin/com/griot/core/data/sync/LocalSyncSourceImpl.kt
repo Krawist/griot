@@ -3,6 +3,7 @@ package com.griot.core.data.sync
 import androidx.room.immediateTransaction
 import androidx.room.useWriterConnection
 import com.griot.core.data.database.GriotDatabase
+import com.griot.core.data.database.entity.ConflictEntity
 import com.griot.core.data.database.entity.IdeaEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
@@ -11,8 +12,10 @@ import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.database.entity.VersionEntity
 import com.griot.core.data.model.SyncEntityType
 import com.griot.core.data.model.SyncRecord
+import com.griot.core.data.model.VersionSource
 import java.time.Clock
 import java.time.Instant
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -46,6 +49,7 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
             insert = database.verseDao()::insert,
             update = database.verseDao()::update,
             updatedAt = VerseEntity::updatedAt,
+            keep = ::keepVerse,
         ),
         SyncEntityType.VERSION to Table(
             serializer = VersionEntity.serializer(),
@@ -60,6 +64,7 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
             insert = database.ideaDao()::insert,
             update = database.ideaDao()::update,
             updatedAt = IdeaEntity::updatedAt,
+            keep = ::keepIdea,
         ),
     )
 
@@ -88,10 +93,38 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
             transactor.immediateTransaction {
                 // Parents first, so that a verse never arrives before its section.
                 records.sortedBy { it.type.ordinal }.forEach { record ->
-                    if (checkNotNull(tables[record.type]).take(record)) markSynced(record = record, at = now)
+                    val synced = database.syncStateDao().get(entityType = record.type, entityId = record.id)
+                    val table = checkNotNull(tables[record.type])
+                    if (table.take(record = record, syncedUpdatedAt = synced?.syncedUpdatedAt, at = now)) {
+                        markSynced(record = record, at = now)
+                    }
                 }
             }
         }
+    }
+
+    // A verse changed on both devices: the text that lost becomes a version of the verse, and a notice.
+    private suspend fun keepVerse(winner: VerseEntity, loser: VerseEntity, at: Instant) {
+        if (winner.text == loser.text) return
+        val songId = database.sectionDao().getById(loser.sectionId)?.songId ?: return
+        val version = VersionEntity(
+            songId = songId,
+            verseId = loser.id,
+            text = loser.text,
+            source = VersionSource.SYNC_CONFLICT,
+            createdAt = at,
+            updatedAt = at,
+        )
+        database.versionDao().insert(version)
+        database.conflictDao().insert(
+            ConflictEntity(versionId = version.id, songId = songId, verseId = loser.id, createdAt = at),
+        )
+    }
+
+    // An idea changed on both devices: the text that lost stays as an idea of its own.
+    private suspend fun keepIdea(winner: IdeaEntity, loser: IdeaEntity, at: Instant) {
+        if (winner.text == loser.text) return
+        database.ideaDao().insert(loser.copy(id = UUID.randomUUID().toString(), updatedAt = at, deleted = false))
     }
 
     private suspend fun markSynced(record: SyncRecord, at: Instant) {
@@ -119,24 +152,45 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
         payload = json.encodeToString(row),
     )
 
-    // How the rows of one table are read and written.
+    /**
+     * How the rows of one table are read and written.
+     *
+     * @property keep Keeps what the losing row of a conflict holds, given the winning row, the losing one and the time;
+     * `null` when the most recent row may simply win.
+     */
     private class Table<T : Any>(
         val serializer: KSerializer<T>,
         val get: suspend (String) -> T?,
         val insert: suspend (T) -> Unit,
         val update: suspend (T) -> Unit,
         val updatedAt: (T) -> Instant,
+        val keep: (suspend (winner: T, loser: T, at: Instant) -> Unit)? = null,
     ) {
-        /** Takes the remote row when it is missing here or more recent; returns whether the two now agree. */
-        suspend fun take(record: SyncRecord): Boolean {
-            val local = get(record.id)
+        /**
+         * Takes the remote row when it is missing here or more recent; when the local row also changed since its last
+         * sync ([syncedUpdatedAt]), the losing one is kept first. Returns whether the two rows now agree.
+         */
+        suspend fun take(record: SyncRecord, syncedUpdatedAt: Instant?, at: Instant): Boolean {
             val remote = json.decodeFromString(serializer, record.payload)
-            when {
-                local == null -> insert(remote)
-                record.updatedAt > updatedAt(local) -> update(remote)
-                record.updatedAt < updatedAt(local) -> return false
+            val local = get(record.id)
+            if (local == null) {
+                insert(remote)
+                return true
             }
-            return true
+            return settle(local = local, remote = remote, syncedUpdatedAt = syncedUpdatedAt, at = at)
+        }
+
+        // The most recent of the two rows wins; when both changed since the last sync, the losing one is kept first.
+        private suspend fun settle(local: T, remote: T, syncedUpdatedAt: Instant?, at: Instant): Boolean {
+            val localUpdatedAt = updatedAt(local)
+            val remoteUpdatedAt = updatedAt(remote)
+            val remoteWins = remoteUpdatedAt > localUpdatedAt
+            val localChanged = syncedUpdatedAt == null || localUpdatedAt > syncedUpdatedAt
+            if (remoteUpdatedAt != localUpdatedAt && localChanged) {
+                keep?.invoke(if (remoteWins) remote else local, if (remoteWins) local else remote, at)
+            }
+            if (remoteWins) update(remote)
+            return remoteUpdatedAt >= localUpdatedAt
         }
     }
 

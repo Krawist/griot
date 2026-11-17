@@ -2,6 +2,8 @@
 <resources>
     <string name="editor_add_section">Ajouter une section</string>
     <string name="editor_back">Retour aux chansons</string>
+    <string name="editor_conflicts_dismiss">Ignorer</string>
+    <string name="editor_conflicts_show">Voir</string>
     <string name="editor_count_body">« %1$s » n\'est pas dans le dictionnaire. Donne le nombre de syllabes de ce vers : Griot s\'en souviendra pour ce mot.</string>
     <string name="editor_count_less">Une syllabe de moins</string>
     <string name="editor_count_more">Une syllabe de plus</string>
@@ -53,6 +55,11 @@
     <string name="history_subtitle_verse">%1$s · %2$s, vers %3$d</string>
     <string name="history_title">Versions</string>
     <string name="history_when">%1$s, %2$s</string>
+    <plurals name="editor_conflicts">
+        <item quantity="one">Un vers a changé sur deux appareils : les deux textes sont gardés.</item>
+        <item quantity="many">%1$d vers ont changé sur deux appareils : les deux textes sont gardés.</item>
+        <item quantity="other">%1$d vers ont changé sur deux appareils : les deux textes sont gardés.</item>
+    </plurals>
     <plurals name="editor_delete_verses">
         <item quantity="one">Son vers sera supprimé, avec ses reprises.</item>
         <item quantity="many">Ses %1$d vers seront supprimés, avec ses reprises.</item>

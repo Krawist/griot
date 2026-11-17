@@ -1,6 +1,7 @@
 package com.griot.core.data.song
 
 import com.griot.core.data.TestClock
+import com.griot.core.data.database.entity.ConflictEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
@@ -12,6 +13,7 @@ import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSnapshot
 import com.griot.core.data.model.SongStatus
 import com.griot.core.data.model.VersionSource
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import java.time.Instant
@@ -37,6 +39,7 @@ internal class VersionRepositoryImplTest {
         versionDao = database.versionDao(),
         sectionDao = database.sectionDao(),
         verseDao = database.verseDao(),
+        conflictDao = database.conflictDao(),
         editor = editor,
         clock = clock,
     )
@@ -240,6 +243,90 @@ internal class VersionRepositoryImplTest {
                     NewSection(kind = SectionKind.CHORUS, name = null, lines = emptyList(), repeatOf = 0),
                 ),
             )
+        }
+    }
+
+    @Nested
+    inner class Conflicts {
+        @Test
+        fun `should list the verses with a conflict, oldest first`() = runTest {
+            // given
+            database.conflictDao().insert(
+                ConflictEntity(
+                    versionId = "my-version-id-1",
+                    songId = "my-song-id",
+                    verseId = "my-verse-id-2",
+                    createdAt = Instant.parse("2026-11-16T09:00:00Z"),
+                ),
+            )
+            database.conflictDao().insert(
+                ConflictEntity(
+                    versionId = "my-version-id-2",
+                    songId = "my-song-id",
+                    verseId = "my-verse-id-1",
+                    createdAt = Instant.parse("2026-11-16T09:30:00Z"),
+                ),
+            )
+            database.conflictDao().insert(
+                ConflictEntity(
+                    versionId = "my-version-id-3",
+                    songId = "my-song-id",
+                    verseId = "my-verse-id-2",
+                    createdAt = Instant.parse("2026-11-16T09:40:00Z"),
+                ),
+            )
+
+            // when
+            val conflicts = repository.observeConflicts("my-song-id").first()
+
+            // then
+            conflicts shouldContainExactly listOf("my-verse-id-2", "my-verse-id-1")
+        }
+
+        @Test
+        fun `should forget the conflicts of a verse once looked at`() = runTest {
+            // given
+            database.conflictDao().insert(
+                ConflictEntity(
+                    versionId = "my-version-id-1",
+                    songId = "my-song-id",
+                    verseId = "my-verse-id-1",
+                    createdAt = Instant.parse("2026-11-16T09:00:00Z"),
+                ),
+            )
+            database.conflictDao().insert(
+                ConflictEntity(
+                    versionId = "my-version-id-2",
+                    songId = "my-song-id",
+                    verseId = "my-verse-id-2",
+                    createdAt = Instant.parse("2026-11-16T09:30:00Z"),
+                ),
+            )
+
+            // when
+            repository.dismissVerseConflicts("my-verse-id-1")
+
+            // then
+            repository.observeConflicts("my-song-id").first() shouldContainExactly listOf("my-verse-id-2")
+        }
+
+        @Test
+        fun `should forget every conflict of the song`() = runTest {
+            // given
+            database.conflictDao().insert(
+                ConflictEntity(
+                    versionId = "my-version-id",
+                    songId = "my-song-id",
+                    verseId = "my-verse-id",
+                    createdAt = Instant.parse("2026-11-16T09:00:00Z"),
+                ),
+            )
+
+            // when
+            repository.dismissSongConflicts("my-song-id")
+
+            // then
+            repository.observeConflicts("my-song-id").first().shouldBeEmpty()
         }
     }
 }

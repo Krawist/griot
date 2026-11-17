@@ -240,7 +240,14 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   the default network. In `:core:data`, `LocalSyncSource` lists the rows to push (`SyncDao`, rows without
   `sync_state` or changed since) as `SyncRecord`s (the entity as JSON), marks them pushed, and applies remote rows
   (missing → added, the most recent `updatedAt` wins, parents first). The last sync time and cursor are preferences.
-- [ ] **Next tickets:** GRI-28 (conflicts) (GRI-27 needs a Google Cloud OAuth client; GRI-10 waits for GRI-27).
+- [x] **GRI-28** — `LocalSyncSource.apply` settles a row changed on both devices since its last sync: the most recent
+  wins; a verse's losing text becomes a version « Autre appareil » (`SYNC_CONFLICT`) and a notice in
+  `sync_conflicts` (database version 3, local only); an idea's losing text stays as an idea of its own. The editor
+  shows `ConflictNotice` under its top bar: « Voir » opens the history of the first verse and forgets its notice,
+  « Ignorer » forgets the song's notices (`VersionRepository.observeConflicts`, `dismissVerseConflicts`,
+  `dismissSongConflicts`). Checked on the phone with a hand-made conflict; no real two-device sync until GRI-27.
+- [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-31 (AI
+  interface).
 
 Update this section at the end of each ticket.
 

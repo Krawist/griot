@@ -3,6 +3,7 @@ package com.griot.core.data.di
 import android.content.Context
 import androidx.room.Room
 import com.griot.core.data.database.GriotDatabase
+import com.griot.core.data.database.dao.ConflictDao
 import com.griot.core.data.database.dao.IdeaDao
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
@@ -37,6 +38,9 @@ internal object DatabaseModule {
 
     @Provides
     fun provideVersionDao(database: GriotDatabase): VersionDao = database.versionDao()
+
+    @Provides
+    fun provideConflictDao(database: GriotDatabase): ConflictDao = database.conflictDao()
 
     @Provides
     fun provideIdeaDao(database: GriotDatabase): IdeaDao = database.ideaDao()
