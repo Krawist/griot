@@ -4,10 +4,10 @@ import com.griot.core.ai.AiAssistant
 import com.griot.core.ai.AiAssistantImpl
 import com.griot.core.ai.AiProvider
 import com.griot.core.ai.OnDeviceProvider
+import com.griot.core.ai.online.AiApiFactory
+import com.griot.core.ai.online.AiApiFactoryImpl
 import com.griot.core.ai.online.ApiKeyRepository
 import com.griot.core.ai.online.ApiKeyRepositoryImpl
-import com.griot.core.ai.online.ClaudeApi
-import com.griot.core.ai.online.ClaudeApiImpl
 import com.griot.core.ai.online.OnlineProvider
 import com.griot.core.ai.online.SecretCipher
 import com.griot.core.ai.online.SecretCipherImpl
@@ -42,5 +42,5 @@ internal interface AiModule {
     fun bindSecretCipher(impl: SecretCipherImpl): SecretCipher
 
     @Binds
-    fun bindClaudeApi(impl: ClaudeApiImpl): ClaudeApi
+    fun bindAiApiFactory(impl: AiApiFactoryImpl): AiApiFactory
 }

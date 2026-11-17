@@ -18,8 +18,8 @@ internal class ApiKeyRepositoryImplTest {
         fun `should save the key encrypted once Anthropic accepts it`() = runTest {
             // given
             val preferences = FakeUserPreferencesRepository()
-            val api = FakeClaudeApi()
-            val repository = ApiKeyRepositoryImpl(preferences = preferences, cipher = FakeSecretCipher(), api = api)
+            val apis = FakeAiApiFactory(FakeAiApi())
+            val repository = ApiKeyRepositoryImpl(preferences = preferences, cipher = FakeSecretCipher(), apis = apis)
 
             // when
             val check = repository.save(" my-key ")
@@ -27,7 +27,7 @@ internal class ApiKeyRepositoryImplTest {
             // then
             check shouldBe KeyCheck.ACCEPTED
             preferences.onlineAiKey.value shouldBe "encrypted:my-key"
-            api.keys shouldContainExactly listOf("my-key")
+            apis.keys shouldContainExactly listOf("my-key")
         }
 
         @ParameterizedTest
@@ -38,7 +38,7 @@ internal class ApiKeyRepositoryImplTest {
             val repository = ApiKeyRepositoryImpl(
                 preferences = preferences,
                 cipher = FakeSecretCipher(),
-                api = FakeClaudeApi(check = check),
+                apis = FakeAiApiFactory(FakeAiApi(check = check)),
             )
 
             // when
@@ -46,6 +46,24 @@ internal class ApiKeyRepositoryImplTest {
 
             // then
             result shouldBe check
+            preferences.onlineAiKey.value.shouldBeNull()
+        }
+
+        @Test
+        fun `should refuse a key of no provider Griot knows`() = runTest {
+            // given
+            val preferences = FakeUserPreferencesRepository()
+            val repository = ApiKeyRepositoryImpl(
+                preferences = preferences,
+                cipher = FakeSecretCipher(),
+                apis = FakeAiApiFactory(api = null),
+            )
+
+            // when
+            val check = repository.save("my-key")
+
+            // then
+            check shouldBe KeyCheck.REFUSED
             preferences.onlineAiKey.value.shouldBeNull()
         }
     }
@@ -58,7 +76,11 @@ internal class ApiKeyRepositoryImplTest {
             val preferences = FakeUserPreferencesRepository()
             preferences.setOnlineAiKey("encrypted:my-key")
             val repository =
-                ApiKeyRepositoryImpl(preferences = preferences, cipher = FakeSecretCipher(), api = FakeClaudeApi())
+                ApiKeyRepositoryImpl(
+                    preferences = preferences,
+                    cipher = FakeSecretCipher(),
+                    apis = FakeAiApiFactory(FakeAiApi()),
+                )
 
             // when
             val key = repository.read()
@@ -73,7 +95,7 @@ internal class ApiKeyRepositoryImplTest {
             val repository = ApiKeyRepositoryImpl(
                 preferences = FakeUserPreferencesRepository(),
                 cipher = FakeSecretCipher(),
-                api = FakeClaudeApi(),
+                apis = FakeAiApiFactory(FakeAiApi()),
             )
 
             // when
@@ -92,7 +114,11 @@ internal class ApiKeyRepositoryImplTest {
             val preferences = FakeUserPreferencesRepository()
             preferences.setOnlineAiKey("encrypted:my-key")
             val repository =
-                ApiKeyRepositoryImpl(preferences = preferences, cipher = FakeSecretCipher(), api = FakeClaudeApi())
+                ApiKeyRepositoryImpl(
+                    preferences = preferences,
+                    cipher = FakeSecretCipher(),
+                    apis = FakeAiApiFactory(FakeAiApi()),
+                )
 
             // when
             repository.clear()

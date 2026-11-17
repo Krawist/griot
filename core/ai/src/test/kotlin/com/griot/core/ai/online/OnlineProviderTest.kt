@@ -14,7 +14,8 @@ internal class OnlineProviderTest {
         @Test
         fun `should be ready once a key is saved`() = runTest {
             // given
-            val provider = OnlineProvider(keys = FakeApiKeyRepository(key = "my-key"), api = FakeClaudeApi())
+            val provider =
+                OnlineProvider(keys = FakeApiKeyRepository(key = "my-key"), apis = FakeAiApiFactory(FakeAiApi()))
 
             // when
             val status = provider.status()
@@ -24,9 +25,22 @@ internal class OnlineProviderTest {
         }
 
         @Test
+        fun `should be unavailable with a key of no provider Griot knows`() = runTest {
+            // given
+            val provider =
+                OnlineProvider(keys = FakeApiKeyRepository(key = "my-key"), apis = FakeAiApiFactory(api = null))
+
+            // when
+            val status = provider.status()
+
+            // then
+            status shouldBe AiStatus.UNAVAILABLE
+        }
+
+        @Test
         fun `should be unavailable without a key`() = runTest {
             // given
-            val provider = OnlineProvider(keys = FakeApiKeyRepository(), api = FakeClaudeApi())
+            val provider = OnlineProvider(keys = FakeApiKeyRepository(), apis = FakeAiApiFactory(FakeAiApi()))
 
             // when
             val status = provider.status()
@@ -41,15 +55,17 @@ internal class OnlineProviderTest {
         @Test
         fun `should ask Claude with the saved key`() = runTest {
             // given
-            val api = FakeClaudeApi(answer = "my-answer")
-            val provider = OnlineProvider(keys = FakeApiKeyRepository(key = "my-key"), api = api)
+            val api = FakeAiApi(answer = "my-answer")
+            val apis = FakeAiApiFactory(api)
+            val provider = OnlineProvider(keys = FakeApiKeyRepository(key = "my-key"), apis = apis)
 
             // when
             val answer = provider.generate(AiPrompt(instructions = "my-instructions", request = "my-request"))
 
             // then
             answer shouldBe "my-answer"
-            api.keys shouldContainExactly listOf("my-key")
+            apis.keys shouldContainExactly listOf("my-key")
+            api.prompts shouldContainExactly listOf(AiPrompt(instructions = "my-instructions", request = "my-request"))
         }
     }
 }

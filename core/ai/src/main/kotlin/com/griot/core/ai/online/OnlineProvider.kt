@@ -8,18 +8,20 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Claude, online, with the author's key: ready once a key is saved. The verses sent leave the phone for Anthropic,
- * which the AI panel tells.
+ * The online model of the author's key, its API picked by [AiApiFactory]: ready once a key of a known provider is
+ * saved. The verses sent leave the phone, which the AI panel tells.
  */
 @Singleton
-internal class OnlineProvider @Inject constructor(private val keys: ApiKeyRepository, private val api: ClaudeApi) :
+internal class OnlineProvider @Inject constructor(private val keys: ApiKeyRepository, private val apis: AiApiFactory) :
     AiProvider {
     override val location = AiLocation.ONLINE
 
-    override suspend fun status(): AiStatus = if (keys.read() != null) AiStatus.READY else AiStatus.UNAVAILABLE
+    override suspend fun status(): AiStatus = if (api() != null) AiStatus.READY else AiStatus.UNAVAILABLE
 
     override suspend fun generate(prompt: AiPrompt): String {
-        val key = checkNotNull(keys.read()) { "No key for the online model" }
-        return api.generate(key = key, prompt = prompt)
+        val api = checkNotNull(api()) { "No key of a known provider" }
+        return api.generate(prompt)
     }
+
+    private suspend fun api(): AiApi? = keys.read()?.let { apis.create(it) }
 }

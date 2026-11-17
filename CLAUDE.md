@@ -386,9 +386,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `ExternalMusicSheet` shows once (`UserPreferencesRepository.externalMusicExplained`) when music plays without the
   access. Settings: « Musique · Contrôle des autres apps », Activé/Désactivé, read again on resume, opening the
   system setting. Checked on the S23 with Spotify (title, cover, 15 s back, pause).
-- [x] **GRI-33** — `OnlineProvider` (`:core:ai` `online`): Claude Haiku 5.5 through the Anthropic Java SDK 3.9.0
-  (`ClaudeApi`, low effort, 15 s timeout, one retry; a refusal answers nothing). The author pastes an Anthropic API
-  key in the settings (`ApiKeySheet`, hidden behind dots): `ApiKeyRepository.save` asks Anthropic first (the models
+- [x] **GRI-33** — `OnlineProvider` (`:core:ai` `online`) asks an `AiApi` that `AiApiFactory` picks from the key's
+  prefix (a key of no known provider is refused without being sent): `ClaudeApi`, Claude Haiku 5.5 through the
+  Anthropic Java SDK 3.9.0 (low effort, 15 s timeout, one retry; a refusal answers nothing). The author pastes an Anthropic API
+  key in the settings (`ApiKeySheet`, hidden behind dots): `ApiKeyRepository.save` asks the provider first (the models
   endpoint, free), then stores it encrypted by an AES-GCM key of the Android Keystore (`SecretCipher`) in
   `UserPreferencesRepository.onlineAiKey`; never in clear, never logged. « IA en ligne » turns on once a key is saved
   (`onlineAi`, on by default); the panel says the verse goes through Anthropic. Checked on the S23 (a refused key,
