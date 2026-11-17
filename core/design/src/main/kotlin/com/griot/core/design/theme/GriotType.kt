@@ -94,6 +94,9 @@ class GriotType internal constructor() {
         letterSpacing = (-1).sp,
     ).copy(fontFeatureSettings = "tnum")
 
+    /** The letter in the icon box of a settings row (« K », « Aa »). */
+    val iconLetter = outfit(size = 16f, weight = FontWeight.Bold)
+
     /** A language code in its badge (« FR »). */
     val code = outfit(size = 15f, weight = FontWeight.Bold)
 

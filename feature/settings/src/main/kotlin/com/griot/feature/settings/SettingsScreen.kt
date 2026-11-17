@@ -135,7 +135,8 @@ private fun MusicGroup(controlled: Boolean) {
     val context = LocalContext.current
     SettingsGroup(title = stringResource(R.string.settings_music)) {
         SettingsRow(
-            letter = stringResource(R.string.settings_music_letter),
+            letter = "",
+            icon = DesignR.drawable.ic_nav_songs,
             tone = SettingsTone.SYNC,
             label = stringResource(R.string.settings_music_control),
             sub = stringResource(R.string.settings_music_control_sub),
@@ -176,7 +177,8 @@ private fun AiGroup(onDeviceAi: Boolean, onDeviceStatus: AiStatus, onOnDeviceAiC
             GriotSwitch(checked = supported && onDeviceAi, onCheckedChange = onOnDeviceAiChange, enabled = supported)
         }
         SettingsRow(
-            letter = stringResource(R.string.settings_ai_online_letter),
+            letter = "",
+            icon = DesignR.drawable.ic_cloud,
             tone = SettingsTone.AI,
             label = stringResource(R.string.settings_ai_online),
             sub = unavailable,
@@ -190,7 +192,8 @@ private fun AiGroup(onDeviceAi: Boolean, onDeviceStatus: AiStatus, onOnDeviceAiC
 private fun TextsGroup(onImport: () -> Unit, onExport: () -> Unit, onTrash: () -> Unit) {
     SettingsGroup(title = stringResource(R.string.settings_texts)) {
         SettingsRow(
-            letter = stringResource(R.string.settings_import_letter),
+            letter = "",
+            icon = DesignR.drawable.ic_import,
             tone = SettingsTone.BRAND,
             label = stringResource(R.string.settings_import),
             sub = stringResource(R.string.settings_import_sub),
@@ -198,7 +201,8 @@ private fun TextsGroup(onImport: () -> Unit, onExport: () -> Unit, onTrash: () -
             onClick = onImport,
         ) { SettingsValue(value = "") }
         SettingsRow(
-            letter = stringResource(R.string.settings_export_letter),
+            letter = "",
+            icon = DesignR.drawable.ic_export,
             tone = SettingsTone.BRAND,
             label = stringResource(R.string.settings_export_all),
             sub = stringResource(R.string.settings_export_sub),
@@ -222,7 +226,8 @@ private fun TextsGroup(onImport: () -> Unit, onExport: () -> Unit, onTrash: () -
 private fun AppearanceGroup(fontSize: Int, onLicences: () -> Unit) {
     SettingsGroup(title = stringResource(R.string.settings_appearance)) {
         SettingsRow(
-            letter = stringResource(R.string.settings_theme_letter),
+            letter = "",
+            icon = DesignR.drawable.ic_theme,
             tone = SettingsTone.BRAND,
             label = stringResource(R.string.settings_theme),
             sub = stringResource(R.string.settings_theme_sub),
@@ -236,7 +241,8 @@ private fun AppearanceGroup(fontSize: Int, onLicences: () -> Unit) {
             first = false,
         ) { SettingsValue(value = stringResource(R.string.settings_font_size_value, fontSize), chevron = false) }
         SettingsRow(
-            letter = stringResource(R.string.settings_licences_letter),
+            letter = "",
+            icon = DesignR.drawable.ic_licence,
             tone = SettingsTone.BRAND,
             label = stringResource(R.string.settings_licences),
             sub = stringResource(R.string.settings_licences_sub),

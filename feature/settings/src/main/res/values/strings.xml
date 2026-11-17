@@ -7,7 +7,6 @@
     <string name="settings_ai_device_ready">Disponible · ton texte reste sur le téléphone</string>
     <string name="settings_ai_device_unsupported">Pas disponible sur ce téléphone</string>
     <string name="settings_ai_online">IA en ligne</string>
-    <string name="settings_ai_online_letter" translatable="false">☁</string>
     <string name="settings_appearance">Apparence</string>
     <string name="settings_auto_sync">Synchro automatique</string>
     <string name="settings_auto_sync_letter" translatable="false">A</string>
@@ -15,14 +14,12 @@
     <string name="settings_drive" translatable="false">Google Drive</string>
     <string name="settings_drive_letter" translatable="false">G</string>
     <string name="settings_export_all">Tout exporter</string>
-    <string name="settings_export_letter" translatable="false">↑</string>
     <string name="settings_export_sub">En Markdown</string>
     <string name="settings_font_size">Taille des paroles</string>
     <string name="settings_font_size_letter" translatable="false">A</string>
     <string name="settings_font_size_sub">Change-la avec « Aa » dans l\'éditeur</string>
     <string name="settings_font_size_value" translatable="false">%1$d sp</string>
     <string name="settings_import">Importer des textes</string>
-    <string name="settings_import_letter" translatable="false">↓</string>
     <string name="settings_import_sub">Samsung Notes, fichiers, texte collé</string>
     <string name="settings_language">Langue de l\'app</string>
     <string name="settings_language_english" translatable="false">English</string>
@@ -42,12 +39,10 @@
     <string name="settings_licence_outfit">Police Outfit</string>
     <string name="settings_licence_outfit_terms" translatable="false">The Outfit Project Authors · SIL Open Font License 1.1</string>
     <string name="settings_licences">Licences</string>
-    <string name="settings_licences_letter" translatable="false">©</string>
     <string name="settings_licences_sub">Dictionnaires et polices</string>
     <string name="settings_music">Musique</string>
     <string name="settings_music_control">Contrôle des autres apps</string>
     <string name="settings_music_control_sub">Titre, pause, recul de 15 s</string>
-    <string name="settings_music_letter" translatable="false">♪</string>
     <string name="settings_music_off">Désactivé</string>
     <string name="settings_music_on">Activé</string>
     <string name="settings_name">Nom</string>
@@ -60,7 +55,6 @@
     <string name="settings_sync_now">Synchroniser</string>
     <string name="settings_texts">Textes</string>
     <string name="settings_theme">Thème</string>
-    <string name="settings_theme_letter" translatable="false">◐</string>
     <string name="settings_theme_sub">Celui du téléphone, clair ou sombre</string>
     <string name="settings_title">Réglages</string>
     <string name="settings_trash">Corbeille</string>

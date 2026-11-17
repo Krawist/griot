@@ -32,7 +32,8 @@ import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 
-private val IconSize = 32.dp
+private val IconSize = 36.dp
+private val GlyphSize = 20.dp
 private val RowHeight = 58.dp
 private const val DISABLED_ALPHA = 0.5f
 
@@ -94,14 +95,14 @@ internal fun SettingsRow(
     }
 }
 
-// The 32 dp box of the row's icon, tinted after its tone.
+// The 36 dp box of the row's icon, tinted after its tone.
 @Composable
 private fun IconBox(letter: String, @DrawableRes icon: Int?, tone: SettingsTone) {
     val (background, foreground) = tone.colors()
     Box(
         modifier = Modifier
             .size(IconSize)
-            .clip(RoundedCornerShape(GriotRadius.control - 1.dp))
+            .clip(RoundedCornerShape(GriotRadius.control))
             .background(background),
         contentAlignment = Alignment.Center,
     ) {
@@ -110,12 +111,12 @@ private fun IconBox(letter: String, @DrawableRes icon: Int?, tone: SettingsTone)
                 painter = painterResource(icon),
                 contentDescription = null,
                 tint = foreground,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(GlyphSize),
             )
         } else {
             Text(
                 text = letter,
-                style = GriotTheme.type.label,
+                style = GriotTheme.type.iconLetter,
                 color = foreground,
             )
         }
