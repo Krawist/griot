@@ -599,6 +599,15 @@ A French verse and an English verse rhyme when their endings sound alike: « enc
 
 Size: M. Dependencies: GRI-21, GRI-23.
 
+### GRI-61 · Rhyme with close consonants, and suggest the ten strongest rhymes
+
+After the last vowel, consonants heard close rhyme like the same one: the nasals (m, n, gn, ng) and each consonant with its voiced pair (p b, t d, k g, f v, s z, ch j, th dh). « clean », « queen », « sublime » and « ultime » rhyme; « vite » and « vide » rhyme. The vowel stays the same: « vite » never rhymes with « vote ». These rhymes show like any other.
+
+- l and r stay apart, a consonant never rhymes with none (« vie » and « vide » do not rhyme), close vowels stay apart.
+- The « Rimes » tab offers ten words at most, all counts together, still grouped by number of syllables: one word per pronunciation (« accord », not « accords »), never the verse's own word nor a word that sounds just like it; common words first, rich rhymes first among them (« encore »: « corps », « décor » before « fort »), a word holding the verse's whole word (« tonight » for « night ») counting as a plain rhyme. Its words still rhyme exactly.
+
+Size: S. Dependencies: GRI-35, GRI-60.
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style

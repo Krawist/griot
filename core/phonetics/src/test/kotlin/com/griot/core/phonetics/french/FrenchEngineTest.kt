@@ -2,9 +2,11 @@ package com.griot.core.phonetics.french
 
 import com.griot.core.phonetics.PhoneticEngines
 import com.griot.core.phonetics.PhoneticLanguage
+import com.griot.core.phonetics.RHYMES_SHOWN
 import com.griot.core.phonetics.RhymingWord
 import com.griot.core.phonetics.SyllableCount
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -83,7 +85,13 @@ internal class FrenchEngineTest {
     @Nested
     inner class RhymeOf {
         @ParameterizedTest
-        @CsvSource("Je marche seul dans la ville, Mon cœur bat fragile", "Sur le bitume, Dans la brume")
+        @CsvSource(
+            "Je marche seul dans la ville, Mon cœur bat fragile",
+            "Sur le bitume, Dans la brume",
+            "Elle est clean, C'est sublime",
+            "Il court plus vite, Le verre est vide",
+            "Je suis riche, Droit comme une tige",
+        )
         fun `should give verses that rhyme the same key`(first: String, second: String) {
             // when
             val keys = engine.rhyme(first)?.key to engine.rhyme(second)?.key
@@ -171,6 +179,37 @@ internal class FrenchEngineTest {
 
             // then
             words.map { it.syllables } shouldBe words.map { it.syllables }.sorted()
+        }
+
+        @Test
+        fun `should suggest the rich rhymes first`() {
+            // when
+            val words = engine.rhymingWords("Je reviens encore")
+
+            // then
+            words.take(3) shouldContainExactly listOf(
+                RhymingWord(word = "corps", syllables = 1),
+                RhymingWord(word = "score", syllables = 1),
+                RhymingWord(word = "accord", syllables = 2),
+            )
+        }
+
+        @Test
+        fun `should suggest at most ten words`() {
+            // when
+            val words = engine.rhymingWords("Je marche seul dans la ville")
+
+            // then
+            words shouldHaveSize RHYMES_SHOWN
+        }
+
+        @Test
+        fun `should leave out the words that sound like the last word of the verse`() {
+            // when
+            val words = engine.rhymingWords("Le verre est vide")
+
+            // then
+            words.map { it.word } shouldNotContain "vides"
         }
 
         @Test

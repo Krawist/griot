@@ -405,6 +405,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   rhyme shows like any other. Guessed English words keep `en~` + letters. « Rimes » follows the last word's language.
   `reference/cross-rhymes.tsv` (19 pairs) is checked by `ReferenceRhymesTest`; only 18 of 32 176 English endings
   share a key (a diphthong and its vowel + glide). Checked on the S25 (« encore / vide / before / need » → ABAB).
+- [x] **GRI-61** — `rhymeKey` writes close consonants alike after the vowel (nasals m n gn ng, and p/b, t/d, k/g,
+  f/v, s/z, ch/j, th/dh): « clean / sublime », « vite / vide » rhyme. `chooseRhymes` keeps the `RHYMES_SHOWN` (10)
+  strongest suggestions: one word per pronunciation, no homophone of the verse's word, common words first, rich rhymes
+  (`richness`: a sound shared before the ending, not the whole word) first among them, grouped by syllables.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 

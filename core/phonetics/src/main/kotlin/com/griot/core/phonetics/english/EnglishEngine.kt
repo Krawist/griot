@@ -10,7 +10,9 @@ import com.griot.core.phonetics.Transcription
 import com.griot.core.phonetics.WordRanks
 import com.griot.core.phonetics.chooseRhymes
 import com.griot.core.phonetics.isSuggestible
+import com.griot.core.phonetics.rhymeKey
 import com.griot.core.phonetics.rhymeStart
+import com.griot.core.phonetics.richness
 import com.griot.core.phonetics.vowelGroups
 import com.griot.core.phonetics.wordsOf
 import java.util.Locale
@@ -88,7 +90,12 @@ class EnglishEngine internal constructor(
             other()?.rhyme(verse)
         } else {
             Rhyme(
-                key = if (analysis.heard) inLexique(analysis.rhyme.split(' ')) else GUESSED_KEY_PREFIX + analysis.rhyme,
+                key = if (analysis.heard) {
+                    rhymeKey(inLexique(analysis.rhyme.split(' ')))
+                } else {
+                    GUESSED_KEY_PREFIX +
+                        analysis.rhyme
+                },
                 start = last.start + rhymeStart(last.text, analysis.silent),
                 end = last.end,
             )
@@ -102,7 +109,7 @@ class EnglishEngine internal constructor(
         return when {
             // A French word ends the verse: its rhymes are the French engine's.
             analysis.language == PhoneticLanguage.FRENCH -> other()?.rhymingWords(verse).orEmpty()
-            analysis.heard -> rhymesOf(ending = analysis.rhyme, own = last.text)
+            analysis.heard -> rhymesOf(analysis = analysis, own = last.text)
             else -> emptyList()
         }
     }
@@ -110,17 +117,35 @@ class EnglishEngine internal constructor(
     // Whether the word's sounds are known, not guessed from its letters.
     private val Analysis.heard get() = known && phonemes.isNotEmpty()
 
-    // The words of the frequency list ending with the sound [ending], but the verse's own word.
-    private fun rhymesOf(ending: String, own: String): List<RhymingWord> {
+    // The words of the frequency list ending with the same sound as the verse's word of [analysis], but that word
+    // itself ([own]) and the words that sound just like it, the rich rhymes first.
+    private fun rhymesOf(analysis: Analysis, own: String): List<RhymingWord> {
         val own = own.lowercase(Locale.ENGLISH)
+        val sounds = analysis.phonemes.map { it.trimEnd(Char::isDigit) }
         val candidates = mutableListOf<RhymingWord>()
+        val shared = mutableMapOf<String, Int>()
+        val heard = mutableMapOf<String, String>()
         dictionary.forEach { word, phonemes ->
             if (word != own && isSuggestible(word) && ranks[word] != Int.MAX_VALUE) {
-                val analysis = known(word, phonemes.split(' '))
-                if (analysis.rhyme == ending) candidates += RhymingWord(word = word, syllables = analysis.syllables)
+                val candidate = known(word, phonemes.split(' '))
+                val candidateSounds = candidate.phonemes.map { it.trimEnd(Char::isDigit) }
+                if (candidate.rhyme == analysis.rhyme && candidateSounds != sounds) {
+                    candidates += RhymingWord(word = word, syllables = candidate.syllables)
+                    shared[word] = richness(
+                        sounds = sounds,
+                        candidate = candidateSounds,
+                        endingLength = analysis.rhyme.split(' ').size,
+                    )
+                    heard[word] = candidateSounds.joinToString(separator = " ")
+                }
             }
         }
-        return chooseRhymes(candidates = candidates, rank = { ranks[it] })
+        return chooseRhymes(
+            candidates = candidates,
+            sound = { heard.getValue(it) },
+            strength = { shared[it] ?: 0 },
+            rank = { ranks[it] },
+        )
     }
 
     private fun analyse(word: String): Analysis = cache.getOrPut(word.lowercase(Locale.ENGLISH)) {
