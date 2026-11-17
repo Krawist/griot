@@ -10,4 +10,7 @@ android {
 dependencies {
     implementation(projects.core.data)
     implementation(libs.kotlinx.coroutines.core)
+
+    testImplementation(testFixtures(projects.core.data))
+    testImplementation(libs.kotlinx.coroutines.test)
 }

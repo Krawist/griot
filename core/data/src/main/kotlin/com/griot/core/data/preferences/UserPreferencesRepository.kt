@@ -1,6 +1,7 @@
 package com.griot.core.data.preferences
 
 import com.griot.core.data.model.SongLanguage
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
 /** Small user settings that are not songs, kept on the phone. The Room database holds the songs, versions and ideas. */
@@ -20,6 +21,12 @@ interface UserPreferencesRepository {
     /** Whether the editor colours the rhymes; `true` until the user hides them. */
     val showRhymes: Flow<Boolean>
 
+    /** When the last sync with the remote store succeeded; `null` until the first one. */
+    val lastSyncedAt: Flow<Instant?>
+
+    /** Where the last sync stopped reading the remote changes, as the remote store gives it; `null` to read all. */
+    val syncCursor: Flow<String?>
+
     /** Records that the onboarding was completed: the next launches open the library. */
     suspend fun setOnboardingCompleted()
 
@@ -34,6 +41,9 @@ interface UserPreferencesRepository {
 
     /** Shows or hides the colours of the rhymes in the editor. */
     suspend fun setShowRhymes(show: Boolean)
+
+    /** Records a successful sync at [at], and the [cursor] of the remote changes read so far. */
+    suspend fun setSynced(at: Instant, cursor: String?)
 
     companion object {
         /** Size of the lyrics, in sp, before the user changes it. */

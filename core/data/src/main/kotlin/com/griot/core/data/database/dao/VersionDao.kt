@@ -3,6 +3,7 @@ package com.griot.core.data.database.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.griot.core.data.database.entity.VersionEntity
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,9 @@ internal interface VersionDao {
     /** Records [version]; versions are never updated, only added. */
     @Insert
     suspend fun insert(version: VersionEntity)
+
+    @Update
+    suspend fun update(version: VersionEntity)
 
     /** The versions of the verse [verseId] that are not deleted, newest first. */
     @Query("SELECT * FROM versions WHERE verseId = :verseId AND deleted = 0 ORDER BY createdAt DESC, rowid DESC")

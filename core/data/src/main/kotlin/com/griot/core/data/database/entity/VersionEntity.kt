@@ -1,12 +1,17 @@
+@file:UseSerializers(InstantSerializer::class)
+
 package com.griot.core.data.database.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.griot.core.data.database.InstantSerializer
 import com.griot.core.data.model.VersionSource
 import java.time.Instant
 import java.util.UUID
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
 /**
  * A past text of a verse or of a whole song, never overwritten (GRI-24).
@@ -20,6 +25,7 @@ import java.util.UUID
  * @property updatedAt Last change of this row, on any device; sync keeps the most recent.
  * @property deleted Whether the version was thinned out; the row stays so that the delete travels to other devices.
  */
+@Serializable
 @Entity(
     tableName = "versions",
     foreignKeys = [

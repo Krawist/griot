@@ -7,6 +7,7 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import java.io.File
+import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -139,6 +140,41 @@ internal class UserPreferencesRepositoryImplTest {
 
             // then
             repository.showRhymes.first().shouldBeFalse()
+        }
+    }
+
+    @Nested
+    inner class SetSynced {
+        @Test
+        fun `should have no sync on a new install`() = runTest {
+            // when
+            val lastSyncedAt = repository.lastSyncedAt.first()
+
+            // then
+            lastSyncedAt.shouldBeNull()
+            repository.syncCursor.first().shouldBeNull()
+        }
+
+        @Test
+        fun `should keep the time and the cursor of the last sync`() = runTest {
+            // when
+            repository.setSynced(at = Instant.parse("2026-11-17T01:00:00Z"), cursor = "my-cursor")
+
+            // then
+            repository.lastSyncedAt.first() shouldBe Instant.parse("2026-11-17T01:00:00Z")
+            repository.syncCursor.first() shouldBe "my-cursor"
+        }
+
+        @Test
+        fun `should forget the cursor when the remote store gives none`() = runTest {
+            // given
+            repository.setSynced(at = Instant.parse("2026-11-17T01:00:00Z"), cursor = "my-cursor")
+
+            // when
+            repository.setSynced(at = Instant.parse("2026-11-17T02:00:00Z"), cursor = null)
+
+            // then
+            repository.syncCursor.first().shouldBeNull()
         }
     }
 }

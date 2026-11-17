@@ -1,6 +1,7 @@
 package com.griot.core.data.preferences
 
 import com.griot.core.data.model.SongLanguage
+import java.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /** In-memory [UserPreferencesRepository] for tests. */
@@ -10,6 +11,8 @@ class FakeUserPreferencesRepository(
     defaultSongLanguage: SongLanguage = SongLanguage.AUTOMATIC,
     editorFontSize: Int = UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE,
     showRhymes: Boolean = true,
+    lastSyncedAt: Instant? = null,
+    syncCursor: String? = null,
 ) : UserPreferencesRepository {
     override val onboardingCompleted = MutableStateFlow(onboardingCompleted)
 
@@ -20,6 +23,10 @@ class FakeUserPreferencesRepository(
     override val editorFontSize = MutableStateFlow(editorFontSize)
 
     override val showRhymes = MutableStateFlow(showRhymes)
+
+    override val lastSyncedAt = MutableStateFlow(lastSyncedAt)
+
+    override val syncCursor = MutableStateFlow(syncCursor)
 
     override suspend fun setOnboardingCompleted() {
         onboardingCompleted.value = true
@@ -39,5 +46,10 @@ class FakeUserPreferencesRepository(
 
     override suspend fun setShowRhymes(show: Boolean) {
         showRhymes.value = show
+    }
+
+    override suspend fun setSynced(at: Instant, cursor: String?) {
+        lastSyncedAt.value = at
+        syncCursor.value = cursor
     }
 }

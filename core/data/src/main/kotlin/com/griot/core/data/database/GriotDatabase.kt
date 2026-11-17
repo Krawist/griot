@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import com.griot.core.data.database.dao.IdeaDao
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
+import com.griot.core.data.database.dao.SyncDao
 import com.griot.core.data.database.dao.SyncStateDao
 import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.dao.VersionDao
@@ -48,6 +49,8 @@ internal abstract class GriotDatabase : RoomDatabase() {
     abstract fun ideaDao(): IdeaDao
 
     abstract fun syncStateDao(): SyncStateDao
+
+    abstract fun syncDao(): SyncDao
 
     abstract fun wordCorrectionDao(): WordCorrectionDao
 }

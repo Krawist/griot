@@ -1,11 +1,16 @@
+@file:UseSerializers(InstantSerializer::class)
+
 package com.griot.core.data.database.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.griot.core.data.database.InstantSerializer
 import java.time.Instant
 import java.util.UUID
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
 /**
  * An idea of the ideas box: a sentence, a title or an image, free or linked to a song.
@@ -18,6 +23,7 @@ import java.util.UUID
  * @property updatedAt Last change of this row, on any device; sync keeps the most recent.
  * @property deleted Whether the idea was deleted; the row stays so that the delete travels to other devices.
  */
+@Serializable
 @Entity(
     tableName = "ideas",
     foreignKeys = [

@@ -5,8 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.griot.core.data.model.SongLanguage
+import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +32,12 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
 
     override val showRhymes: Flow<Boolean> = dataStore.data.map { it[ShowRhymes] ?: true }
 
+    override val lastSyncedAt: Flow<Instant?> = dataStore.data.map { preferences ->
+        preferences[LastSyncedAt]?.let(Instant::ofEpochMilli)
+    }
+
+    override val syncCursor: Flow<String?> = dataStore.data.map { it[SyncCursor] }
+
     override suspend fun setOnboardingCompleted() {
         dataStore.edit { it[OnboardingCompleted] = true }
     }
@@ -50,11 +58,20 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         dataStore.edit { it[ShowRhymes] = show }
     }
 
+    override suspend fun setSynced(at: Instant, cursor: String?) {
+        dataStore.edit { preferences ->
+            preferences[LastSyncedAt] = at.toEpochMilli()
+            if (cursor != null) preferences[SyncCursor] = cursor else preferences.remove(SyncCursor)
+        }
+    }
+
     private companion object {
         val OnboardingCompleted = booleanPreferencesKey("onboarding_completed")
         val AuthorName = stringPreferencesKey("author_name")
         val DefaultSongLanguage = stringPreferencesKey("default_song_language")
         val EditorFontSize = intPreferencesKey("editor_font_size")
         val ShowRhymes = booleanPreferencesKey("show_rhymes")
+        val LastSyncedAt = longPreferencesKey("last_synced_at")
+        val SyncCursor = stringPreferencesKey("sync_cursor")
     }
 }

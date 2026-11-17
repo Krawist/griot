@@ -234,8 +234,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   dimmed, « Pas encore disponible », until GRI-27 and GRI-32/33. Textes: import (`navigateToImport()`, the onboarding's
   import without its progress, closing on « Terminé »), export everything, trash. Apparence: theme (the phone's),
   lyrics size (set with « Aa »), licences (`LicencesSheet`). `PlaceholderScreen` is gone.
-- [ ] **Next tickets:** GRI-26/28 (sync interface, merge) (GRI-27 needs a Google Cloud OAuth client; GRI-10 waits
-  for GRI-27).
+- [x] **GRI-26** — `:core:sync`: `SyncRepository` (`status` flow: off, syncing, synced, pending, offline, error, with
+  the pending count and the last sync; `sync()` pulls, applies, then pushes) on a `RemoteStore` interface
+  (`push`, `pull(cursor)`), bound optionally (`@BindsOptionalOf`): without one, sync is off. `NetworkMonitor` on
+  the default network. In `:core:data`, `LocalSyncSource` lists the rows to push (`SyncDao`, rows without
+  `sync_state` or changed since) as `SyncRecord`s (the entity as JSON), marks them pushed, and applies remote rows
+  (missing → added, the most recent `updatedAt` wins, parents first). The last sync time and cursor are preferences.
+- [ ] **Next tickets:** GRI-28 (conflicts) (GRI-27 needs a Google Cloud OAuth client; GRI-10 waits for GRI-27).
 
 Update this section at the end of each ticket.
 

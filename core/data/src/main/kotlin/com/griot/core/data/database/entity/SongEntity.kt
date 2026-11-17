@@ -1,12 +1,17 @@
+@file:UseSerializers(InstantSerializer::class)
+
 package com.griot.core.data.database.entity
 
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.griot.core.data.database.InstantSerializer
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
 import java.time.Instant
 import java.util.UUID
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
 /**
  * A song: its sections and verses are in [SectionEntity] and [VerseEntity].
@@ -19,6 +24,7 @@ import java.util.UUID
  * @property updatedAt Last change of this row, on any device; sync keeps the most recent.
  * @property deleted Whether the song is in the trash; the row stays so that the delete travels to other devices.
  */
+@Serializable
 @Entity(tableName = "songs", indices = [Index("updatedAt")])
 internal data class SongEntity(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),

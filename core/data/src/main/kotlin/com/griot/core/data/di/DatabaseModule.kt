@@ -6,6 +6,7 @@ import com.griot.core.data.database.GriotDatabase
 import com.griot.core.data.database.dao.IdeaDao
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
+import com.griot.core.data.database.dao.SyncDao
 import com.griot.core.data.database.dao.SyncStateDao
 import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.dao.VersionDao
@@ -39,6 +40,9 @@ internal object DatabaseModule {
 
     @Provides
     fun provideIdeaDao(database: GriotDatabase): IdeaDao = database.ideaDao()
+
+    @Provides
+    fun provideSyncDao(database: GriotDatabase): SyncDao = database.syncDao()
 
     @Provides
     fun provideSyncStateDao(database: GriotDatabase): SyncStateDao = database.syncStateDao()

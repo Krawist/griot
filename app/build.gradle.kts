@@ -61,6 +61,7 @@ dependencies {
     implementation(projects.core.design)
     implementation(projects.core.data)
     implementation(projects.core.phonetics)
+    implementation(projects.core.sync)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.library)
     implementation(projects.feature.editor)
