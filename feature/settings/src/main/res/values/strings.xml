@@ -47,10 +47,8 @@
     <string name="settings_key_unreachable">Impossible de joindre Anthropic. Vérifie ta connexion et réessaie.</string>
     <string name="settings_language">Langue de l\'app</string>
     <string name="settings_language_english" translatable="false">English</string>
-    <string name="settings_language_english_code" translatable="false">EN</string>
     <string name="settings_language_english_hint" translatable="false">The interface in English</string>
     <string name="settings_language_french" translatable="false">Français</string>
-    <string name="settings_language_french_code" translatable="false">FR</string>
     <string name="settings_language_french_hint" translatable="false">L\'interface en français</string>
     <string name="settings_language_hint">Français ou English devient aussi la langue des nouvelles chansons.</string>
     <string name="settings_language_letter" translatable="false">Aa</string>

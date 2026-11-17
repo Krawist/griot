@@ -75,7 +75,7 @@
     <string name="library_resume">Reprendre</string>
     <string name="library_resume_continue">Continuer à écrire</string>
     <string name="library_resume_meta">Rien écrit aujourd\'hui · dernier texte touché %1$s</string>
-    <string name="library_search">Chercher un titre, un vers…</string>
+    <string name="library_search">Chercher dans tous tes textes…</string>
     <string name="library_title">Tes chansons</string>
     <string name="library_today">Aujourd\'hui</string>
     <string name="library_untitled">Sans titre</string>

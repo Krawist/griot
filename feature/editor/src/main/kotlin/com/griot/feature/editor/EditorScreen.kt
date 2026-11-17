@@ -285,6 +285,7 @@ private fun OpenSheet(sheet: EditorSheet?, uiState: EditorUiState, viewModel: Ed
         )
         EditorSheet.LANGUAGE -> LanguageSheet(
             choice = uiState.languageChoice,
+            language = uiState.language,
             onSelect = { choice ->
                 viewModel.onLanguageSelected(choice)
                 onClosed()

@@ -73,7 +73,7 @@
     <string name="library_resume">Pick up</string>
     <string name="library_resume_continue">Keep writing</string>
     <string name="library_resume_meta">Nothing written today · last text touched %1$s</string>
-    <string name="library_search">Search a title, a verse…</string>
+    <string name="library_search">Search all your texts…</string>
     <string name="library_title">Your songs</string>
     <string name="library_today">Today</string>
     <string name="library_untitled">Untitled</string>

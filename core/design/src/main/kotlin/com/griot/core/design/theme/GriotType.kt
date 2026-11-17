@@ -109,6 +109,9 @@ class GriotType internal constructor() {
     /** A rhyming word offered by the AI panel. */
     val word = outfit(size = 16f, weight = FontWeight.Normal)
 
+    /** A song's first verse on its card. */
+    val cardVerse = outfit(size = 15f, weight = FontWeight.Normal)
+
     /** A verse shown out of the editor: suggestions, ideas, versions. */
     val quote = outfit(size = 17f, weight = FontWeight.Normal, lineHeight = 1.4f)
 

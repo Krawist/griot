@@ -54,7 +54,7 @@ fun ChoiceGroup(label: String, modifier: Modifier = Modifier, content: @Composab
  * One option of a choice, as in the onboarding: a glass card with its badge, its [title] and its [hint], and a round
  * mark, filled in magenta with a check while it is [selected].
  *
- * @param badge The short text in the badge (« FR »), unless [icon] is given.
+ * @param badge The short text in the badge (« FR »), unless [icon] is given; no badge without either.
  * @param icon The icon in the badge.
  * @param hint What the option does, under its title; none when `null`.
  */
@@ -93,7 +93,7 @@ fun ChoiceCard(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m + 2.dp),
     ) {
-        Badge(badge = badge, icon = icon)
+        if (badge != null || icon != null) Badge(badge = badge, icon = icon)
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(text = title, style = GriotTheme.type.button, color = palette.ink)
             hint?.let { Text(text = it, style = GriotTheme.type.description, color = palette.muted) }

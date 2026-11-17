@@ -73,14 +73,14 @@
     <string name="editor_ideas">Idées de cette chanson</string>
     <string name="editor_jump_to_top">Haut de la chanson</string>
     <string name="editor_language_auto_detected">Auto · %1$s</string>
-    <string name="editor_language_automatic_hint">En automatique, Griot repère la langue dominante de toute la chanson pour compter les syllabes et trouver les rimes.</string>
     <string name="editor_language_automatic_name">Automatique</string>
-    <string name="editor_language_automatic_short">La langue dominante des paroles</string>
+    <string name="editor_language_automatic_short">Détectée sur le texte · aujourd\'hui : %1$s</string>
+    <string name="editor_language_description">Elle décide du comptage des syllabes, des rimes et de la langue de l\'aide IA.</string>
     <string name="editor_language_english" translatable="false">EN</string>
-    <string name="editor_language_english_hint">Syllabes et rimes de l\'anglais</string>
+    <string name="editor_language_english_hint" translatable="false">Always in English</string>
     <string name="editor_language_english_name" translatable="false">English</string>
     <string name="editor_language_french" translatable="false">FR</string>
-    <string name="editor_language_french_hint">Syllabes et rimes du français</string>
+    <string name="editor_language_french_hint" translatable="false">Toujours en français</string>
     <string name="editor_language_french_name" translatable="false">Français</string>
     <string name="editor_language_title">Langue de la chanson</string>
     <string name="editor_menu">Plus d\'options</string>

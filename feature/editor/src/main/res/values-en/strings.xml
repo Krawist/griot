@@ -73,11 +73,9 @@
     <string name="editor_ideas">Ideas for this song</string>
     <string name="editor_jump_to_top">Top of the song</string>
     <string name="editor_language_auto_detected">Auto · %1$s</string>
-    <string name="editor_language_automatic_hint">In automatic mode, Griot spots the dominant language of the whole song to count its syllables and find its rhymes.</string>
     <string name="editor_language_automatic_name">Automatic</string>
-    <string name="editor_language_automatic_short">The main language of the lyrics</string>
-    <string name="editor_language_english_hint">English syllables and rhymes</string>
-    <string name="editor_language_french_hint">French syllables and rhymes</string>
+    <string name="editor_language_automatic_short">Detected from the lyrics · today: %1$s</string>
+    <string name="editor_language_description">It sets how syllables are counted, the rhymes, and the language of the AI help.</string>
     <string name="editor_language_title">Song language</string>
     <string name="editor_menu">More options</string>
     <string name="editor_menu_file">Folder and genre</string>

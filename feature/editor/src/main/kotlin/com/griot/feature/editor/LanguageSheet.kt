@@ -1,48 +1,53 @@
 package com.griot.feature.editor
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.griot.core.design.R as DesignR
-import com.griot.core.design.component.ChoiceCard
-import com.griot.core.design.component.ChoiceGroup
-import com.griot.core.design.component.GriotSheet
-import com.griot.core.design.theme.GriotTheme
+import com.griot.core.data.model.SongLanguage
+import com.griot.core.design.component.ChoiceOption
+import com.griot.core.design.component.ChoiceSheet
 
-/** The writing language of the song: French, English, or automatic (the dominant language of the lyrics). */
+/**
+ * The writing language of the song: automatic (the dominant language of the lyrics, today [language]), French or
+ * English.
+ */
 @Composable
-internal fun LanguageSheet(choice: LanguageChoice, onSelect: (LanguageChoice) -> Unit, onDismiss: () -> Unit) {
-    val palette = GriotTheme.palette
-    val title = stringResource(R.string.editor_language_title)
-    GriotSheet(onDismiss = onDismiss) {
-        Text(text = title, style = GriotTheme.type.sheetTitle, color = palette.ink)
-        ChoiceGroup(label = title) {
-            ChoiceCard(
-                badge = stringResource(R.string.editor_language_french),
+internal fun LanguageSheet(
+    choice: LanguageChoice,
+    language: SongLanguage,
+    onSelect: (LanguageChoice) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val detected = stringResource(
+        if (language ==
+            SongLanguage.ENGLISH
+        ) {
+            R.string.editor_language_english_name
+        } else {
+            R.string.editor_language_french_name
+        },
+    )
+    ChoiceSheet(
+        title = stringResource(R.string.editor_language_title),
+        description = stringResource(R.string.editor_language_description),
+        options = listOf(
+            ChoiceOption(
+                value = LanguageChoice.AUTOMATIC,
+                title = stringResource(R.string.editor_language_automatic_name),
+                hint = stringResource(R.string.editor_language_automatic_short, detected),
+            ),
+            ChoiceOption(
+                value = LanguageChoice.FRENCH,
                 title = stringResource(R.string.editor_language_french_name),
                 hint = stringResource(R.string.editor_language_french_hint),
-                selected = choice == LanguageChoice.FRENCH,
-                onClick = { onSelect(LanguageChoice.FRENCH) },
-            )
-            ChoiceCard(
-                badge = stringResource(R.string.editor_language_english),
+            ),
+            ChoiceOption(
+                value = LanguageChoice.ENGLISH,
                 title = stringResource(R.string.editor_language_english_name),
                 hint = stringResource(R.string.editor_language_english_hint),
-                selected = choice == LanguageChoice.ENGLISH,
-                onClick = { onSelect(LanguageChoice.ENGLISH) },
-            )
-            ChoiceCard(
-                icon = DesignR.drawable.ic_ai,
-                title = stringResource(R.string.editor_language_automatic_name),
-                hint = stringResource(R.string.editor_language_automatic_short),
-                selected = choice == LanguageChoice.AUTOMATIC,
-                onClick = { onSelect(LanguageChoice.AUTOMATIC) },
-            )
-        }
-        Text(
-            text = stringResource(R.string.editor_language_automatic_hint),
-            style = GriotTheme.type.description,
-            color = palette.muted,
-        )
-    }
+            ),
+        ),
+        selected = choice,
+        onApply = onSelect,
+        onDismiss = onDismiss,
+    )
 }

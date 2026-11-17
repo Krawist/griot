@@ -422,6 +422,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `LibrarySong.genreIds`, `favorite`. « Favoris » (`FAVORITES_FOLDER_ID`, `isVirtualFolder`) after « Récents »; heart
   on the card; « Ajouter aux favoris » first in `SongActionsSheet`; `FilingSheet` genres checked like folders
   (`FilingCheck`, `FilingGenre`, outlined `FilterChip(mixed)`). An empty folder says how to fill it.
+- [x] **GRI-63** — song card « Carte affinée » (pistes A): title, heart for a favourite, time; first verse
+  (`GriotType.cardVerse`); dots, folders · genres (`LibraryItem.meta`, no time now), language badge. One
+  `ChoiceSheet` (`:core:design`, `ChoiceOption`; « Appliquer ») for the app language, preferred AI, theme and song
+  language; `ChoiceCard` draws its badge only when given one.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 

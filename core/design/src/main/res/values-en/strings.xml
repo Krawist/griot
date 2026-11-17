@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="choice_apply">Apply</string>
     <string name="export_save">Save to a folder</string>
     <string name="export_saved">File saved</string>
     <string name="export_share">Share</string>

@@ -619,6 +619,16 @@ A song can be in the author's favourites and have several genres.
 
 Size: M. Dependencies: GRI-55, GRI-56, GRI-57, GRI-58.
 
+### GRI-63 · Refined song card and single-choice sheets
+
+The song card follows « Cartes de chanson · pistes », option A (« Carte affinée »): its title, a heart for a favourite and when it changed; its first verse in Outfit; then its rhyme dots, its folders and genres, and its language badge at the bottom right. The search reads « Chercher dans tous tes textes… ».
+
+Every sheet choosing one option follows « Feuille de choix unique »: its title and what the choice decides, one card per option with its hint and a round check, and « Appliquer », which applies the option checked. It serves the language of the app, the preferred AI, the theme and the language of a song (« Automatique » first, with the language detected today).
+
+- The favourite's heart stays as decided in GRI-62: only on favourites, set from a long press.
+
+Size: S. Dependencies: GRI-56, GRI-62. Mockups: « Cartes de chanson · pistes », « Feuille de choix unique », « Accueil ».
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style

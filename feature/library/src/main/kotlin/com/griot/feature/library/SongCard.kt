@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.design.R as DesignR
+import com.griot.core.design.format.text
 import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
@@ -33,8 +34,8 @@ private val FavoriteSize = 16.dp
 private const val MAX_DOTS = 8
 
 /**
- * One song: its title, language, first verse, the rhymes of its first section, and its [meta] (folder, genre, time of
- * change).
+ * One song (« Carte affinée »): its title, a heart when it is a favourite, and when it changed; its first verse;
+ * then the rhymes of its first section, its [meta] (folders, genres) and its language.
  */
 @Composable
 internal fun SongCard(
@@ -73,11 +74,11 @@ internal fun SongCard(
                         modifier = Modifier.size(FavoriteSize),
                     )
                 }
-                LanguageBadge(language = song.language)
+                Text(text = item.updated.text(), style = GriotTheme.type.caption, color = palette.muted, maxLines = 1)
             }
             Text(
                 text = song.firstVerse ?: stringResource(R.string.library_no_text),
-                style = GriotTheme.type.small,
+                style = GriotTheme.type.cardVerse,
                 color = if (song.firstVerse == null) palette.muted else palette.ink2,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -90,7 +91,9 @@ internal fun SongCard(
                     overflow = TextOverflow.Ellipsis,
                     style = GriotTheme.type.caption,
                     color = palette.muted,
+                    modifier = Modifier.weight(1f),
                 )
+                LanguageBadge(language = song.language)
             }
         }
     }

@@ -8,7 +8,6 @@ import com.griot.core.data.model.Folder
 import com.griot.core.data.model.FolderColor
 import com.griot.core.data.model.FolderKind
 import com.griot.core.data.model.Genre
-import com.griot.core.design.format.text
 import com.griot.core.design.theme.GriotTheme
 
 /** The name of the folder: the author's, or « Archives » in the interface's language. */
@@ -44,8 +43,8 @@ internal fun FolderColor.tint(): Pair<Color, Color> {
 private const val YELLOW_FILL_ALPHA = 0.22f
 
 /**
- * What a card says of a song: « EP 2027, Brouillons · Afro, Rap · il y a 2 h ». [showFolders] adds its folders, or
- * « Sans dossier », where the songs of several folders mix.
+ * What a card says of a song under its first verse: « EP 2027, Brouillons · Afro, Rap ». [showFolders] adds its
+ * folders, or « Sans dossier », where the songs of several folders mix.
  */
 @Composable
 internal fun LibraryItem.meta(showFolders: Boolean): String = listOfNotNull(
@@ -57,5 +56,4 @@ internal fun LibraryItem.meta(showFolders: Boolean): String = listOfNotNull(
         null
     },
     genres.map { it.displayName() }.joinToString(separator = ", ").ifEmpty { null },
-    updated.text(),
 ).joinToString(separator = " · ")
