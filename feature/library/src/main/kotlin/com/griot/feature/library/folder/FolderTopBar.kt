@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.griot.core.data.model.FolderKind
 import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.BackButton
 import com.griot.core.design.component.GriotMenu
 import com.griot.core.design.component.GriotMenuItem
 import com.griot.core.design.theme.GriotRadius
@@ -53,13 +54,7 @@ internal fun FolderTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(GriotSpacing.xs),
     ) {
-        IconButton(onClick = onBack, modifier = Modifier.size(GriotSpacing.touchTarget)) {
-            Icon(
-                painter = painterResource(DesignR.drawable.ic_back),
-                contentDescription = stringResource(R.string.folder_back),
-                tint = palette.ink,
-            )
-        }
+        BackButton(description = stringResource(R.string.folder_back), onClick = onBack)
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = if (uiState.selecting) {

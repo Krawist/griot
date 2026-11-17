@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -18,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,6 +34,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.data.model.TrashedSong
 import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.BackButton
 import com.griot.core.design.format.RelativeTime
 import com.griot.core.design.format.text
 import com.griot.core.design.glass.GlassSurface
@@ -44,8 +43,6 @@ import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.library.R
 import java.time.Instant
-
-private val BackOffset = (-10).dp
 
 /** The trash: the songs deleted in the last 30 days, which can be restored. */
 @Composable
@@ -64,13 +61,7 @@ private fun TrashContent(uiState: TrashUiState, onBack: () -> Unit, onRestore: (
             .padding(start = GriotSpacing.xl, top = GriotSpacing.s, end = GriotSpacing.xl),
         verticalArrangement = Arrangement.spacedBy(GriotSpacing.m),
     ) {
-        IconButton(onClick = onBack, modifier = Modifier.offset(x = BackOffset).size(GriotSpacing.touchTarget)) {
-            Icon(
-                painter = painterResource(DesignR.drawable.ic_back),
-                contentDescription = stringResource(R.string.trash_back),
-                tint = palette.ink,
-            )
-        }
+        BackButton(description = stringResource(R.string.trash_back), onClick = onBack)
         Text(
             text = stringResource(R.string.trash_title),
             style = GriotTheme.type.screenTitle,

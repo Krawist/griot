@@ -11,28 +11,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.BackButton
 import com.griot.core.design.component.BackdropShape
 import com.griot.core.design.component.backdrop
 import com.griot.core.design.theme.GriotSpacing
@@ -46,7 +41,6 @@ private val TitleTop = 48.dp
 private val ContentTop = 36.dp
 private val ProgressHeight = 5.dp
 private val ProgressGap = 6.dp
-private val BackOffset = (-10).dp
 
 // Background shapes, as fractions of the screen size, from the step mockups: magenta at the top right, turquoise at
 // the bottom left.
@@ -120,13 +114,7 @@ private fun Header(step: Int?, onBack: () -> Unit) {
     val palette = GriotTheme.palette
     val description = step?.let { stringResource(R.string.onboarding_step, it, ONBOARDING_STEPS) }
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m)) {
-        IconButton(onClick = onBack, modifier = Modifier.offset(x = BackOffset).size(GriotSpacing.touchTarget)) {
-            Icon(
-                painter = painterResource(DesignR.drawable.ic_back),
-                contentDescription = stringResource(R.string.onboarding_back),
-                tint = palette.ink,
-            )
-        }
+        BackButton(description = stringResource(R.string.onboarding_back), onClick = onBack)
         if (step == null || description == null) return@Row
         Row(
             modifier = Modifier.weight(1f).semantics { contentDescription = description },
