@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -223,3 +224,50 @@ internal fun EmptyState(title: String, body: String) {
         Text(text = body, style = GriotTheme.type.body, color = palette.muted, textAlign = TextAlign.Center)
     }
 }
+
+/** « Griot propose de ranger N textes », in the AI colour: opens the proposals. */
+@Composable
+internal fun TidyUpCard(count: Int, onClick: () -> Unit) {
+    val palette = GriotTheme.palette
+    val shape = RoundedCornerShape(GriotRadius.card)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(palette.aiSoft, shape)
+            .border(1.dp, palette.ai.copy(alpha = TIDY_LINE_ALPHA), shape)
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = GriotSpacing.m + 2.dp, vertical = GriotSpacing.m),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m),
+    ) {
+        Box(
+            modifier = Modifier.size(TidyIcon).background(palette.ai, RoundedCornerShape(GriotRadius.control)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = painterResource(DesignR.drawable.ic_ai),
+                contentDescription = null,
+                tint = palette.onAi,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = pluralStringResource(R.plurals.tidy_card, count, count),
+                style = GriotTheme.type.bodyStrong,
+                color = palette.ink,
+            )
+            Text(text = stringResource(R.string.tidy_card_body), style = GriotTheme.type.caption, color = palette.ink2)
+        }
+        Icon(
+            painter = painterResource(DesignR.drawable.ic_chevron),
+            contentDescription = null,
+            tint = palette.aiText,
+            modifier = Modifier.size(18.dp),
+        )
+    }
+}
+
+private val TidyIcon = 36.dp
+private const val TIDY_LINE_ALPHA = 0.3f

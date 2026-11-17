@@ -72,6 +72,26 @@
     <string name="library_title">Tes chansons</string>
     <string name="library_today">Aujourd\'hui</string>
     <string name="library_untitled">Sans titre</string>
+    <string name="tidy_accept">Accepter</string>
+    <string name="tidy_accepted">Accepté</string>
+    <string name="tidy_archive">Archiver</string>
+    <string name="tidy_badge_ai">Suggestion IA</string>
+    <string name="tidy_badge_griot">Détecté par Griot</string>
+    <string name="tidy_card_body">Dossiers, titres, doublons · tu valides chaque idée</string>
+    <string name="tidy_classify">Classer</string>
+    <string name="tidy_done">Terminé</string>
+    <string name="tidy_duplicates_title">Doublons</string>
+    <string name="tidy_empty">Rien à ranger pour l\'instant.</string>
+    <string name="tidy_nothing_deleted">Rien n\'est supprimé : archiver déplace dans « Archives »</string>
+    <string name="tidy_refuse">Refuser</string>
+    <string name="tidy_refused">Refusé</string>
+    <string name="tidy_thinking">L\'IA réfléchit…</string>
+    <string name="tidy_title">Propositions de rangement</string>
+    <string name="tidy_titles">Donner un titre</string>
+    <string name="tidy_to_archives">Pas touchés depuis plus de 30 jours → Archives</string>
+    <string name="tidy_to_folder">dossier %1$s</string>
+    <string name="tidy_to_genre">genre %1$s</string>
+    <string name="tidy_to_title">« %1$s » → « %2$s »</string>
     <string name="trash_back">Retour</string>
     <string name="trash_body">Les chansons supprimées restent ici 30 jours, puis sont effacées partout.</string>
     <string name="trash_empty">La corbeille est vide.</string>
@@ -92,6 +112,31 @@
         <item quantity="one">%1$d texte</item>
         <item quantity="many">%1$d textes</item>
         <item quantity="other">%1$d textes</item>
+    </plurals>
+    <plurals name="tidy_accept_all">
+        <item quantity="one">Accepter la dernière</item>
+        <item quantity="many">Accepter les %1$d restantes</item>
+        <item quantity="other">Accepter les %1$d restantes</item>
+    </plurals>
+    <plurals name="tidy_card">
+        <item quantity="one">Griot propose de ranger %1$d texte</item>
+        <item quantity="many">Griot propose de ranger %1$d textes</item>
+        <item quantity="other">Griot propose de ranger %1$d textes</item>
+    </plurals>
+    <plurals name="tidy_drafts">
+        <item quantity="one">%1$d brouillon</item>
+        <item quantity="many">%1$d brouillons</item>
+        <item quantity="other">%1$d brouillons</item>
+    </plurals>
+    <plurals name="tidy_duplicates">
+        <item quantity="one">Importé %1$d fois, textes identiques · garder un seul</item>
+        <item quantity="many">Importé %1$d fois, textes identiques · garder un seul</item>
+        <item quantity="other">Importé %1$d fois, textes identiques · garder un seul</item>
+    </plurals>
+    <plurals name="tidy_pending">
+        <item quantity="one">%1$d idée en attente · tu valides chacune</item>
+        <item quantity="many">%1$d idées en attente · tu valides chacune</item>
+        <item quantity="other">%1$d idées en attente · tu valides chacune</item>
     </plurals>
     <plurals name="trash_days_left">
         <item quantity="one">encore %1$d jour</item>

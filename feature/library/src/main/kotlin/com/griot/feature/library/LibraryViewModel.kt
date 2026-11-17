@@ -2,10 +2,13 @@ package com.griot.feature.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.griot.core.ai.AiAssistant
 import com.griot.core.data.organisation.FolderRepository
 import com.griot.core.data.organisation.GenreRepository
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongRepository
+import com.griot.core.data.tidy.TidyUpRepository
+import com.griot.feature.library.tidy.songCount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import java.time.Instant
@@ -20,11 +23,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /** The home screen: the songs of the last 24 hours (or the last one touched), the folders, and the search. */
+@Suppress("LongParameterList") // The songs, their folders and genres, the tidy-up and the AI.
 @HiltViewModel
 internal class LibraryViewModel @Inject constructor(
     private val songs: SongRepository,
     private val folders: FolderRepository,
     genres: GenreRepository,
+    tidy: TidyUpRepository,
+    private val assistant: AiAssistant,
     preferences: UserPreferencesRepository,
     private val items: LibraryItems,
     private val clock: Clock,
@@ -42,12 +48,20 @@ internal class LibraryViewModel @Inject constructor(
         Triple(library, folders, genres)
     }
 
-    val uiState: StateFlow<LibraryUiState> = combine(library, preferences.authorName, query, actions.deleted) {
-            (library, folders, genres),
-            authorName,
-            query,
-            deleted,
-        ->
+    // Whether a model can answer: the tidy-up then counts the songs the AI would name or file.
+    private val aiAvailable = MutableStateFlow(false)
+
+    private val tidyUpCount = combine(tidy.observeDue(), tidy.observeCandidates(), aiAvailable) { due, candidates, ai ->
+        if (due) candidates.songCount(withAi = ai) else 0
+    }
+
+    val uiState: StateFlow<LibraryUiState> = combine(
+        library,
+        preferences.authorName,
+        query,
+        actions.deleted,
+        tidyUpCount,
+    ) { (library, folders, genres), authorName, query, deleted, tidyUpCount ->
         val now = Instant.now(clock)
         val all = library.map { items.itemOf(song = it, folders = folders, genres = genres, now = now) }
         val recent = all.filter { it.song.isRecent(now) }
@@ -62,6 +76,7 @@ internal class LibraryViewModel @Inject constructor(
             },
             folders = folders,
             songCount = library.size,
+            tidyUpCount = tidyUpCount,
             loading = false,
             deleted = deleted,
         )
@@ -69,6 +84,10 @@ internal class LibraryViewModel @Inject constructor(
         // The rhymes are read from the dictionaries: never on the main thread.
         .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), LibraryUiState())
+
+    init {
+        viewModelScope.launch { aiAvailable.value = assistant.availability().location != null }
+    }
 
     fun onQueryChange(text: String) {
         query.value = text

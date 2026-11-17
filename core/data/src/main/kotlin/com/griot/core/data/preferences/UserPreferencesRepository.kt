@@ -51,6 +51,18 @@ interface UserPreferencesRepository {
     /** Records a successful sync at [at], and the [cursor] of the remote changes read so far. */
     suspend fun setSynced(at: Instant, cursor: String?)
 
+    /** Whether an import asked for a tidy-up (GRI-59), until the author looks at the proposals. */
+    val tidyUpRequested: Flow<Boolean>
+
+    /** When the author last looked at the tidy-up proposals; `null` never. */
+    val tidyUpReviewedAt: Flow<Instant?>
+
+    /** An import asks for a tidy-up. */
+    suspend fun requestTidyUp()
+
+    /** The author looked at the proposals at [at]: the next ones come after an import, or a week later. */
+    suspend fun setTidyUpReviewed(at: Instant)
+
     companion object {
         /** Size of the lyrics, in sp, before the user changes it. */
         const val DEFAULT_EDITOR_FONT_SIZE = 18

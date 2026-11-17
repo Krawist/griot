@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.griot.feature.library.folder.FolderScreen
+import com.griot.feature.library.tidy.TidyUpScreen
 import com.griot.feature.library.trash.TrashScreen
 import kotlinx.serialization.Serializable
 
@@ -26,6 +27,10 @@ internal data object TrashRoute
  */
 @Serializable
 internal data class FolderRoute(val folderId: String?)
+
+/** The tidy-up proposals (GRI-59). */
+@Serializable
+internal data object TidyUpRoute
 
 /** Opens the trash, from the settings. */
 fun NavController.navigateToTrash() = navigate(TrashRoute)
@@ -49,11 +54,13 @@ fun NavGraphBuilder.libraryGraph(
             LibraryScreen(
                 onOpenSong = onOpenSong,
                 onOpenFolder = { folderId -> navController.navigate(FolderRoute(folderId)) },
+                onTidyUp = { navController.navigate(TidyUpRoute) },
                 onControlsShownChange = onControlsShownChange,
             )
         }
     }
     composable<TrashRoute> { TrashScreen(onBack = onBack) }
+    composable<TidyUpRoute> { TidyUpScreen(onBack = onBack) }
     composable<FolderRoute> { entry ->
         FolderScreen(
             folderId = entry.toRoute<FolderRoute>().folderId,

@@ -1,15 +1,18 @@
 package com.griot.feature.library
 
+import com.griot.core.ai.FakeAiAssistant
 import com.griot.core.data.model.Folder
 import com.griot.core.data.model.FolderColor
 import com.griot.core.data.model.FolderKind
 import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
+import com.griot.core.data.model.TidyUpCandidates
 import com.griot.core.data.organisation.FakeFolderRepository
 import com.griot.core.data.organisation.FakeGenreRepository
 import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.data.song.FakeSongRepository
+import com.griot.core.data.tidy.FakeTidyUpRepository
 import com.griot.core.design.format.RelativeTime
 import com.griot.core.phonetics.PhoneticEngines
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -78,6 +81,8 @@ internal class LibraryViewModelTest {
                 songs = FakeSongRepository(library = listOf(today, older)),
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -112,6 +117,8 @@ internal class LibraryViewModelTest {
                 songs = FakeSongRepository(library = songs),
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -144,6 +151,8 @@ internal class LibraryViewModelTest {
                 songs = FakeSongRepository(library = listOf(song)),
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -172,6 +181,8 @@ internal class LibraryViewModelTest {
                 songs = FakeSongRepository(),
                 folders = FakeFolderRepository(folders = listOf(folder)),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -186,12 +197,48 @@ internal class LibraryViewModelTest {
         }
 
         @Test
+        fun `should count the songs a due tidy-up would change`() = runTest {
+            // given
+            val songs = listOf("my-song-id-1", "my-song-id-2").map {
+                LibrarySong(
+                    id = it,
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "my-lyrics",
+                )
+            }
+            val viewModel = LibraryViewModel(
+                songs = FakeSongRepository(),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(due = true, candidates = TidyUpCandidates(duplicates = listOf(songs))),
+                assistant = FakeAiAssistant(),
+                preferences = FakeUserPreferencesRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            val state = viewModel.uiState.first { !it.loading }
+
+            // then
+            state.tidyUpCount shouldBe 2
+        }
+
+        @Test
         fun `should not greet a blank name`() = runTest {
             // given
             val viewModel = LibraryViewModel(
                 songs = FakeSongRepository(),
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(authorName = " "),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -226,6 +273,8 @@ internal class LibraryViewModelTest {
                 songs = FakeSongRepository(library = listOf(song, song.copy(id = "my-song-id-2", title = "other"))),
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -261,6 +310,8 @@ internal class LibraryViewModelTest {
                 songs = FakeSongRepository(),
                 folders = folders,
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -283,6 +334,8 @@ internal class LibraryViewModelTest {
                 songs = FakeSongRepository(),
                 folders = folders,
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -307,6 +360,8 @@ internal class LibraryViewModelTest {
                 songs = songs,
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -332,6 +387,8 @@ internal class LibraryViewModelTest {
                 songs = songs,
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -355,6 +412,8 @@ internal class LibraryViewModelTest {
                 songs = songs,
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -378,6 +437,8 @@ internal class LibraryViewModelTest {
                 songs = songs,
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -403,6 +464,8 @@ internal class LibraryViewModelTest {
                 songs = songs,
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
@@ -429,6 +492,8 @@ internal class LibraryViewModelTest {
                 songs = songs,
                 folders = FakeFolderRepository(),
                 genres = FakeGenreRepository(),
+                tidy = FakeTidyUpRepository(),
+                assistant = FakeAiAssistant(),
                 preferences = FakeUserPreferencesRepository(),
                 items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,

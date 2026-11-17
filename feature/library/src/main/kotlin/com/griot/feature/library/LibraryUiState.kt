@@ -13,6 +13,7 @@ import com.griot.core.data.model.Folder
  * @property resume The last song touched, when [today] is empty; `null` otherwise or without songs.
  * @property folders The folders, « Archives » last, with their count of songs.
  * @property songCount How many songs « Tous les textes » holds.
+ * @property tidyUpCount How many songs a tidy-up would change, when one is due: its card shows; 0 hides it.
  * @property loading Whether the songs are still being read, so that no empty state flashes at start.
  * @property deleted The song just moved to the trash, while the undo bar shows; `null` otherwise.
  */
@@ -25,6 +26,7 @@ internal data class LibraryUiState(
     val resume: ResumeSong? = null,
     val folders: List<Folder> = emptyList(),
     val songCount: Int = 0,
+    val tidyUpCount: Int = 0,
     val loading: Boolean = true,
     val deleted: DeletedSong? = null,
 )

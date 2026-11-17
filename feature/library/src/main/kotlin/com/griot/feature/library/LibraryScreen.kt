@@ -68,6 +68,7 @@ private val ListBottom = 140.dp
  * one touched), then the folders. Scrolling down hides the header and shows « Haut de la liste ».
  *
  * @param onOpenFolder Opens the folder with this id, or every song when `null` (« Tous les textes »).
+ * @param onTidyUp Opens the tidy-up proposals, from their card.
  * @param onControlsShownChange Whether the controls show, for the app's bottom bar to follow them; `true` again when
  * the screen leaves.
  */
@@ -75,6 +76,7 @@ private val ListBottom = 140.dp
 internal fun LibraryScreen(
     onOpenSong: (String) -> Unit,
     onOpenFolder: (String?) -> Unit,
+    onTidyUp: () -> Unit,
     onControlsShownChange: (Boolean) -> Unit,
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
@@ -97,6 +99,7 @@ internal fun LibraryScreen(
         onSongActions = { actionsFor = it },
         onNewSong = { viewModel.onNewSong(onCreated = onOpenSong) },
         onOpenFolder = onOpenFolder,
+        onTidyUp = onTidyUp,
         onNewFolder = { newFolder = true },
         onUndoDelete = viewModel.actions::onUndoDelete,
         onUndoDismissed = viewModel.actions::onUndoDismissed,
@@ -139,6 +142,7 @@ private fun LibraryContent(
     onSongActions: (String) -> Unit,
     onNewSong: () -> Unit,
     onOpenFolder: (String?) -> Unit,
+    onTidyUp: () -> Unit,
     onNewFolder: () -> Unit,
     onUndoDelete: () -> Unit,
     onUndoDismissed: () -> Unit,
@@ -169,6 +173,7 @@ private fun LibraryContent(
                     onOpenSong = onOpenSong,
                     onSongActions = onSongActions,
                     onOpenFolder = onOpenFolder,
+                    onTidyUp = onTidyUp,
                     onNewFolder = onNewFolder,
                 )
             }
@@ -196,18 +201,23 @@ private fun HomeList(
     onOpenSong: (String) -> Unit,
     onSongActions: (String) -> Unit,
     onOpenFolder: (String?) -> Unit,
+    onTidyUp: () -> Unit,
     onNewFolder: () -> Unit,
 ) {
-    // A song changed goes to the top. The list keeps the card it showed first, now just below: when it was at the top,
-    // it goes back up to show the song.
+    // A song changed, or the tidy-up card, comes at the top. The list keeps the item it showed first, now just below:
+    // when it was at the top, it goes back up to show what came.
     val first = uiState.today.firstOrNull()?.song?.id
-    LaunchedEffect(first) { if (list.firstVisibleItemIndex <= 1) list.scrollToItem(0) }
+    val tidyUp = uiState.tidyUpCount > 0
+    LaunchedEffect(first, tidyUp) { if (list.firstVisibleItemIndex <= 1) list.scrollToItem(0) }
     LazyColumn(
         state = list,
         modifier = Modifier.fillMaxSize().nestedScroll(controls.connection),
         contentPadding = PaddingValues(bottom = ListBottom),
         verticalArrangement = Arrangement.spacedBy(GriotSpacing.s),
     ) {
+        if (uiState.query.isBlank() && uiState.tidyUpCount > 0) {
+            item(key = "tidy-up") { TidyUpCard(count = uiState.tidyUpCount, onClick = onTidyUp) }
+        }
         when {
             uiState.query.isNotBlank() -> results(uiState.results, onOpenSong, onSongActions)
             uiState.songCount == 0 -> item(key = "empty") {
@@ -365,6 +375,7 @@ private fun LibraryScreenPreview() {
                 onSongActions = {},
                 onNewSong = {},
                 onOpenFolder = {},
+                onTidyUp = {},
                 onNewFolder = {},
                 onUndoDelete = {},
                 onUndoDismissed = {},

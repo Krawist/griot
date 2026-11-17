@@ -4,6 +4,8 @@ import com.griot.core.data.organisation.FolderRepository
 import com.griot.core.data.organisation.FolderRepositoryImpl
 import com.griot.core.data.organisation.GenreRepository
 import com.griot.core.data.organisation.GenreRepositoryImpl
+import com.griot.core.data.tidy.TidyUpRepository
+import com.griot.core.data.tidy.TidyUpRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,4 +19,7 @@ internal interface OrganisationModule {
 
     @Binds
     fun bindGenreRepository(impl: GenreRepositoryImpl): GenreRepository
+
+    @Binds
+    fun bindTidyUpRepository(impl: TidyUpRepositoryImpl): TidyUpRepository
 }

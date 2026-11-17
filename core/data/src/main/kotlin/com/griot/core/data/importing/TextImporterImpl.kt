@@ -2,6 +2,7 @@ package com.griot.core.data.importing
 
 import com.griot.core.data.model.ImportResult
 import com.griot.core.data.model.ImportedText
+import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongRepository
 import com.griot.core.data.song.toNewSections
 import com.griot.core.phonetics.paste.PastedBlock
@@ -11,7 +12,10 @@ import javax.inject.Singleton
 
 /** Default implementation for [TextImporter], splitting each text with the paste splitter. */
 @Singleton
-internal class TextImporterImpl @Inject constructor(private val songs: SongRepository) : TextImporter {
+internal class TextImporterImpl @Inject constructor(
+    private val songs: SongRepository,
+    private val preferences: UserPreferencesRepository,
+) : TextImporter {
     override suspend fun import(texts: List<ImportedText>): ImportResult {
         var created = 0
         var sections = 0
@@ -26,6 +30,8 @@ internal class TextImporterImpl @Inject constructor(private val songs: SongRepos
                 sections += blocks.size
             }
         }
+        // New songs: a tidy-up is proposed (GRI-59).
+        if (created > 0) preferences.requestTidyUp()
         return ImportResult(songs = created, sections = sections, failed = failed)
     }
 

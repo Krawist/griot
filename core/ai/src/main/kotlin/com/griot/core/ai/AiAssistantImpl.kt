@@ -44,6 +44,16 @@ internal class AiAssistantImpl @Inject constructor(
         return AiAnswer(items = remarks, location = provider.location)
     }
 
+    override suspend fun suggestTitle(request: SongRequest): String? {
+        val provider = provider() ?: return null
+        return checkTitle(answerLines(provider.generate(titlePrompt(request)), max = 1).firstOrNull())
+    }
+
+    override suspend fun classify(request: SongRequest): Classification? {
+        val provider = provider() ?: return null
+        return checkClassification(answer = provider.generate(classifyPrompt(request)), request = request)
+    }
+
     // The phone's model when it can answer, else the online one.
     private suspend fun provider(): AiProvider? = allowed().firstOrNull { it.status() == AiStatus.READY }
 

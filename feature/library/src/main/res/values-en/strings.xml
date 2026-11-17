@@ -70,6 +70,26 @@
     <string name="library_title">Your songs</string>
     <string name="library_today">Today</string>
     <string name="library_untitled">Untitled</string>
+    <string name="tidy_accept">Accept</string>
+    <string name="tidy_accepted">Accepted</string>
+    <string name="tidy_archive">Archive</string>
+    <string name="tidy_badge_ai">AI suggestion</string>
+    <string name="tidy_badge_griot">Found by Griot</string>
+    <string name="tidy_card_body">Folders, titles, duplicates · you approve each idea</string>
+    <string name="tidy_classify">File</string>
+    <string name="tidy_done">Done</string>
+    <string name="tidy_duplicates_title">Duplicates</string>
+    <string name="tidy_empty">Nothing to tidy up for now.</string>
+    <string name="tidy_nothing_deleted">Nothing is deleted: archiving moves to « Archives »</string>
+    <string name="tidy_refuse">Refuse</string>
+    <string name="tidy_refused">Refused</string>
+    <string name="tidy_thinking">The AI is thinking…</string>
+    <string name="tidy_title">Tidy-up proposals</string>
+    <string name="tidy_titles">Give a title</string>
+    <string name="tidy_to_archives">Untouched for more than 30 days → Archives</string>
+    <string name="tidy_to_folder">folder %1$s</string>
+    <string name="tidy_to_genre">genre %1$s</string>
+    <string name="tidy_to_title">« %1$s » → « %2$s »</string>
     <string name="trash_back">Back</string>
     <string name="trash_body">Deleted songs stay here for 30 days, then are erased everywhere.</string>
     <string name="trash_empty">The trash is empty.</string>
@@ -87,6 +107,26 @@
     <plurals name="library_texts">
         <item quantity="one">%1$d text</item>
         <item quantity="other">%1$d texts</item>
+    </plurals>
+    <plurals name="tidy_accept_all">
+        <item quantity="one">Accept the last one</item>
+        <item quantity="other">Accept the %1$d left</item>
+    </plurals>
+    <plurals name="tidy_card">
+        <item quantity="one">Griot offers to tidy up %1$d text</item>
+        <item quantity="other">Griot offers to tidy up %1$d texts</item>
+    </plurals>
+    <plurals name="tidy_drafts">
+        <item quantity="one">%1$d draft</item>
+        <item quantity="other">%1$d drafts</item>
+    </plurals>
+    <plurals name="tidy_duplicates">
+        <item quantity="one">Imported %1$d times, same text · keep one</item>
+        <item quantity="other">Imported %1$d times, same text · keep one</item>
+    </plurals>
+    <plurals name="tidy_pending">
+        <item quantity="one">%1$d idea waiting · you approve each</item>
+        <item quantity="other">%1$d ideas waiting · you approve each</item>
     </plurals>
     <plurals name="trash_days_left">
         <item quantity="one">%1$d day left</item>

@@ -23,4 +23,16 @@ interface AiAssistant {
      * verse dropped; `null` without a model.
      */
     suspend fun critique(request: VerseRequest): AiAnswer<String>?
+
+    /**
+     * A short title for the song, from its first verse or its chorus; `null` without a model, or when the answer is
+     * not a short title.
+     */
+    suspend fun suggestTitle(request: SongRequest): String?
+
+    /**
+     * A folder and a genre for the song among those of the request, from its themes and style; `null` without a model,
+     * or when neither fits.
+     */
+    suspend fun classify(request: SongRequest): Classification?
 }

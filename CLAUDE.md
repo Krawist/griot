@@ -338,6 +338,16 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (`FolderRepository.fileSongs`, `SongRepository.setGenre`). It opens from a long press (« Dossier et genre », first
   action of `SongActionsSheet`), « Ranger » in the selection, and the editor's « ⋯ » (`editorGraph(onFile)`, shown by
   `:app`). New folders take the accents in turn in `FolderRepository.createFolder`.
+- [x] **GRI-59** — tidy-up. `:core:data` `tidy`: `findDuplicates` (normalised text, verses in any order) and
+  `staleDrafts` (drafts untouched > 30 days, not archived) are code; `TidyUpRepository` says when it is due (after an
+  import, `requestTidyUp()` from `TextImporter`, or a week after the proposals were looked at), lists the candidates
+  without the refusals (`tidy_refusals`, database version 7, local only) and merges duplicates into the last changed
+  (versions moved, folders added, the others to the trash). `AiAssistant.suggestTitle` and `classify` (checked:
+  1–6 words, names among those given) for at most `AI_SONGS` (8) songs of each kind. Home card « Griot propose de
+  ranger N textes » (AI colours) → `TidyUpScreen` (`TidyUpRoute`): groups « Classer », « Donner un titre » (« Suggestion
+  IA »), « Doublons », « Archiver » (« Détecté par Griot », offered without a model too: it is code), ✓/✕ each and
+  « Accepter les N restantes »; opening it counts as looked at. Duplicates and their merge checked on the S23; the
+  AI proposals are not checked on a phone yet (no model on the S23).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 

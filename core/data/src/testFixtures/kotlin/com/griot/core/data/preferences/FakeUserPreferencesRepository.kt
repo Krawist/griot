@@ -59,4 +59,17 @@ class FakeUserPreferencesRepository(
         lastSyncedAt.value = at
         syncCursor.value = cursor
     }
+
+    override val tidyUpRequested = MutableStateFlow(false)
+
+    override val tidyUpReviewedAt = MutableStateFlow<Instant?>(null)
+
+    override suspend fun requestTidyUp() {
+        tidyUpRequested.value = true
+    }
+
+    override suspend fun setTidyUpReviewed(at: Instant) {
+        tidyUpRequested.value = false
+        tidyUpReviewedAt.value = at
+    }
 }

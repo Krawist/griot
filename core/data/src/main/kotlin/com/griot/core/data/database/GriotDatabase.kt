@@ -13,6 +13,7 @@ import com.griot.core.data.database.dao.SongDao
 import com.griot.core.data.database.dao.SongFolderDao
 import com.griot.core.data.database.dao.SyncDao
 import com.griot.core.data.database.dao.SyncStateDao
+import com.griot.core.data.database.dao.TidyRefusalDao
 import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.dao.VersionDao
 import com.griot.core.data.database.dao.WordCorrectionDao
@@ -24,6 +25,7 @@ import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.SongFolderEntity
 import com.griot.core.data.database.entity.SyncStateEntity
+import com.griot.core.data.database.entity.TidyRefusalEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.database.entity.VersionEntity
 import com.griot.core.data.database.entity.WordCorrectionEntity
@@ -42,13 +44,15 @@ import com.griot.core.data.database.entity.WordCorrectionEntity
         FolderEntity::class,
         GenreEntity::class,
         SongFolderEntity::class,
+        TidyRefusalEntity::class,
     ],
-    version = 6,
+    version = 7,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6, spec = SongFoldersMigration::class),
+        AutoMigration(from = 6, to = 7),
     ],
 )
 @TypeConverters(DatabaseConverters::class)
@@ -77,4 +81,6 @@ internal abstract class GriotDatabase : RoomDatabase() {
     abstract fun genreDao(): GenreDao
 
     abstract fun songFolderDao(): SongFolderDao
+
+    abstract fun tidyRefusalDao(): TidyRefusalDao
 }

@@ -44,6 +44,23 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
 
     override val syncCursor: Flow<String?> = dataStore.data.map { it[SyncCursor] }
 
+    override val tidyUpRequested: Flow<Boolean> = dataStore.data.map { it[TidyUpRequested] ?: false }
+
+    override val tidyUpReviewedAt: Flow<Instant?> = dataStore.data.map { preferences ->
+        preferences[TidyUpReviewedAt]?.let(Instant::ofEpochMilli)
+    }
+
+    override suspend fun requestTidyUp() {
+        dataStore.edit { it[TidyUpRequested] = true }
+    }
+
+    override suspend fun setTidyUpReviewed(at: Instant) {
+        dataStore.edit { preferences ->
+            preferences[TidyUpRequested] = false
+            preferences[TidyUpReviewedAt] = at.toEpochMilli()
+        }
+    }
+
     override suspend fun setOnboardingCompleted() {
         dataStore.edit { it[OnboardingCompleted] = true }
     }
@@ -82,6 +99,8 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         val EditorFontSize = intPreferencesKey("editor_font_size")
         val ShowRhymes = booleanPreferencesKey("show_rhymes")
         val OnDeviceAi = booleanPreferencesKey("on_device_ai")
+        val TidyUpRequested = booleanPreferencesKey("tidy_up_requested")
+        val TidyUpReviewedAt = longPreferencesKey("tidy_up_reviewed_at")
         val LastSyncedAt = longPreferencesKey("last_synced_at")
         val SyncCursor = stringPreferencesKey("sync_cursor")
     }

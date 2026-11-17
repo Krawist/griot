@@ -32,6 +32,10 @@ internal interface VersionDao {
     )
     suspend fun latestForVerse(verseId: String): VersionEntity?
 
+    /** Gives the versions of the song [from] to the song [to] at [at]: a duplicate merged keeps its history. */
+    @Query("UPDATE versions SET songId = :to, updatedAt = :at WHERE songId = :from")
+    suspend fun moveToSong(from: String, to: String, at: Instant)
+
     /** The last version of the whole song [songId] that is not deleted; `null` when there is none. */
     @Query(
         """

@@ -36,6 +36,32 @@ internal fun critiquePrompt(request: VerseRequest, counts: List<Int>): AiPrompt 
         request.context(task = "Verse to critique"),
 )
 
+/** The prompt asking a short title for a whole song, from its first verse or its chorus. */
+internal fun titlePrompt(request: SongRequest): AiPrompt = AiPrompt(
+    instructions = """
+        You help a songwriter name a song they wrote. You never rewrite the song.
+        Answer in ${request.language.englishName()}.
+        Write one title of 1 to 4 words, taken from the first verse or the chorus, and nothing else: no quotes, no
+        comments.
+    """.trimIndent(),
+    request = "Song:\n${request.lyrics.joinToString("\n")}",
+)
+
+/** The prompt asking a folder and a genre for a song, among the names given only. */
+internal fun classifyPrompt(request: SongRequest): AiPrompt = AiPrompt(
+    instructions = """
+        You help a songwriter file a song they wrote, from its themes and its style. You never rewrite the song.
+        Answer with exactly two lines and nothing else:
+        Folder: one of the folders listed, or none
+        Genre: one of the genres listed, or none
+    """.trimIndent(),
+    request = buildString {
+        appendLine("Folders: ${request.folders.joinToString().ifEmpty { "none" }}")
+        appendLine("Genres: ${request.genres.joinToString()}")
+        append("Song:\n${request.lyrics.joinToString("\n")}")
+    },
+)
+
 /** The lines of a model's answer, without bullets, numbers nor quotes: at most [max], each once. */
 internal fun answerLines(answer: String, max: Int = MAX_ITEMS): List<String> = answer.lines()
     .map { line -> line.trim().replace(Bullet, "").trim().trim('"', '«', '»', '“', '”').trim() }

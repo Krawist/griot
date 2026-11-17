@@ -4,6 +4,7 @@ import com.griot.core.data.model.ImportResult
 import com.griot.core.data.model.ImportedText
 import com.griot.core.data.model.NewSection
 import com.griot.core.data.model.SectionKind
+import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.data.song.SongRepository
 import io.kotest.matchers.shouldBe
 import io.mockk.Called
@@ -17,7 +18,8 @@ import org.junit.jupiter.api.Test
 
 internal class TextImporterImplTest {
     private val songs = mockk<SongRepository>()
-    private val importer = TextImporterImpl(songs)
+    private val preferences = FakeUserPreferencesRepository()
+    private val importer = TextImporterImpl(songs = songs, preferences = preferences)
 
     @Nested
     inner class Import {
@@ -99,6 +101,27 @@ internal class TextImporterImplTest {
             // then
             result shouldBe ImportResult(songs = 0, sections = 0, failed = emptyList())
             verify { songs wasNot Called }
+        }
+
+        @Test
+        fun `should ask for a tidy-up once songs are imported`() = runTest {
+            // given
+            coEvery { songs.importSong(any(), any()) } returns "my-song-id"
+
+            // when
+            importer.import(listOf(ImportedText(name = "my-name", text = "a")))
+
+            // then
+            preferences.tidyUpRequested.value shouldBe true
+        }
+
+        @Test
+        fun `should not ask for a tidy-up when nothing was imported`() = runTest {
+            // when
+            importer.import(listOf(ImportedText(name = "my-name", text = null)))
+
+            // then
+            preferences.tidyUpRequested.value shouldBe false
         }
     }
 }
