@@ -40,7 +40,11 @@ internal class TidyUpRepositoryImpl @Inject constructor(
                     allowed(TidyUpKind.DUPLICATE, TidyUpRepository.duplicateKey(group.map { it.id }))
                 },
                 staleDrafts = staleDrafts(library, Instant.now(clock)).filter { allowed(TidyUpKind.ARCHIVE, it.id) },
-                untitled = library.filter { it.title.isBlank() && allowed(TidyUpKind.TITLE, it.id) },
+                untitled = library.filter {
+                    it.title.isBlank() &&
+                        it.firstVerse != null &&
+                        allowed(TidyUpKind.TITLE, it.id)
+                },
                 unclassified = library.filter {
                     it.folderIds.isEmpty() && it.genreId == null && allowed(TidyUpKind.CLASSIFY, it.id)
                 },

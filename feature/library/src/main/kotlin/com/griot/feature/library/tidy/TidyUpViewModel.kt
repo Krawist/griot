@@ -3,19 +3,13 @@ package com.griot.feature.library.tidy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.ai.AiAssistant
-import com.griot.core.ai.SongRequest
-import com.griot.core.data.model.BuiltInGenre
-import com.griot.core.data.model.Folder
 import com.griot.core.data.model.FolderKind
-import com.griot.core.data.model.Genre
 import com.griot.core.data.model.LibrarySong
-import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.TidyUpKind
 import com.griot.core.data.organisation.FolderRepository
 import com.griot.core.data.organisation.GenreRepository
 import com.griot.core.data.song.SongRepository
 import com.griot.core.data.tidy.TidyUpRepository
-import com.griot.core.phonetics.PhoneticLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,8 +37,6 @@ internal class TidyUpViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // Looked at: the next tidy-up comes after an import, or a week later.
-            tidy.markReviewed()
             val candidates = tidy.observeCandidates().first()
             val duplicates = candidates.duplicates.map { group ->
                 TidyUpProposal(
@@ -141,6 +133,14 @@ internal class TidyUpViewModel @Inject constructor(
         state.update { current ->
             current.copy(proposals = current.proposals.map { if (it.id == id) it.copy(decision = decision) else it })
         }
+        viewModelScope.launch { reviewIfDone() }
+    }
+
+    // Every proposal decided (or none to make): the next tidy-up comes after an import, or a week later. Leaving
+    // with proposals waiting keeps the card.
+    private suspend fun reviewIfDone() {
+        val current = state.value
+        if (!current.loading && !current.thinking && current.proposals.none { it.decision == null }) tidy.markReviewed()
     }
 
     private suspend fun apply(proposal: TidyUpProposal) {
@@ -160,28 +160,5 @@ internal class TidyUpViewModel @Inject constructor(
                 remove = emptySet(),
             )
         }
-    }
-
-    private fun LibrarySong.request(folders: List<Folder> = emptyList(), genres: List<Genre> = emptyList()) =
-        SongRequest(
-            language = if (language == SongLanguage.ENGLISH) PhoneticLanguage.ENGLISH else PhoneticLanguage.FRENCH,
-            lyrics = firstSection.filter { it.isNotBlank() }.ifEmpty { listOfNotNull(firstVerse) }.take(LYRICS_LINES),
-            folders = folders.map { it.name },
-            genres = genres.map { it.modelName() },
-        )
-
-    // The name a model reads: the author's, or the built-in genre's English one.
-    private fun Genre.modelName(): String = when (builtIn) {
-        null -> name
-        BuiltInGenre.AFRO -> "Afro"
-        BuiltInGenre.RAP -> "Rap"
-        BuiltInGenre.RNB -> "R&B"
-        BuiltInGenre.GOSPEL -> "Gospel"
-        BuiltInGenre.POP -> "Pop"
-        BuiltInGenre.OTHER -> "Other"
-    }
-
-    private companion object {
-        const val LYRICS_LINES = 12
     }
 }

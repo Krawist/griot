@@ -346,8 +346,9 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   1–6 words, names among those given) for at most `AI_SONGS` (8) songs of each kind. Home card « Griot propose de
   ranger N textes » (AI colours) → `TidyUpScreen` (`TidyUpRoute`): groups « Classer », « Donner un titre » (« Suggestion
   IA »), « Doublons », « Archiver » (« Détecté par Griot », offered without a model too: it is code), ✓/✕ each and
-  « Accepter les N restantes »; opening it counts as looked at. Duplicates and their merge checked on the S23; the
-  AI proposals are not checked on a phone yet (no model on the S23).
+  « Accepter les N restantes »; the proposals count as looked at once every one is decided, so leaving keeps the card.
+  Songs without text are not titled. Checked on the S23 (duplicates, merge) and the S25 (genres and a title from
+  Gemini Nano).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 

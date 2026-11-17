@@ -17,6 +17,7 @@ import com.griot.core.data.organisation.FakeFolderRepository
 import com.griot.core.data.organisation.FakeGenreRepository
 import com.griot.core.data.song.FakeSongRepository
 import com.griot.core.data.tidy.FakeTidyUpRepository
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import java.time.Instant
@@ -47,46 +48,45 @@ internal class TidyUpViewModelTest {
     @Nested
     inner class UiState {
         @Test
-        fun `should propose the duplicates and the old drafts without a model, and mark the proposals looked at`() =
-            runTest {
-                // given
-                val songs = listOf("my-song-id-1", "my-song-id-2", "my-song-id-3").map {
-                    LibrarySong(
-                        id = it,
-                        title = "my-title",
-                        language = SongLanguage.FRENCH,
-                        status = SongStatus.DRAFT,
-                        updatedAt = Instant.parse("2026-09-01T10:00:00Z"),
-                        sectionCount = 1,
-                        firstVerse = null,
-                        lyrics = "",
-                    )
-                }
-                val tidy = FakeTidyUpRepository(
-                    candidates = TidyUpCandidates(
-                        duplicates = listOf(songs.take(2)),
-                        staleDrafts = listOf(songs[2]),
-                        untitled = listOf(songs[0]),
-                    ),
+        fun `should propose the duplicates and the old drafts without a model`() = runTest {
+            // given
+            val songs = listOf("my-song-id-1", "my-song-id-2", "my-song-id-3").map {
+                LibrarySong(
+                    id = it,
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    updatedAt = Instant.parse("2026-09-01T10:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "",
                 )
-                val viewModel = TidyUpViewModel(
-                    tidy = tidy,
-                    songs = FakeSongRepository(),
-                    folders = FakeFolderRepository(),
-                    genres = FakeGenreRepository(),
-                    assistant = FakeAiAssistant(),
-                )
-
-                // when
-                val state = viewModel.uiState.first { !it.loading }
-
-                // then
-                state.proposals.map { it.kind to it.songIds } shouldContainExactly listOf(
-                    TidyUpKind.DUPLICATE to listOf("my-song-id-1", "my-song-id-2"),
-                    TidyUpKind.ARCHIVE to listOf("my-song-id-3"),
-                )
-                tidy.calls shouldContainExactly listOf("reviewed")
             }
+            val tidy = FakeTidyUpRepository(
+                candidates = TidyUpCandidates(
+                    duplicates = listOf(songs.take(2)),
+                    staleDrafts = listOf(songs[2]),
+                    untitled = listOf(songs[0]),
+                ),
+            )
+            val viewModel = TidyUpViewModel(
+                tidy = tidy,
+                songs = FakeSongRepository(),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                assistant = FakeAiAssistant(),
+            )
+
+            // when
+            val state = viewModel.uiState.first { !it.loading }
+
+            // then
+            state.proposals.map { it.kind to it.songIds } shouldContainExactly listOf(
+                TidyUpKind.DUPLICATE to listOf("my-song-id-1", "my-song-id-2"),
+                TidyUpKind.ARCHIVE to listOf("my-song-id-3"),
+            )
+            tidy.calls.shouldBeEmpty()
+        }
 
         @Test
         fun `should add the titles and classifications of the AI`() = runTest {
@@ -185,7 +185,7 @@ internal class TidyUpViewModelTest {
             // then
             viewModel.uiState.value.proposals.map { it.decision }.distinct() shouldContainExactly
                 listOf(TidyUpDecision.ACCEPTED)
-            tidy.calls shouldContainExactly listOf("reviewed", "merge my-song-id-1 my-song-id-2")
+            tidy.calls shouldContainExactly listOf("merge my-song-id-1 my-song-id-2", "reviewed")
             folders.calls shouldContainExactly listOf("file my-song-id-1 +archives -")
         }
     }

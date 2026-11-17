@@ -78,7 +78,7 @@ internal class TidyUpRepositoryImplTest {
                     status = SongStatus.IN_PROGRESS,
                     updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
                     sectionCount = 1,
-                    firstVerse = null,
+                    firstVerse = "my-lyrics",
                     lyrics = "my-lyrics",
                 )
             }

@@ -21,7 +21,7 @@ interface TidyUpRepository {
      */
     suspend fun mergeDuplicates(keepId: String, duplicates: List<String>)
 
-    /** The author looked at the proposals: the next ones come after an import, or a week later. */
+    /** The author decided every proposal: the next ones come after an import, or a week later. */
     suspend fun markReviewed()
 
     companion object {
