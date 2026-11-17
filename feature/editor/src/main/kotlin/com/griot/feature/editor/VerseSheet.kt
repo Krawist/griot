@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -70,6 +69,7 @@ internal fun VerseSheet(
     onRhymes: () -> Unit,
     onAiHelp: () -> Unit,
     onVersions: () -> Unit,
+    onMemo: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = GriotTheme.palette
@@ -94,14 +94,14 @@ internal fun VerseSheet(
     ) {
         Summary(selection = selection, expanded = expanded, onClick = { onExpandedChange(!expanded) })
         AnimatedVisibility(visible = expanded, enter = expandVertically(), exit = shrinkVertically()) {
-            Options(onRhymes = onRhymes, onAiHelp = onAiHelp, onVersions = onVersions)
+            Options(onRhymes = onRhymes, onAiHelp = onAiHelp, onVersions = onVersions, onMemo = onMemo)
         }
     }
 }
 
-// « Rimes », « Aide IA » and « Versions du vers », two by two.
+// « Rimes », « Aide IA », « Mémo sur ce vers » and « Versions du vers », two by two.
 @Composable
-private fun Options(onRhymes: () -> Unit, onAiHelp: () -> Unit, onVersions: () -> Unit) {
+private fun Options(onRhymes: () -> Unit, onAiHelp: () -> Unit, onVersions: () -> Unit, onMemo: () -> Unit) {
     val palette = GriotTheme.palette
     Column(
         modifier = Modifier.padding(
@@ -129,13 +129,17 @@ private fun Options(onRhymes: () -> Unit, onAiHelp: () -> Unit, onVersions: () -
         }
         Row(horizontalArrangement = Arrangement.spacedBy(GriotSpacing.s)) {
             Option(
+                icon = DesignR.drawable.ic_mic,
+                label = stringResource(R.string.editor_verse_memo),
+                tint = palette.accentText,
+                onClick = onMemo,
+            )
+            Option(
                 icon = DesignR.drawable.ic_history,
                 label = stringResource(R.string.editor_verse_versions),
                 tint = palette.muted,
                 onClick = onVersions,
             )
-            // « Mémo sur ce vers » takes this place with the voice memos (GRI-50).
-            Spacer(Modifier.weight(1f))
         }
     }
 }

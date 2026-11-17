@@ -2,6 +2,7 @@ package com.griot.feature.editor.audio
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -19,6 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.griot.core.data.model.AttachmentKind
@@ -36,7 +41,7 @@ private val IconRadius = 12.dp
  * Spotify », « Fichier introuvable », « Sur un autre téléphone »).
  */
 @Composable
-internal fun AudioRow(item: AudioItem, onClick: () -> Unit, onLongClick: () -> Unit) {
+internal fun AudioRow(item: AudioItem, playing: Boolean, onClick: () -> Unit, onLongClick: () -> Unit) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(GriotRadius.card)
     val attachment = item.attachment
@@ -78,6 +83,9 @@ internal fun AudioRow(item: AudioItem, onClick: () -> Unit, onLongClick: () -> U
                 overflow = TextOverflow.Ellipsis,
             )
         }
+        if (attachment.kind != AttachmentKind.LINK && attachment.onThisPhone && !item.missing) {
+            PlayButton(playing = playing, onClick = onClick)
+        }
         if (attachment.kind == AttachmentKind.LINK) {
             Icon(
                 painter = painterResource(DesignR.drawable.ic_external),
@@ -87,6 +95,31 @@ internal fun AudioRow(item: AudioItem, onClick: () -> Unit, onLongClick: () -> U
         }
     }
 }
+
+// Listen, or pause what plays, in a round button.
+@Composable
+private fun PlayButton(playing: Boolean, onClick: () -> Unit) {
+    val palette = GriotTheme.palette
+    val description = stringResource(if (playing) R.string.audios_pause else R.string.audios_play)
+    Box(
+        modifier = Modifier
+            .size(PlaySize)
+            .clip(CircleShape)
+            .background(if (playing) palette.accentFill else palette.accentSoft)
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            painter = painterResource(if (playing) DesignR.drawable.ic_pause else DesignR.drawable.ic_play),
+            contentDescription = null,
+            tint = if (playing) palette.onAccent else palette.accentText,
+            modifier = Modifier.size(16.dp),
+        )
+    }
+}
+
+private val PlaySize = 40.dp
 
 @Composable
 private fun AudioItem.detail(): String {

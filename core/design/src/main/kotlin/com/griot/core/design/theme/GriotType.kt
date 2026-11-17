@@ -3,12 +3,14 @@ package com.griot.core.design.theme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -85,6 +87,13 @@ class GriotType internal constructor() {
     /** Song titles in lists and card titles. */
     val cardTitle = outfit(size = 18f, weight = FontWeight.SemiBold)
 
+    /** The time of a recording, its digits all the same width. */
+    val timer = outfit(
+        size = 48f,
+        weight = FontWeight.SemiBold,
+        letterSpacing = (-1).sp,
+    ).copy(fontFeatureSettings = "tnum")
+
     /** A language code in its badge (« FR »). */
     val code = outfit(size = 15f, weight = FontWeight.Bold)
 
@@ -149,7 +158,14 @@ class GriotType internal constructor() {
     val tag = inter(size = 11f, weight = FontWeight.SemiBold)
 
     /** A count on an icon. */
-    val counter = inter(size = 10f, weight = FontWeight.Bold)
+    val counter = inter(size = 10f, weight = FontWeight.Bold).copy(
+        lineHeight = 16.sp,
+        platformStyle = PlatformTextStyle(includeFontPadding = false),
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.Both,
+        ),
+    )
 
     /** Words stressed inside a text, such as what a suggestion changes. */
     val emphasis = SpanStyle(fontWeight = FontWeight.SemiBold)

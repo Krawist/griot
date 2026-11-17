@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.data.audio.AttachmentRepository
 import com.griot.core.data.audio.AudioFiles
+import com.griot.core.data.audio.AudioPlayer
 import com.griot.core.data.model.AttachmentKind
 import com.griot.core.data.song.SongEditorRepository
 import dagger.assisted.Assisted
@@ -19,13 +20,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/** The audios of the song [songId]: files and links, memos, and whether each file can still be read. */
+/** The audios of the song [songId]: files and links, memos, whether each file can still be read, and listening. */
 @HiltViewModel(assistedFactory = AudiosViewModel.Factory::class)
 internal class AudiosViewModel @AssistedInject constructor(
     @Assisted private val songId: String,
     editor: SongEditorRepository,
     private val attachments: AttachmentRepository,
     private val files: AudioFiles,
+    private val player: AudioPlayer,
 ) : ViewModel() {
     // The message to show once: a file that could not be read.
     private val failed = MutableStateFlow(false)
@@ -41,9 +43,11 @@ internal class AudiosViewModel @AssistedInject constructor(
                 AudioItem(attachment = attachment, missing = file && !files.isAvailable(attachment.uri))
             }
         },
-    ) { title, items ->
+        player.state,
+    ) { title, items, playback ->
         AudiosUiState(
             songTitle = title,
+            playing = playback.uri?.takeIf { playback.playing },
             beats = items.filter { it.attachment.kind != AttachmentKind.MEMO },
             memos = items.filter { it.attachment.kind == AttachmentKind.MEMO },
             loading = false,
@@ -72,6 +76,21 @@ internal class AudiosViewModel @AssistedInject constructor(
     /** Removes the audio [id]; a file stays on the phone. */
     fun onDelete(id: String) {
         viewModelScope.launch { attachments.delete(id) }
+    }
+
+    /** Plays the memo or file [item], or pauses it when it plays. */
+    fun onPlayToggle(item: AudioItem) {
+        val uri = item.attachment.uri
+        if (uiState.value.playing == uri) {
+            player.pause()
+        } else if (!player.play(uri)) {
+            failed.value = true
+        }
+    }
+
+    override fun onCleared() {
+        // Leaving the audios stops what plays: the player under the lyrics comes with GRI-52.
+        player.stop()
     }
 
     fun onFailureShown() {

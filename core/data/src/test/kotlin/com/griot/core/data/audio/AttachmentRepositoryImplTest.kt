@@ -105,6 +105,37 @@ internal class AttachmentRepositoryImplTest {
     }
 
     @Nested
+    inner class AddMemo {
+        @Test
+        fun `should keep the memo on this phone, attached to its verse`() = runTest {
+            // when
+            val id = repository.addMemo(
+                songId = "my-song-id",
+                memo = RecordedMemo(uri = "my-uri", durationMillis = 24_000),
+                title = "my-title",
+                sectionId = "my-section-id",
+                verseId = "my-verse-id",
+            )
+
+            // then
+            repository.observeAttachments("my-song-id").first() shouldContainExactly listOf(
+                Attachment(
+                    id = id,
+                    songId = "my-song-id",
+                    sectionId = "my-section-id",
+                    verseId = "my-verse-id",
+                    kind = AttachmentKind.MEMO,
+                    uri = "my-uri",
+                    title = "my-title",
+                    durationMillis = 24_000,
+                    createdAt = Instant.parse("2026-11-17T10:00:00Z"),
+                ),
+            )
+            verify { files wasNot Called }
+        }
+    }
+
+    @Nested
     inner class AddLink {
         @Test
         fun `should name a link after its address when no name is given`() = runTest {

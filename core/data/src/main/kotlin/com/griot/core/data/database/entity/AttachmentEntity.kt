@@ -23,7 +23,7 @@ import kotlinx.serialization.UseSerializers
  * @property uri The file's content address, or the link.
  * @property title What it is called.
  * @property durationMillis Its length in milliseconds; `null` when unknown.
- * @property deviceId The phone that holds a file (`UserPreferencesRepository.deviceId`); `null` for a link or a memo.
+ * @property deviceId The phone that holds a file or a memo (`UserPreferencesRepository.deviceId`); `null` for a link.
  * @property createdAt When it was added.
  * @property updatedAt Last change of this row, on any device; sync keeps the most recent.
  * @property deleted Whether it was removed; the row stays so that the delete travels to other devices.

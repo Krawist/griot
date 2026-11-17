@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Voice memos (GRI-50): asked the first time, after an explanation. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+</manifest>

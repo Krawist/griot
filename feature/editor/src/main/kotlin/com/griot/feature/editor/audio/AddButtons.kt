@@ -30,9 +30,9 @@ import com.griot.feature.editor.R
 private val TileHeight = 72.dp
 private val TileRadius = 20.dp
 
-/** « Fichier » and « Lien », side by side at the bottom of the audios screen. */
+/** « Enregistrer », « Fichier » and « Lien », side by side at the bottom of the audios screen. */
 @Composable
-internal fun AddButtons(onFile: () -> Unit, onLink: () -> Unit, modifier: Modifier = Modifier) {
+internal fun AddButtons(onRecord: () -> Unit, onFile: () -> Unit, onLink: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -40,27 +40,34 @@ internal fun AddButtons(onFile: () -> Unit, onLink: () -> Unit, modifier: Modifi
             .padding(horizontal = GriotSpacing.xl, vertical = GriotSpacing.l),
         horizontalArrangement = Arrangement.spacedBy(GriotSpacing.s + 2.dp),
     ) {
+        Tile(
+            icon = DesignR.drawable.ic_mic,
+            label = stringResource(R.string.audios_add_record),
+            onClick = onRecord,
+            filled = true,
+        )
         Tile(icon = DesignR.drawable.ic_folder, label = stringResource(R.string.audios_add_file), onClick = onFile)
         Tile(icon = DesignR.drawable.ic_link, label = stringResource(R.string.audios_add_link), onClick = onLink)
     }
 }
 
 @Composable
-private fun RowScope.Tile(icon: Int, label: String, onClick: () -> Unit) {
+private fun RowScope.Tile(icon: Int, label: String, onClick: () -> Unit, filled: Boolean = false) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(TileRadius)
+    val content = if (filled) palette.onAccent else palette.ink
     Column(
         modifier = Modifier
             .weight(1f)
             .height(TileHeight)
             .clip(shape)
-            .background(palette.sheet, shape)
-            .border(1.dp, palette.line, shape)
+            .background(if (filled) palette.accentFill else palette.sheet, shape)
+            .then(if (filled) Modifier else Modifier.border(1.dp, palette.line, shape))
             .clickable(role = Role.Button, onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
     ) {
-        Icon(painter = painterResource(icon), contentDescription = null, tint = palette.ink)
-        Text(text = label, style = GriotTheme.type.smallStrong, color = palette.ink)
+        Icon(painter = painterResource(icon), contentDescription = null, tint = content)
+        Text(text = label, style = GriotTheme.type.smallStrong, color = content)
     }
 }

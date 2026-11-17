@@ -358,7 +358,17 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   count in a badge): « Beats et musique » and « Mémos vocaux », « Fichier » and « Lien » (`LinkService` names Spotify,
   YouTube, SoundCloud…; a link opens in its app or the browser), long press to rename, relink or remove.
   « Enregistrer » and playing a file come with GRI-50 and GRI-52.
-- [ ] **Next tickets:** GRI-50, GRI-52, GRI-53 (audio); GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
+- [x] **GRI-50** — `VoiceRecorder` (`MediaRecorder`, AAC in
+  `files/memos/`, pause, level ten times a second) and `AudioPlayer` (`MediaPlayer` for now: GRI-52 moves it to
+  Media3) in `:core:data` `audio`; `AttachmentRepository.addMemo`. `RecordingSheet` (`RecordingViewModel`): time,
+  waveform, « Rattacher à » (the verse, the sections, « Toute la chanson »), « Annuler », « Arrêter » (closing the sheet
+  keeps the memo too), « Pause ». `MicrophoneAccess` explains before the system dialog, and offers the phone's
+  settings once refused for good; `MemoRecorder` joins both. From the editor's microphone (on the selected verse's
+  section), « Mémo sur ce vers », and « Enregistrer » in the audios, where memos and files play. The top bar's audios
+  button is the mockup's headphones (`ic_headphones`) with a 16 dp pill badge. Checked on the S25 (record, pause,
+  cancel, keep, play). « Jouer le beat pendant l'enregistrement » comes with GRI-52; recording stops if Griot leaves
+  the screen (a foreground service would be needed).
+- [ ] **Next tickets:** GRI-52, GRI-53 (audio); GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30; GRI-33 (online model: need setup).
 
 Update this section at the end of each ticket.

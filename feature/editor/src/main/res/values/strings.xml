@@ -29,6 +29,7 @@
     <string name="audios_add_file">Fichier</string>
     <string name="audios_add_link">Lien</string>
     <string name="audios_add_link_title">Ajouter un lien</string>
+    <string name="audios_add_record">Enregistrer</string>
     <string name="audios_back">Retour à la chanson</string>
     <string name="audios_beats">Beats et musique</string>
     <string name="audios_count">Audios de la chanson, %1$d</string>
@@ -46,6 +47,8 @@
     <string name="audios_missing">Fichier introuvable · touche pour le retrouver</string>
     <string name="audios_name">Nom</string>
     <string name="audios_other_phone">Sur un autre téléphone · touche pour choisir le fichier ici</string>
+    <string name="audios_pause">Pause</string>
+    <string name="audios_play">Écouter</string>
     <string name="audios_relink">Choisir le fichier à nouveau</string>
     <string name="audios_rename">Renommer</string>
     <string name="audios_title">Audios</string>
@@ -99,6 +102,7 @@
     <string name="editor_verse_collapse_hint">Réduire</string>
     <string name="editor_verse_expand">Afficher les options du vers</string>
     <string name="editor_verse_hint">Glisse pour les options</string>
+    <string name="editor_verse_memo">Mémo sur ce vers</string>
     <string name="editor_verse_place">%1$s · vers %2$d</string>
     <string name="editor_verse_placeholder">Écris un vers…</string>
     <string name="editor_verse_rhymes">Rimes</string>
@@ -117,6 +121,22 @@
     <string name="history_subtitle_verse">%1$s · %2$s, vers %3$d</string>
     <string name="history_title">Versions</string>
     <string name="history_when">%1$s, %2$s</string>
+    <string name="microphone_allow">Autoriser le micro</string>
+    <string name="microphone_body">Pour enregistrer une mélodie ou un flow, Griot a besoin du micro. Le son reste sur ton téléphone. Sans micro, tu écris comme avant.</string>
+    <string name="microphone_refused">Le micro est refusé pour Griot. Tu peux l\'autoriser dans les réglages du téléphone, rubrique Autorisations.</string>
+    <string name="microphone_settings">Ouvrir les réglages</string>
+    <string name="microphone_title">Enregistrer ta voix</string>
+    <string name="recording_attach">Rattacher à</string>
+    <string name="recording_cancel">Annuler</string>
+    <string name="recording_failed">Le micro n\'est pas disponible : une autre app l\'utilise peut-être.</string>
+    <string name="recording_memo_title">Mémo · %1$s</string>
+    <string name="recording_pause">Pause</string>
+    <string name="recording_paused">En pause</string>
+    <string name="recording_record">Enregistrer sa voix</string>
+    <string name="recording_resume">Reprendre</string>
+    <string name="recording_running">Enregistrement</string>
+    <string name="recording_stop">Arrêter et garder le mémo</string>
+    <string name="recording_whole_song">Toute la chanson</string>
     <plurals name="ai_fewer_syllables">
         <item quantity="one">%1$d de moins</item>
         <item quantity="many">%1$d de moins</item>

@@ -44,6 +44,30 @@ internal class AttachmentRepositoryImpl @Inject constructor(
         return attachment.id
     }
 
+    override suspend fun addMemo(
+        songId: String,
+        memo: RecordedMemo,
+        title: String,
+        sectionId: String?,
+        verseId: String?,
+    ): String {
+        val now = Instant.now(clock)
+        val attachment = AttachmentEntity(
+            songId = songId,
+            sectionId = sectionId,
+            verseId = verseId,
+            kind = AttachmentKind.MEMO,
+            uri = memo.uri,
+            title = title,
+            durationMillis = memo.durationMillis,
+            deviceId = preferences.deviceId(),
+            createdAt = now,
+            updatedAt = now,
+        )
+        attachmentDao.insert(attachment)
+        return attachment.id
+    }
+
     override suspend fun addLink(songId: String, url: String, title: String): String {
         val now = Instant.now(clock)
         val address = url.trim().let { if ("://" in it) it else "https://$it" }
@@ -86,6 +110,6 @@ internal class AttachmentRepositoryImpl @Inject constructor(
         title = title,
         durationMillis = durationMillis,
         createdAt = createdAt,
-        onThisPhone = kind != AttachmentKind.FILE || deviceId == device,
+        onThisPhone = kind == AttachmentKind.LINK || deviceId == device,
     )
 }

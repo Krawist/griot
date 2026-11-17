@@ -14,8 +14,8 @@ import java.time.Instant
  * @property title What it is called.
  * @property durationMillis Its length in milliseconds; `null` when unknown (a link).
  * @property createdAt When it was added.
- * @property onThisPhone Whether its file is on this phone; `false` for a file added on another phone, which only syncs
- * as a reference. Always `true` for a link.
+ * @property onThisPhone Whether its file or memo is on this phone; `false` for one added on another phone (a file only
+ * syncs as a reference; a memo's sound travels with Google Drive, GRI-27). Always `true` for a link.
  */
 data class Attachment(
     val id: String,

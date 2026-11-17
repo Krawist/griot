@@ -11,6 +11,12 @@ interface AttachmentRepository {
     /** Adds the file [uri] picked by the author to the song [songId]; `null` when it cannot be read. */
     suspend fun addFile(songId: String, uri: String): String?
 
+    /**
+     * Adds the [memo] just recorded to the song [songId], about the section [sectionId] or the verse [verseId] when
+     * given, named [title]; returns its id.
+     */
+    suspend fun addMemo(songId: String, memo: RecordedMemo, title: String, sectionId: String?, verseId: String?): String
+
     /** Adds the link [url] to the song [songId], named [title] (or after its address when blank); returns its id. */
     suspend fun addLink(songId: String, url: String, title: String): String
 

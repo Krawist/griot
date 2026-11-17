@@ -4,6 +4,10 @@ import com.griot.core.data.audio.AttachmentRepository
 import com.griot.core.data.audio.AttachmentRepositoryImpl
 import com.griot.core.data.audio.AudioFiles
 import com.griot.core.data.audio.AudioFilesImpl
+import com.griot.core.data.audio.AudioPlayer
+import com.griot.core.data.audio.AudioPlayerImpl
+import com.griot.core.data.audio.VoiceRecorder
+import com.griot.core.data.audio.VoiceRecorderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,4 +21,10 @@ internal interface AudioModule {
 
     @Binds
     fun bindAudioFiles(impl: AudioFilesImpl): AudioFiles
+
+    @Binds
+    fun bindVoiceRecorder(impl: VoiceRecorderImpl): VoiceRecorder
+
+    @Binds
+    fun bindAudioPlayer(impl: AudioPlayerImpl): AudioPlayer
 }

@@ -30,6 +30,8 @@ import com.griot.core.design.component.TextInputForm
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.ai.AiPanelSheet
 import com.griot.feature.editor.ai.AiTab
+import com.griot.feature.editor.audio.MemoRecorder
+import com.griot.feature.editor.audio.MemoRequest
 
 /** The structured editor of the song [songId]: its title, its sections and their verses, all saved as typed. */
 @Suppress("LongMethod") // The screen's menus and sheets, and how each one opens and closes.
@@ -56,6 +58,7 @@ internal fun EditorScreen(
     var aiFor by rememberSaveable { mutableStateOf<String?>(null) }
     var aiTab by rememberSaveable { mutableStateOf(AiTab.RHYMES) }
     var verseSheetOpen by rememberSaveable { mutableStateOf(false) }
+    var memo by rememberSaveable(stateSaver = MemoRequest.Saver) { mutableStateOf<MemoRequest?>(null) }
     val focusManager = LocalFocusManager.current
     // Another verse selected shows its sheet closed.
     LaunchedEffect(uiState.selection?.verseId) { verseSheetOpen = false }
@@ -97,6 +100,7 @@ internal fun EditorScreen(
                         aiFor = selection.verseId
                     },
                     onVersions = { onOpenHistory(selection.verseId) },
+                    onMemo = { memo = MemoRequest(verseId = selection.verseId, onVerse = true) },
                     modifier = modifier,
                 )
             }
@@ -104,6 +108,7 @@ internal fun EditorScreen(
         menu = menu,
         onMenu = { menu = it },
         onOpenAudios = onOpenAudios,
+        onRecord = { memo = MemoRequest(verseId = uiState.selection?.verseId) },
         songMenu = {
             SongMenu(
                 uiState = uiState,
@@ -144,6 +149,7 @@ internal fun EditorScreen(
             sheetSection = null
         },
     )
+    MemoRecorder(songId = songId, request = memo, onClosed = { memo = null })
     AiPanel(
         songId = songId,
         verseId = aiFor,
@@ -351,6 +357,7 @@ private fun EditorScreenPreview() {
                 menu = null,
                 onMenu = {},
                 onOpenAudios = {},
+                onRecord = {},
                 songMenu = {},
                 sectionMenu = {},
                 onAddSection = {},

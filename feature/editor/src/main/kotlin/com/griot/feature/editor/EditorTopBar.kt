@@ -6,11 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -31,7 +32,8 @@ import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 
 /**
- * The editor's top bar: back, the song's title with its language under it, the audios with their count, and « ⋯ »
+ * The editor's top bar: back, the song's title with its language under it, the microphone, the audios with their
+ * count, and « ⋯ »
  * with the song's [menu] anchored to it.
  */
 @Suppress("LongParameterList") // The song, its menu, and one callback per button.
@@ -44,6 +46,7 @@ internal fun EditorTopBar(
     menuOpen: Boolean,
     onBack: () -> Unit,
     onAudios: () -> Unit,
+    onRecord: () -> Unit,
     onMenu: () -> Unit,
     onMenuDismiss: () -> Unit,
     menu: @Composable ColumnScope.() -> Unit,
@@ -76,6 +79,13 @@ internal fun EditorTopBar(
                 color = palette.muted,
             )
         }
+        IconButton(onClick = onRecord, modifier = Modifier.size(GriotSpacing.touchTarget)) {
+            Icon(
+                painter = painterResource(DesignR.drawable.ic_mic),
+                contentDescription = stringResource(R.string.recording_record),
+                tint = palette.accentText,
+            )
+        }
         AudiosButton(count = audioCount, onClick = onAudios)
         Box {
             IconButton(onClick = onMenu, modifier = Modifier.size(GriotSpacing.touchTarget)) {
@@ -101,24 +111,30 @@ private fun AudiosButton(count: Int, onClick: () -> Unit) {
             modifier = Modifier.size(GriotSpacing.touchTarget).semantics { contentDescription = description },
         ) {
             Icon(
-                painter = painterResource(DesignR.drawable.ic_nav_songs),
+                painter = painterResource(DesignR.drawable.ic_headphones),
                 contentDescription = null,
                 tint = palette.ink,
             )
         }
         if (count > 0) {
-            Text(
-                text = count.toString(),
-                style = GriotTheme.type.counter,
-                color = palette.onAccent,
-                textAlign = TextAlign.Center,
+            // A pill of 16 dp, its number centred on its one line.
+            Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(top = 6.dp, end = 5.dp)
-                    .background(palette.accentFill, CircleShape)
-                    .defaultMinSize(minWidth = BadgeSize, minHeight = BadgeSize)
+                    .height(BadgeSize)
+                    .widthIn(min = BadgeSize)
+                    .background(palette.accentFill, RoundedCornerShape(BadgeSize / 2))
                     .padding(horizontal = 4.dp),
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = count.toString(),
+                    style = GriotTheme.type.counter,
+                    color = palette.onAccent,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }

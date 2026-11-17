@@ -44,7 +44,8 @@ private val AudioTypes = arrayOf("audio/*")
 
 /**
  * The audios of the song [songId] (« Audios »): « Beats et musique » (files and links) and « Mémos vocaux », with
- * « Fichier » and « Lien » at the bottom. A link opens in its app, or in the browser.
+ * « Enregistrer », « Fichier » and « Lien » at the bottom. A memo or a file plays here; a link opens in its app, or in
+ * the browser.
  */
 @Composable
 internal fun AudiosScreen(
@@ -61,6 +62,7 @@ internal fun AudiosScreen(
     var sheet by rememberSaveable { mutableStateOf<AudioSheet?>(null) }
     var sheetFor by rememberSaveable { mutableStateOf<String?>(null) }
     var relinkFor by rememberSaveable { mutableStateOf<String?>(null) }
+    var memo by rememberSaveable(stateSaver = MemoRequest.Saver) { mutableStateOf<MemoRequest?>(null) }
     val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let { viewModel.onFilePicked(it.toString()) }
     }
@@ -81,9 +83,10 @@ internal fun AudiosScreen(
             onOpen = { item ->
                 when {
                     item.attachment.kind == AttachmentKind.LINK -> openLink(context, item.attachment.uri)
-                    item.missing || !item.attachment.onThisPhone -> relink(item.attachment.id)
-                    // Playing a file comes with the player (GRI-52).
-                    else -> Unit
+                    item.attachment.kind == AttachmentKind.FILE && (item.missing || !item.attachment.onThisPhone) ->
+                        relink(item.attachment.id)
+                    item.missing || !item.attachment.onThisPhone -> Unit
+                    else -> viewModel.onPlayToggle(item)
                 }
             },
             onActions = { id ->
@@ -92,11 +95,13 @@ internal fun AudiosScreen(
             },
         )
         AddButtons(
+            onRecord = { memo = MemoRequest() },
             onFile = { filePicker.launch(AudioTypes) },
             onLink = { sheet = AudioSheet.LINK },
             modifier = Modifier.align(Alignment.BottomCenter),
         )
     }
+    MemoRecorder(songId = songId, request = memo, onClosed = { memo = null })
     AudioSheetContent(
         sheet = sheet,
         item = (uiState.beats + uiState.memos).firstOrNull { it.attachment.id == sheetFor },
@@ -158,6 +163,7 @@ private fun AudiosList(
             }
             group(
                 key = "beats",
+                playing = uiState.playing,
                 label = R.string.audios_beats,
                 items = uiState.beats,
                 onOpen = onOpen,
@@ -165,6 +171,7 @@ private fun AudiosList(
             )
             group(
                 key = "memos",
+                playing = uiState.playing,
                 label = R.string.audios_memos,
                 items = uiState.memos,
                 onOpen = onOpen,
@@ -174,8 +181,10 @@ private fun AudiosList(
     }
 }
 
+@Suppress("LongParameterList") // The group, its audios, what plays, and the actions.
 private fun androidx.compose.foundation.lazy.LazyListScope.group(
     key: String,
+    playing: String?,
     label: Int,
     items: List<AudioItem>,
     onOpen: (AudioItem) -> Unit,
@@ -191,7 +200,12 @@ private fun androidx.compose.foundation.lazy.LazyListScope.group(
         )
     }
     items(items = items, key = { it.attachment.id }) { item ->
-        AudioRow(item = item, onClick = { onOpen(item) }, onLongClick = { onActions(item.attachment.id) })
+        AudioRow(
+            item = item,
+            playing = item.attachment.uri == playing,
+            onClick = { onOpen(item) },
+            onLongClick = { onActions(item.attachment.id) },
+        )
     }
 }
 

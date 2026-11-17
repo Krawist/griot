@@ -29,6 +29,7 @@
     <string name="audios_add_file">File</string>
     <string name="audios_add_link">Link</string>
     <string name="audios_add_link_title">Add a link</string>
+    <string name="audios_add_record">Record</string>
     <string name="audios_back">Back to the song</string>
     <string name="audios_beats">Beats and music</string>
     <string name="audios_count">Audios of the song, %1$d</string>
@@ -46,6 +47,8 @@
     <string name="audios_missing">File not found · tap to find it</string>
     <string name="audios_name">Name</string>
     <string name="audios_other_phone">On another phone · tap to pick the file here</string>
+    <string name="audios_pause">Pause</string>
+    <string name="audios_play">Listen</string>
     <string name="audios_relink">Pick the file again</string>
     <string name="audios_rename">Rename</string>
     <string name="audios_title">Audios</string>
@@ -94,6 +97,7 @@
     <string name="editor_verse_collapse_hint">Hide</string>
     <string name="editor_verse_expand">Show the verse options</string>
     <string name="editor_verse_hint">Swipe up for options</string>
+    <string name="editor_verse_memo">Memo on this line</string>
     <string name="editor_verse_place">%1$s · line %2$d</string>
     <string name="editor_verse_placeholder">Write a verse…</string>
     <string name="editor_verse_rhymes">Rhymes</string>
@@ -112,6 +116,22 @@
     <string name="history_subtitle_verse">%1$s · %2$s, verse %3$d</string>
     <string name="history_title">Versions</string>
     <string name="history_when">%1$s, %2$s</string>
+    <string name="microphone_allow">Allow the microphone</string>
+    <string name="microphone_body">To record a melody or a flow, Griot needs the microphone. The sound stays on your phone. Without it, you write as before.</string>
+    <string name="microphone_refused">The microphone is refused for Griot. You can allow it in the phone\'s settings, under Permissions.</string>
+    <string name="microphone_settings">Open the settings</string>
+    <string name="microphone_title">Record your voice</string>
+    <string name="recording_attach">Attach to</string>
+    <string name="recording_cancel">Cancel</string>
+    <string name="recording_failed">The microphone is not available: another app may be using it.</string>
+    <string name="recording_memo_title">Memo · %1$s</string>
+    <string name="recording_pause">Pause</string>
+    <string name="recording_paused">Paused</string>
+    <string name="recording_record">Record your voice</string>
+    <string name="recording_resume">Resume</string>
+    <string name="recording_running">Recording</string>
+    <string name="recording_stop">Stop and keep the memo</string>
+    <string name="recording_whole_song">Whole song</string>
     <plurals name="ai_fewer_syllables">
         <item quantity="one">%1$d fewer</item>
         <item quantity="other">%1$d fewer</item>

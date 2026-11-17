@@ -21,6 +21,17 @@ class FakeAttachmentRepository(attachments: List<Attachment> = emptyList()) : At
         return "added-attachment-id".takeUnless { uri.startsWith("bad") }
     }
 
+    override suspend fun addMemo(
+        songId: String,
+        memo: RecordedMemo,
+        title: String,
+        sectionId: String?,
+        verseId: String?,
+    ): String {
+        calls += "memo $songId ${memo.uri} ${memo.durationMillis} $title $sectionId $verseId"
+        return "added-attachment-id"
+    }
+
     override suspend fun addLink(songId: String, url: String, title: String): String {
         calls += "link $songId $url $title"
         return "added-attachment-id"
