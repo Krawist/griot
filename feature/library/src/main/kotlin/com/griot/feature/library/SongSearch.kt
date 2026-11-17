@@ -1,8 +1,6 @@
 package com.griot.feature.library
 
 import com.griot.core.data.model.LibrarySong
-import com.griot.core.data.model.SongLanguage
-import com.griot.core.data.model.SongStatus
 import java.text.Normalizer
 import java.util.Locale
 
@@ -15,14 +13,6 @@ private val Accents = Regex("\\p{Mn}+")
 internal fun LibrarySong.matches(query: String): Boolean {
     val wanted = query.loose().trim()
     return wanted.isEmpty() || wanted in title.loose() || wanted in lyrics.loose()
-}
-
-/** Whether the song shows under [filter]: its language, chosen or detected, or its status. */
-internal fun LibrarySong.isIn(filter: LibraryFilter): Boolean = when (filter) {
-    LibraryFilter.ALL -> true
-    LibraryFilter.FRENCH -> language == SongLanguage.FRENCH
-    LibraryFilter.ENGLISH -> language == SongLanguage.ENGLISH
-    LibraryFilter.DRAFTS -> status == SongStatus.DRAFT
 }
 
 private fun String.loose(): String = Normalizer.normalize(this, Normalizer.Form.NFD)

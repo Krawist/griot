@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="folder_all_genres">Tous</string>
+    <string name="folder_all_languages">Toutes</string>
+    <string name="folder_all_texts">Tous les textes</string>
+    <string name="folder_back">Retour à l\'accueil</string>
+    <string name="folder_cancel">Annuler</string>
+    <string name="folder_checked">%1$s ✓</string>
+    <string name="folder_color">Changer la couleur</string>
+    <string name="folder_color_magenta">Magenta</string>
+    <string name="folder_color_neutral">Gris</string>
+    <string name="folder_color_orange">Orange</string>
+    <string name="folder_color_turquoise">Turquoise</string>
+    <string name="folder_color_yellow">Jaune</string>
+    <string name="folder_delete">Supprimer le dossier</string>
+    <string name="folder_delete_title">Supprimer « %1$s » ?</string>
+    <string name="folder_file">Ranger (%1$d)</string>
+    <string name="folder_language">Langue</string>
+    <string name="folder_language_filter">Filtrer par langue</string>
+    <string name="folder_menu">Options du dossier</string>
+    <string name="folder_rename">Renommer</string>
+    <string name="folder_select">Sélectionner</string>
+    <string name="folder_subtitle">%1$s · dossier</string>
     <string name="genre_afro">Afro</string>
     <string name="genre_gospel">Gospel</string>
     <string name="genre_other">Autre</string>
@@ -16,7 +37,6 @@
     <string name="library_empty_body">Touche « + » pour écrire ta première chanson.</string>
     <string name="library_empty_title">Pas encore de chanson</string>
     <string name="library_filter_all">Toutes</string>
-    <string name="library_filter_drafts">Brouillons</string>
     <string name="library_filter_english">English</string>
     <string name="library_filter_french">Français</string>
     <string name="library_folders">Dossiers</string>
@@ -46,6 +66,16 @@
     <string name="trash_meta">Supprimée %1$s · %2$s</string>
     <string name="trash_restore">Restaurer</string>
     <string name="trash_title">Corbeille</string>
+    <plurals name="folder_delete_body">
+        <item quantity="one">Son texte va dans « Sans dossier » : il n\'est pas supprimé.</item>
+        <item quantity="many">Ses %1$d textes vont dans « Sans dossier » : ils ne sont pas supprimés.</item>
+        <item quantity="other">Ses %1$d textes vont dans « Sans dossier » : ils ne sont pas supprimés.</item>
+    </plurals>
+    <plurals name="folder_selected">
+        <item quantity="one">%1$d sélectionné</item>
+        <item quantity="many">%1$d sélectionnés</item>
+        <item quantity="other">%1$d sélectionnés</item>
+    </plurals>
     <plurals name="library_texts">
         <item quantity="one">%1$d texte</item>
         <item quantity="many">%1$d textes</item>

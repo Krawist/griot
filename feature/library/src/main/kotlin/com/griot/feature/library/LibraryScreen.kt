@@ -95,12 +95,14 @@ internal fun LibraryScreen(
         onNewSong = { viewModel.onNewSong(onCreated = onOpenSong) },
         onOpenFolder = onOpenFolder,
         onNewFolder = { newFolder = true },
-        onUndoDelete = viewModel::onUndoDelete,
-        onUndoDismissed = viewModel::onUndoDismissed,
+        onUndoDelete = viewModel.actions::onUndoDelete,
+        onUndoDismissed = viewModel.actions::onUndoDismissed,
     )
     (uiState.today + uiState.results + listOfNotNull(uiState.resume?.item))
         .firstOrNull { it.song.id == actionsFor }
-        ?.let { item -> SongActions(song = item.song, viewModel = viewModel, onClosed = { actionsFor = null }) }
+        ?.let { item ->
+            SongActionsHost(song = item.song, actions = viewModel.actions, onClosed = { actionsFor = null })
+        }
     if (newFolder) {
         GriotSheet(onDismiss = { newFolder = false }) {
             TextInputForm(
@@ -115,30 +117,6 @@ internal fun LibraryScreen(
             )
         }
     }
-}
-
-// Rename, duplicate or delete the [song] long pressed.
-@Composable
-private fun SongActions(song: LibrarySong, viewModel: LibraryViewModel, onClosed: () -> Unit) {
-    val displayTitle = song.title.ifBlank { stringResource(R.string.library_untitled) }
-    val copyTitle = stringResource(R.string.library_copy_title, displayTitle)
-    SongActionsSheet(
-        title = song.title,
-        displayTitle = displayTitle,
-        onRename = { title ->
-            viewModel.onRename(id = song.id, title = title)
-            onClosed()
-        },
-        onDuplicate = {
-            viewModel.onDuplicate(id = song.id, title = copyTitle)
-            onClosed()
-        },
-        onDelete = {
-            viewModel.onDelete(id = song.id, title = displayTitle)
-            onClosed()
-        },
-        onDismiss = onClosed,
-    )
 }
 
 @Suppress("LongParameterList") // One callback per action of the home screen.

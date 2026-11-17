@@ -33,7 +33,9 @@ internal class LibraryViewModel @Inject constructor(
     private val clock: Clock,
 ) : ViewModel() {
     private val query = MutableStateFlow("")
-    private val deleted = MutableStateFlow<DeletedSong?>(null)
+
+    /** Rename, duplicate or delete a song long pressed. */
+    val actions = SongActions(songs = songs, scope = viewModelScope)
 
     private val library = combine(songs.observeLibrary(), folders.observeFolders(), genres.observeGenres()) {
             library,
@@ -43,7 +45,7 @@ internal class LibraryViewModel @Inject constructor(
         Triple(library, folders, genres)
     }
 
-    val uiState: StateFlow<LibraryUiState> = combine(library, preferences.authorName, query, deleted) {
+    val uiState: StateFlow<LibraryUiState> = combine(library, preferences.authorName, query, actions.deleted) {
             (library, folders, genres),
             authorName,
             query,
@@ -85,34 +87,6 @@ internal class LibraryViewModel @Inject constructor(
         if (name.isBlank()) return
         val count = uiState.value.folders.count { it.kind == FolderKind.CUSTOM }
         viewModelScope.launch { folders.createFolder(name = name, color = FolderColors[count % FolderColors.size]) }
-    }
-
-    fun onRename(id: String, title: String) {
-        viewModelScope.launch { songs.renameSong(id = id, title = title.trim()) }
-    }
-
-    /** Copies the song under [title], such as « Les néons (copie) ». */
-    fun onDuplicate(id: String, title: String) {
-        viewModelScope.launch { songs.duplicateSong(id = id, title = title) }
-    }
-
-    /** Moves the song to the trash and shows the undo bar; [title] is the one the bar shows. */
-    fun onDelete(id: String, title: String) {
-        viewModelScope.launch {
-            songs.deleteSong(id)
-            deleted.value = DeletedSong(id = id, title = title)
-        }
-    }
-
-    /** Takes the song just deleted out of the trash. */
-    fun onUndoDelete() {
-        val song = deleted.value ?: return
-        deleted.value = null
-        viewModelScope.launch { songs.restoreSong(song.id) }
-    }
-
-    fun onUndoDismissed() {
-        deleted.value = null
     }
 
     private companion object {

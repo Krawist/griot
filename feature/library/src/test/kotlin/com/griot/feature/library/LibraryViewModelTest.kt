@@ -305,7 +305,7 @@ internal class LibraryViewModelTest {
             )
 
             // when
-            viewModel.onRename(id = "my-song-id", title = " my-title ")
+            viewModel.actions.onRename(id = "my-song-id", title = " my-title ")
 
             // then
             songs.calls shouldContainExactly listOf("rename my-song-id my-title")
@@ -328,7 +328,7 @@ internal class LibraryViewModelTest {
             )
 
             // when
-            viewModel.onDuplicate(id = "my-song-id", title = "my-title")
+            viewModel.actions.onDuplicate(id = "my-song-id", title = "my-title")
 
             // then
             songs.calls shouldContainExactly listOf("duplicate my-song-id my-title")
@@ -352,7 +352,7 @@ internal class LibraryViewModelTest {
             viewModel.uiState.launchIn(backgroundScope)
 
             // when
-            viewModel.onDelete(id = "my-song-id", title = "my-title")
+            viewModel.actions.onDelete(id = "my-song-id", title = "my-title")
 
             // then
             viewModel.uiState.first { !it.loading }.deleted shouldBe DeletedSong(id = "my-song-id", title = "my-title")
@@ -375,10 +375,10 @@ internal class LibraryViewModelTest {
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
-            viewModel.onDelete(id = "my-song-id", title = "my-title")
+            viewModel.actions.onDelete(id = "my-song-id", title = "my-title")
 
             // when
-            viewModel.onUndoDelete()
+            viewModel.actions.onUndoDelete()
 
             // then
             viewModel.uiState.first { !it.loading }.deleted.shouldBeNull()
@@ -401,10 +401,10 @@ internal class LibraryViewModelTest {
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
-            viewModel.onDelete(id = "my-song-id", title = "my-title")
+            viewModel.actions.onDelete(id = "my-song-id", title = "my-title")
 
             // when
-            viewModel.onUndoDismissed()
+            viewModel.actions.onUndoDismissed()
 
             // then
             viewModel.uiState.first { !it.loading }.deleted.shouldBeNull()

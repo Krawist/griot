@@ -322,6 +322,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   then « Dossiers » (`FolderGrid`, two by two, « Nouveau dossier » last, new folders taking the accents in turn) and
   « Tous les textes · N ». Song cards read « folder · genre · time » (`LibraryItem.meta`); `LibraryItems` builds
   the cards for both library screens. The filters left the home screen for the folder screen (GRI-57).
+- [x] **GRI-57** — `FolderScreen` (`FolderRoute(folderId)`, `null` for « Tous les textes », outside the tabs):
+  title and count, « Tous » and the genres present as `FilterChip`s, a language filter menu that reads « FR » or
+  « EN » when on, songs last changed first. The folder's « ⋯ » (not for « Archives »): rename, colour, delete with a
+  confirmation. « Sélectionner » circles the songs tapped and shows « Ranger (N) » (the sheet comes with GRI-58).
+  `SongActions` (rename, duplicate, delete with undo) is shared by both library ViewModels, `SongActionsHost` by
+  both screens. The old `LibraryFilter` chips are gone.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 
