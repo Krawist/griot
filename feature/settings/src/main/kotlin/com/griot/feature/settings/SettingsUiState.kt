@@ -13,6 +13,7 @@ import com.griot.core.data.preferences.UserPreferencesRepository
  * @property fontSize Size of the lyrics in the editor, in sp.
  * @property onDeviceAi Whether the AI help may use the model on the phone.
  * @property onDeviceStatus Whether the phone's model can answer, downloads, or this phone cannot have it.
+ * @property externalMusic Whether Griot controls the music of other apps (the notification access, GRI-53).
  * @property export Every song exported as Markdown, while its share sheet shows; `null` otherwise.
  */
 internal data class SettingsUiState(
@@ -21,5 +22,6 @@ internal data class SettingsUiState(
     val fontSize: Int = UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE,
     val onDeviceAi: Boolean = true,
     val onDeviceStatus: AiStatus = AiStatus.UNAVAILABLE,
+    val externalMusic: Boolean = false,
     val export: ExportFile? = null,
 )

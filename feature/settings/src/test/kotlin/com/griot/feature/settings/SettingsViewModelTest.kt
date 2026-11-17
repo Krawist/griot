@@ -2,6 +2,7 @@ package com.griot.feature.settings
 
 import com.griot.core.ai.AiStatus
 import com.griot.core.ai.FakeAiAssistant
+import com.griot.core.data.audio.FakeExternalMusic
 import com.griot.core.data.export.FakeMarkdownExporter
 import com.griot.core.data.language.FakeAppLanguageRepository
 import com.griot.core.data.model.AppLanguage
@@ -48,6 +49,7 @@ internal class SettingsViewModelTest {
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
             )
 
             // then
@@ -69,6 +71,7 @@ internal class SettingsViewModelTest {
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
             )
 
             // then
@@ -87,6 +90,7 @@ internal class SettingsViewModelTest {
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
             )
 
             // when
@@ -106,6 +110,7 @@ internal class SettingsViewModelTest {
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
             )
 
             // when
@@ -127,6 +132,7 @@ internal class SettingsViewModelTest {
                 preferences = FakeUserPreferencesRepository(),
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
             )
 
             // when
@@ -151,6 +157,7 @@ internal class SettingsViewModelTest {
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
             )
 
             // when
@@ -169,6 +176,7 @@ internal class SettingsViewModelTest {
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
             )
 
             // when
@@ -190,6 +198,7 @@ internal class SettingsViewModelTest {
                 preferences = FakeUserPreferencesRepository(),
                 exporter = exporter,
                 assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
             )
 
             // when
@@ -211,6 +220,7 @@ internal class SettingsViewModelTest {
                 preferences = FakeUserPreferencesRepository(onDeviceAi = false),
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(deviceStatus = AiStatus.PREPARING),
+                externalMusic = FakeExternalMusic(),
             )
 
             // then
@@ -227,6 +237,7 @@ internal class SettingsViewModelTest {
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(deviceStatus = AiStatus.READY),
+                externalMusic = FakeExternalMusic(),
             )
 
             // when
@@ -234,6 +245,27 @@ internal class SettingsViewModelTest {
 
             // then
             preferences.onDeviceAi.value shouldBe false
+        }
+    }
+
+    @Nested
+    inner class OnResume {
+        @Test
+        fun `should read whether other apps' music is controlled`() {
+            // given
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(access = true),
+            )
+
+            // when
+            viewModel.onResume()
+
+            // then
+            viewModel.uiState.value.externalMusic shouldBe true
         }
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import androidx.palette.graphics.Palette
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,14 +25,6 @@ internal class CoverReaderImpl @Inject constructor(@param:ApplicationContext pri
         }
         val image = bytes?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
             ?: return@withContext CoverArt(image = null, colors = PlayerColors.Griot)
-        val palette = Palette.from(image).generate()
-        CoverArt(
-            image = image,
-            colors = PlayerColors.from(
-                dark = (palette.darkMutedSwatch ?: palette.darkVibrantSwatch ?: palette.dominantSwatch)?.rgb,
-                light = (palette.vibrantSwatch ?: palette.lightVibrantSwatch)?.rgb,
-                secondLight = (palette.lightMutedSwatch ?: palette.mutedSwatch)?.rgb,
-            ),
-        )
+        coverArtOf(image)
     }
 }

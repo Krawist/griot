@@ -66,6 +66,12 @@ class FakeUserPreferencesRepository(
 
     override suspend fun deviceId() = "this-device-id"
 
+    override val externalMusicExplained = MutableStateFlow(false)
+
+    override suspend fun setExternalMusicExplained() {
+        externalMusicExplained.value = true
+    }
+
     override suspend fun requestTidyUp() {
         tidyUpRequested.value = true
     }

@@ -1,5 +1,7 @@
 package com.griot.feature.settings
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,9 +17,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.ai.AiStatus
 import com.griot.core.design.R as DesignR
@@ -37,6 +41,10 @@ internal fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LifecycleResumeEffect(viewModel) {
+        viewModel.onResume()
+        onPauseOrDispose {}
+    }
     var sheet by rememberSaveable { mutableStateOf<SettingsSheet?>(null) }
     Column(
         modifier = Modifier
@@ -60,6 +68,7 @@ internal fun SettingsScreen(
             onDeviceStatus = uiState.onDeviceStatus,
             onOnDeviceAiChange = viewModel::onOnDeviceAiChange,
         )
+        MusicGroup(controlled = uiState.externalMusic)
         TextsGroup(onImport = onOpenImport, onExport = viewModel::onExportAll, onTrash = onOpenTrash)
         AppearanceGroup(fontSize = uiState.fontSize, onLicences = { sheet = SettingsSheet.LICENCES })
     }
@@ -120,6 +129,30 @@ private fun SyncGroup() {
 }
 
 // Gemini Nano on the phone, when the phone can have it; the online AI comes with GRI-33.
+// « Contrôle des autres apps »: its status, and the phone's notification access setting on a tap.
+@Composable
+private fun MusicGroup(controlled: Boolean) {
+    val context = LocalContext.current
+    SettingsGroup(title = stringResource(R.string.settings_music)) {
+        SettingsRow(
+            letter = stringResource(R.string.settings_music_letter),
+            tone = SettingsTone.SYNC,
+            label = stringResource(R.string.settings_music_control),
+            sub = stringResource(R.string.settings_music_control_sub),
+            first = true,
+            onClick = {
+                context.startActivity(
+                    Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                )
+            },
+        ) {
+            SettingsValue(
+                value = stringResource(if (controlled) R.string.settings_music_on else R.string.settings_music_off),
+            )
+        }
+    }
+}
+
 @Composable
 private fun AiGroup(onDeviceAi: Boolean, onDeviceStatus: AiStatus, onOnDeviceAiChange: (Boolean) -> Unit) {
     val unavailable = stringResource(R.string.settings_unavailable)

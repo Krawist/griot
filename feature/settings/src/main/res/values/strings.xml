@@ -44,6 +44,12 @@
     <string name="settings_licences">Licences</string>
     <string name="settings_licences_letter" translatable="false">©</string>
     <string name="settings_licences_sub">Dictionnaires et polices</string>
+    <string name="settings_music">Musique</string>
+    <string name="settings_music_control">Contrôle des autres apps</string>
+    <string name="settings_music_control_sub">Titre, pause, recul de 15 s</string>
+    <string name="settings_music_letter" translatable="false">♪</string>
+    <string name="settings_music_off">Désactivé</string>
+    <string name="settings_music_on">Activé</string>
     <string name="settings_name">Nom</string>
     <string name="settings_name_letter" translatable="false">N</string>
     <string name="settings_name_placeholder">Ton nom ou ton nom d\'artiste</string>

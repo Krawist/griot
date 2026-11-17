@@ -60,6 +60,12 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         return checkNotNull(dataStore.data.first()[DeviceId])
     }
 
+    override val externalMusicExplained: Flow<Boolean> = dataStore.data.map { it[ExternalMusicExplained] ?: false }
+
+    override suspend fun setExternalMusicExplained() {
+        dataStore.edit { it[ExternalMusicExplained] = true }
+    }
+
     override suspend fun requestTidyUp() {
         dataStore.edit { it[TidyUpRequested] = true }
     }
@@ -111,6 +117,7 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         val OnDeviceAi = booleanPreferencesKey("on_device_ai")
         val TidyUpRequested = booleanPreferencesKey("tidy_up_requested")
         val DeviceId = stringPreferencesKey("device_id")
+        val ExternalMusicExplained = booleanPreferencesKey("external_music_explained")
         val TidyUpReviewedAt = longPreferencesKey("tidy_up_reviewed_at")
         val LastSyncedAt = longPreferencesKey("last_synced_at")
         val SyncCursor = stringPreferencesKey("sync_cursor")

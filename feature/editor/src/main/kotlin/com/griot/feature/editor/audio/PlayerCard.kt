@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.griot.core.data.audio.CoverArt
 import com.griot.core.data.audio.PlayerColors
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.theme.GriotSpacing
@@ -66,17 +67,23 @@ private const val HOLE = 0.26f
 private const val LABEL = 0.17f
 
 /**
- * The beat's player, alone at the bottom of the editor: its cover, its title and position, « Reculer de 15 secondes »
- * and play/pause. Its colours come from the cover; white stays readable on them, in light and dark modes alike.
+ * The player alone at the bottom of the editor, for the song's beat or another app's music: its cover, [title] and
+ * [subtitle], « Reculer de 15 secondes » when [onRewind] is given, play/pause, and the progress when [progress] is
+ * known. Its colours come from the [cover]; white stays readable on them, in light and dark modes alike.
  */
+@Suppress("LongParameterList") // What the player shows, and its controls.
 @Composable
-internal fun BeatPlayer(
-    beat: BeatUiState,
+internal fun PlayerCard(
+    title: String,
+    subtitle: String,
+    cover: CoverArt?,
+    playing: Boolean,
+    progress: Float?,
     onPlayToggle: () -> Unit,
-    onRewind: () -> Unit,
+    onRewind: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    val colors = beat.cover?.colors ?: PlayerColors.Griot
+    val colors = cover?.colors ?: PlayerColors.Griot
     val background = Color(colors.background)
     val glow = Color(colors.glow)
     val secondGlow = Color(colors.secondGlow)
@@ -109,37 +116,63 @@ internal fun BeatPlayer(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m),
         ) {
-            Cover(beat = beat)
+            Cover(cover = cover)
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = beat.title,
+                    text = title,
                     style = GriotTheme.type.bodyStrong,
                     color = Color.White,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = stringResource(
-                        R.string.player_position,
-                        formatDuration(beat.positionMillis),
-                        formatDuration(beat.durationMillis),
-                    ),
+                    text = subtitle,
                     style = GriotTheme.type.caption,
                     color = Color.White.copy(alpha = SUBTITLE_ALPHA),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-            Rewind(onClick = onRewind)
-            PlayPause(playing = beat.playing, background = background, onClick = onPlayToggle)
+            if (onRewind != null) Rewind(onClick = onRewind)
+            PlayPause(playing = playing, background = background, onClick = onPlayToggle)
         }
-        Progress(beat = beat)
+        if (progress != null) Progress(fraction = progress)
     }
 }
 
+/** The song's beat in the [PlayerCard]. */
+@Composable
+internal fun BeatPlayer(
+    beat: BeatUiState,
+    onPlayToggle: () -> Unit,
+    onRewind: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    PlayerCard(
+        title = beat.title,
+        subtitle = stringResource(
+            R.string.player_position,
+            formatDuration(beat.positionMillis),
+            formatDuration(beat.durationMillis),
+        ),
+        cover = beat.cover,
+        playing = beat.playing,
+        progress = fractionOf(beat.positionMillis, beat.durationMillis),
+        onPlayToggle = onPlayToggle,
+        onRewind = onRewind,
+        modifier = modifier,
+    )
+}
+
+/** How far [position] is in [duration], from 0 to 1; 0 while the length is unknown. */
+internal fun fractionOf(position: Long, duration: Long): Float =
+    if (duration > 0) (position.toFloat() / duration).coerceIn(0f, 1f) else 0f
+
 // The embedded artwork, or Griot's own: two discs in the beat's colours and a yellow centre, like a record.
 @Composable
-private fun Cover(beat: BeatUiState) {
+private fun Cover(cover: CoverArt?) {
     val shape = RoundedCornerShape(InnerRadius)
-    val image = beat.cover?.image
+    val image = cover?.image
     val imageBitmap = remember(image) { image?.asImageBitmap() }
     Box(modifier = Modifier.size(CoverSize).clip(shape)) {
         if (imageBitmap != null) {
@@ -150,7 +183,7 @@ private fun Cover(beat: BeatUiState) {
                 modifier = Modifier.fillMaxSize(),
             )
         } else {
-            val colors = beat.cover?.colors ?: PlayerColors.Griot
+            val colors = cover?.colors ?: PlayerColors.Griot
             val disc = Color(colors.background)
             val first = Color(colors.glow)
             val second = Color(colors.secondGlow)
@@ -210,14 +243,7 @@ private fun PlayPause(playing: Boolean, background: Color, onClick: () -> Unit) 
 }
 
 @Composable
-private fun Progress(beat: BeatUiState) {
-    val fraction = if (beat.durationMillis >
-        0
-    ) {
-        (beat.positionMillis.toFloat() / beat.durationMillis).coerceIn(0f, 1f)
-    } else {
-        0f
-    }
+private fun Progress(fraction: Float) {
     val shape = RoundedCornerShape(ProgressHeight / 2)
     Box(
         modifier = Modifier

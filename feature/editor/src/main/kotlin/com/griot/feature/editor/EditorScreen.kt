@@ -30,10 +30,12 @@ import com.griot.core.design.component.TextInputForm
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.ai.AiPanelSheet
 import com.griot.feature.editor.ai.AiTab
-import com.griot.feature.editor.audio.BeatPlayer
 import com.griot.feature.editor.audio.BeatViewModel
+import com.griot.feature.editor.audio.ExternalMusicSheet
+import com.griot.feature.editor.audio.ExternalMusicViewModel
 import com.griot.feature.editor.audio.MemoRecorder
 import com.griot.feature.editor.audio.MemoRequest
+import com.griot.feature.editor.audio.editorPlayer
 
 /** The structured editor of the song [songId]: its title, its sections and their verses, all saved as typed. */
 @Suppress("LongMethod") // The screen's menus and sheets, and how each one opens and closes.
@@ -55,6 +57,8 @@ internal fun EditorScreen(
         creationCallback = { factory -> factory.create(songId) },
     )
     val beat by beatViewModel.uiState.collectAsStateWithLifecycle()
+    val externalViewModel = hiltViewModel<ExternalMusicViewModel>()
+    val external by externalViewModel.uiState.collectAsStateWithLifecycle()
     // A song deleted meanwhile, on this phone or another one, closes the editor.
     LaunchedEffect(uiState.missing) { if (uiState.missing) onBack() }
     var menu by remember { mutableStateOf<EditorMenu?>(null) }
@@ -113,16 +117,12 @@ internal fun EditorScreen(
                 )
             }
         },
-        player = beat?.let { state ->
-            { modifier ->
-                BeatPlayer(
-                    beat = state,
-                    onPlayToggle = beatViewModel::onPlayToggle,
-                    onRewind = beatViewModel::onRewind,
-                    modifier = modifier,
-                )
-            }
-        },
+        player = editorPlayer(
+            beat = beat,
+            beatViewModel = beatViewModel,
+            external = external,
+            externalViewModel = externalViewModel,
+        ),
         menu = menu,
         onMenu = { menu = it },
         onOpenAudios = onOpenAudios,
@@ -168,6 +168,8 @@ internal fun EditorScreen(
         },
     )
     MemoRecorder(songId = songId, request = memo, onClosed = { memo = null })
+    // The first time the player meets another app's music, without the access.
+    if (beat == null && external.explain) ExternalMusicSheet(onDone = externalViewModel::onExplained)
     AiPanel(
         songId = songId,
         verseId = aiFor,

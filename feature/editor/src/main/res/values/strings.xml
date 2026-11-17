@@ -108,6 +108,17 @@
     <string name="editor_verse_rhymes">Rimes</string>
     <string name="editor_verse_summary">%1$s · %2$s</string>
     <string name="editor_verse_versions">Versions du vers</string>
+    <string name="external_allow">Autoriser dans les réglages</string>
+    <string name="external_later">Plus tard · lecture et pause seulement</string>
+    <string name="external_no_access">Titre inconnu sans autorisation</string>
+    <string name="external_perk_pause">Mettre en pause sans quitter Griot</string>
+    <string name="external_perk_rewind">Reculer de 15 secondes</string>
+    <string name="external_perk_title">Voir le titre et la progression</string>
+    <string name="external_position">%1$s / %2$s</string>
+    <string name="external_sheet_body">Tu écris sur un beat qui tourne dans Spotify ou YouTube ? Griot peut le piloter sans que tu quittes ton texte.</string>
+    <string name="external_sheet_note">Android appelle cette autorisation « accès aux notifications ». Griot s\'en sert uniquement pour piloter le lecteur, jamais pour lire tes messages.</string>
+    <string name="external_sheet_title">Contrôler la musique des autres apps</string>
+    <string name="external_title">Musique d\'une autre app</string>
     <string name="history_back">Retour à la chanson</string>
     <string name="history_badge_ai">Suggestion IA</string>
     <string name="history_badge_conflict">Autre appareil</string>

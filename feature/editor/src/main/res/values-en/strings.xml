@@ -103,6 +103,17 @@
     <string name="editor_verse_rhymes">Rhymes</string>
     <string name="editor_verse_summary">%1$s · %2$s</string>
     <string name="editor_verse_versions">Line versions</string>
+    <string name="external_allow">Allow in the settings</string>
+    <string name="external_later">Later · play and pause only</string>
+    <string name="external_no_access">Unknown title without permission</string>
+    <string name="external_perk_pause">Pause without leaving Griot</string>
+    <string name="external_perk_rewind">Go back 15 seconds</string>
+    <string name="external_perk_title">See the title and the progress</string>
+    <string name="external_position">%1$s / %2$s</string>
+    <string name="external_sheet_body">Writing over a beat playing in Spotify or YouTube? Griot can control it without you leaving your text.</string>
+    <string name="external_sheet_note">Android calls this permission « notification access ». Griot only uses it to control the player, never to read your messages.</string>
+    <string name="external_sheet_title">Control the music of other apps</string>
+    <string name="external_title">Music from another app</string>
     <string name="history_back">Back to the song</string>
     <string name="history_badge_ai">AI suggestion</string>
     <string name="history_badge_conflict">Other device</string>

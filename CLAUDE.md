@@ -376,7 +376,15 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   sheet reaching behind it; cover and play button follow the player's radius minus its padding; « Reculer de 15
   secondes » never goes before the start. The recording sheet's « Jouer le beat pendant l'enregistrement »
   (`GriotSwitch`, now shared by the settings) plays it and stops it with the memo. Checked on the S23.
-- [ ] **Next tickets:** GRI-53 (audio); GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
+- [x] **GRI-53** — `ExternalMusic` (`:core:data` `audio`): without the access, `AudioManager.isMusicActive` and the
+  system's play/pause key (the player stays after a pause by Griot); with the notification access (`MusicListener`, a
+  `NotificationListenerService` that reads nothing; Play Store declaration noted in its KDoc and the manifest), the
+  other app's `MediaController`: title, artist, cover (Palette colours, `coverArtOf`), progress, 15 s back. The editor's
+  player is one `PlayerCard` for the song's beat (first) or another app's music (`ExternalPlayer`, `editorPlayer`).
+  `ExternalMusicSheet` shows once (`UserPreferencesRepository.externalMusicExplained`) when music plays without the
+  access. Settings: « Musique · Contrôle des autres apps », Activé/Désactivé, read again on resume, opening the
+  system setting. Checked on the S23 with Spotify (title, cover, 15 s back, pause).
+- [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30; GRI-33 (online model: need setup).
 
 Update this section at the end of each ticket.

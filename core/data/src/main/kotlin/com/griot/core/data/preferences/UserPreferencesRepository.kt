@@ -5,6 +5,7 @@ import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
 /** Small user settings that are not songs, kept on the phone. The Room database holds the songs, versions and ideas. */
+@Suppress("TooManyFunctions") // One setter per preference.
 interface UserPreferencesRepository {
     /** Whether the onboarding was completed once; `false` on a new install. */
     val onboardingCompleted: Flow<Boolean>
@@ -59,6 +60,12 @@ interface UserPreferencesRepository {
 
     /** The id of this phone, made once: a file added here is on this phone only (GRI-51). */
     suspend fun deviceId(): String
+
+    /** Whether the author saw the explanation of « Contrôler la musique des autres apps » (GRI-53). */
+    val externalMusicExplained: Flow<Boolean>
+
+    /** The explanation of the music of other apps was shown: it does not come back. */
+    suspend fun setExternalMusicExplained()
 
     /** An import asks for a tidy-up. */
     suspend fun requestTidyUp()

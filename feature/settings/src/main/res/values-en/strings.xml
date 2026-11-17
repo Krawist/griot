@@ -25,6 +25,11 @@
     <string name="settings_licence_outfit">Outfit font</string>
     <string name="settings_licences">Licences</string>
     <string name="settings_licences_sub">Dictionaries and fonts</string>
+    <string name="settings_music">Music</string>
+    <string name="settings_music_control">Other apps\' music</string>
+    <string name="settings_music_control_sub">Title, pause, back 15 s</string>
+    <string name="settings_music_off">Off</string>
+    <string name="settings_music_on">On</string>
     <string name="settings_name">Name</string>
     <string name="settings_name_placeholder">Your name or artist name</string>
     <string name="settings_name_sub">Signs your exports</string>

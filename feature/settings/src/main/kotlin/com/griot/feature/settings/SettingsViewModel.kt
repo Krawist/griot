@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.ai.AiAssistant
 import com.griot.core.ai.AiLocation
+import com.griot.core.data.audio.ExternalMusic
 import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.language.AppLanguageRepository
 import com.griot.core.data.model.AppLanguage
@@ -25,6 +26,7 @@ internal class SettingsViewModel @Inject constructor(
     private val preferences: UserPreferencesRepository,
     private val exporter: MarkdownExporter,
     private val assistant: AiAssistant,
+    private val externalMusic: ExternalMusic,
 ) : ViewModel() {
     private val state = MutableStateFlow(SettingsUiState(language = appLanguage.current()))
     val uiState: StateFlow<SettingsUiState> = state.asStateFlow()
@@ -37,6 +39,11 @@ internal class SettingsViewModel @Inject constructor(
             val status = assistant.status(AiLocation.DEVICE)
             state.update { it.copy(onDeviceStatus = status) }
         }
+    }
+
+    /** Reads again whether the notification access is given: the author may come back from the phone's settings. */
+    fun onResume() {
+        state.update { it.copy(externalMusic = externalMusic.hasAccess()) }
     }
 
     /** Saves [name] without the spaces around it; an empty name keeps the one before. */

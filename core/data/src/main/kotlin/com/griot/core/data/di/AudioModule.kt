@@ -8,6 +8,8 @@ import com.griot.core.data.audio.AudioPlayer
 import com.griot.core.data.audio.AudioPlayerImpl
 import com.griot.core.data.audio.CoverReader
 import com.griot.core.data.audio.CoverReaderImpl
+import com.griot.core.data.audio.ExternalMusic
+import com.griot.core.data.audio.ExternalMusicImpl
 import com.griot.core.data.audio.VoiceRecorder
 import com.griot.core.data.audio.VoiceRecorderImpl
 import dagger.Binds
@@ -32,4 +34,7 @@ internal interface AudioModule {
 
     @Binds
     fun bindCoverReader(impl: CoverReaderImpl): CoverReader
+
+    @Binds
+    fun bindExternalMusic(impl: ExternalMusicImpl): ExternalMusic
 }

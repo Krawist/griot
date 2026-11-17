@@ -14,5 +14,18 @@
                 <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
+
+        <!--
+            Only lets Griot read the media sessions of other apps (GRI-53); it never reads a notification.
+            Play Store: needs the « Notification listener » declaration before any public release.
+        -->
+        <service
+            android:name="com.griot.core.data.audio.MusicListener"
+            android:exported="false"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>
