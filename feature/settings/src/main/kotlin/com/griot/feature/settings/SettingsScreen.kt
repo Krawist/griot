@@ -69,7 +69,7 @@ internal fun SettingsScreen(
             uiState = uiState,
             onOnDeviceAiChange = viewModel::onOnDeviceAiChange,
             onOnlineAiChange = viewModel::onOnlineAiChange,
-            onApiKey = { sheet = SettingsSheet.API_KEY },
+            onSheet = { sheet = it },
         )
         MusicGroup(controlled = uiState.externalMusic)
         TextsGroup(onImport = onOpenImport, onExport = viewModel::onExportAll, onTrash = onOpenTrash)
@@ -156,37 +156,26 @@ private fun MusicGroup(controlled: Boolean) {
     }
 }
 
-// Gemini Nano on the phone, when the phone can have it; Claude online, once the author's key is saved.
+// The model asked first; Gemini Nano on the phone, when the phone can have it; Claude online, once the author's key
+// is saved.
 @Composable
 private fun AiGroup(
     uiState: SettingsUiState,
     onOnDeviceAiChange: (Boolean) -> Unit,
     onOnlineAiChange: (Boolean) -> Unit,
-    onApiKey: () -> Unit,
+    onSheet: (SettingsSheet) -> Unit,
 ) {
-    val supported = uiState.onDeviceStatus != AiStatus.UNAVAILABLE
     SettingsGroup(title = stringResource(R.string.settings_ai)) {
         SettingsRow(
-            letter = stringResource(R.string.settings_ai_device_letter),
+            letter = "",
+            icon = DesignR.drawable.ic_ai,
             tone = SettingsTone.AI,
-            label = stringResource(R.string.settings_ai_device),
-            sub = stringResource(
-                when (uiState.onDeviceStatus) {
-                    AiStatus.READY -> R.string.settings_ai_device_ready
-                    AiStatus.PREPARING -> R.string.settings_ai_device_preparing
-                    AiStatus.UNAVAILABLE -> R.string.settings_ai_device_unsupported
-                },
-            ),
+            label = stringResource(R.string.settings_ai_preferred),
+            sub = stringResource(R.string.settings_ai_preferred_sub),
             first = true,
-            enabled = supported,
-            onClick = { onOnDeviceAiChange(!uiState.onDeviceAi) },
-        ) {
-            GriotSwitch(
-                checked = supported && uiState.onDeviceAi,
-                onCheckedChange = onOnDeviceAiChange,
-                enabled = supported,
-            )
-        }
+            onClick = { onSheet(SettingsSheet.PREFERRED_AI) },
+        ) { SettingsValue(value = stringResource(uiState.preferredAi.labelRes())) }
+        DeviceAiRow(uiState = uiState, onChange = onOnDeviceAiChange)
         SettingsRow(
             letter = "",
             icon = DesignR.drawable.ic_cloud,
@@ -212,7 +201,7 @@ private fun AiGroup(
             label = stringResource(R.string.settings_key),
             sub = stringResource(R.string.settings_key_sub),
             first = false,
-            onClick = onApiKey,
+            onClick = { onSheet(SettingsSheet.API_KEY) },
         ) {
             SettingsValue(
                 value = stringResource(
@@ -220,6 +209,33 @@ private fun AiGroup(
                 ),
             )
         }
+    }
+}
+
+// Gemini Nano: its status, and whether the AI help may use it; dimmed when the phone cannot have it.
+@Composable
+private fun DeviceAiRow(uiState: SettingsUiState, onChange: (Boolean) -> Unit) {
+    val supported = uiState.onDeviceStatus != AiStatus.UNAVAILABLE
+    SettingsRow(
+        letter = stringResource(R.string.settings_ai_device_letter),
+        tone = SettingsTone.AI,
+        label = stringResource(R.string.settings_ai_device),
+        sub = stringResource(
+            when (uiState.onDeviceStatus) {
+                AiStatus.READY -> R.string.settings_ai_device_ready
+                AiStatus.PREPARING -> R.string.settings_ai_device_preparing
+                AiStatus.UNAVAILABLE -> R.string.settings_ai_device_unsupported
+            },
+        ),
+        first = false,
+        enabled = supported,
+        onClick = { onChange(!uiState.onDeviceAi) },
+    ) {
+        GriotSwitch(
+            checked = supported && uiState.onDeviceAi,
+            onCheckedChange = onChange,
+            enabled = supported,
+        )
     }
 }
 
@@ -313,6 +329,14 @@ private fun SettingsSheets(
             onDismiss = onClose,
         )
         SettingsSheet.LICENCES -> LicencesSheet(onDismiss = onClose)
+        SettingsSheet.PREFERRED_AI -> PreferredAiSheet(
+            preferred = uiState.preferredAi,
+            onSelect = { preferred ->
+                viewModel.onPreferredAiChange(preferred)
+                onClose()
+            },
+            onDismiss = onClose,
+        )
         SettingsSheet.API_KEY -> {
             val close = {
                 viewModel.onApiKeyClosed()

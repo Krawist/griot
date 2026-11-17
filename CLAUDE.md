@@ -394,6 +394,8 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (`onlineAi`, on by default); the panel says the verse goes through Anthropic. Checked on the S23 (a refused key,
   then a real key: « Reformuler » and « Critiquer » answered by Claude). Use a key scoped to a workspace: an
   organisation key needs an `anthropic-workspace-id` header Griot does not send.
+  « IA préférée » (`PreferredAi`, the phone's by default) picks the model asked first; `AiAssistantImpl` asks the
+  other one when it cannot answer or fails, and fails only when both do.
   A proxy is still needed before any public release.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.

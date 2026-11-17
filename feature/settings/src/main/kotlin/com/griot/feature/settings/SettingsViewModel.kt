@@ -9,6 +9,7 @@ import com.griot.core.data.audio.ExternalMusic
 import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.language.AppLanguageRepository
 import com.griot.core.data.model.AppLanguage
+import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.preferences.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,8 +39,8 @@ internal class SettingsViewModel @Inject constructor(
         combine(preferences.authorName, preferences.editorFontSize, preferences.onDeviceAi) { name, size, onDevice ->
             state.update { it.copy(authorName = name.orEmpty(), fontSize = size, onDeviceAi = onDevice) }
         }.launchIn(viewModelScope)
-        combine(preferences.onlineAi, apiKeys.isSet) { online, keySet ->
-            state.update { it.copy(onlineAi = online, apiKeySet = keySet) }
+        combine(preferences.onlineAi, preferences.preferredAi, apiKeys.isSet) { online, preferred, keySet ->
+            state.update { it.copy(onlineAi = online, preferredAi = preferred, apiKeySet = keySet) }
         }.launchIn(viewModelScope)
         viewModelScope.launch {
             val status = assistant.status(AiLocation.DEVICE)
@@ -83,6 +84,11 @@ internal class SettingsViewModel @Inject constructor(
     /** Allows or forbids the AI help to use the online model. */
     fun onOnlineAiChange(allowed: Boolean) {
         viewModelScope.launch { preferences.setOnlineAi(allowed) }
+    }
+
+    /** Saves the model the AI help asks first. */
+    fun onPreferredAiChange(preferred: PreferredAi) {
+        viewModelScope.launch { preferences.setPreferredAi(preferred) }
     }
 
     /** Asks Anthropic about the pasted [key], and saves it once accepted. */

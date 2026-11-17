@@ -8,6 +8,7 @@ import com.griot.core.data.audio.FakeExternalMusic
 import com.griot.core.data.export.FakeMarkdownExporter
 import com.griot.core.data.language.FakeAppLanguageRepository
 import com.griot.core.data.model.AppLanguage
+import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import io.kotest.matchers.collections.shouldContainExactly
@@ -280,6 +281,30 @@ internal class SettingsViewModelTest {
 
             // then
             preferences.onlineAi.value shouldBe false
+        }
+    }
+
+    @Nested
+    inner class OnPreferredAiChange {
+        @Test
+        fun `should save the model the AI help asks first`() = runTest {
+            // given
+            val preferences = FakeUserPreferencesRepository()
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = preferences,
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
+            )
+
+            // when
+            viewModel.onPreferredAiChange(PreferredAi.ONLINE)
+
+            // then
+            preferences.preferredAi.value shouldBe PreferredAi.ONLINE
+            viewModel.uiState.value.preferredAi shouldBe PreferredAi.ONLINE
         }
     }
 

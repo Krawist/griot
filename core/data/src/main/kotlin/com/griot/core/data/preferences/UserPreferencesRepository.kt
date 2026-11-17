@@ -1,5 +1,6 @@
 package com.griot.core.data.preferences
 
+import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -54,6 +55,12 @@ interface UserPreferencesRepository {
 
     /** Allows or forbids the AI help to use the online model. */
     suspend fun setOnlineAi(allowed: Boolean)
+
+    /** The model the AI help asks first, among those allowed; [PreferredAi.DEVICE] until the author changes it. */
+    val preferredAi: Flow<PreferredAi>
+
+    /** Saves the model the AI help asks first. */
+    suspend fun setPreferredAi(preferred: PreferredAi)
 
     /**
      * The key of the online model, encrypted by a key of the Android Keystore (never the key itself); `null` until one

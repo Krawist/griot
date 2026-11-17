@@ -1,12 +1,15 @@
 package com.griot.core.ai
 
+import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.phonetics.PhoneticEngines
 import com.griot.core.phonetics.PhoneticLanguage
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.throwable.shouldHaveMessage
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -81,6 +84,22 @@ internal class AiAssistantImplTest {
 
             // then
             availability shouldBe AiAvailability(location = null, preparing = false)
+        }
+
+        @Test
+        fun `should prefer the online model when the author does`() = runTest {
+            // given
+            val assistant = AiAssistantImpl(
+                providers = setOf(FakeAiProvider(AiLocation.DEVICE), FakeAiProvider(AiLocation.ONLINE)),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(preferredAi = PreferredAi.ONLINE),
+            )
+
+            // when
+            val availability = assistant.availability()
+
+            // then
+            availability shouldBe AiAvailability(location = AiLocation.ONLINE, preparing = false)
         }
 
         @Test
@@ -169,6 +188,62 @@ internal class AiAssistantImplTest {
                 location = AiLocation.DEVICE,
             )
             provider.prompts shouldContainExactly listOf(rephrasePrompt(request))
+        }
+
+        @Test
+        fun `should ask the other model when the preferred one fails`() = runTest {
+            // given
+            val online = FakeAiProvider(location = AiLocation.ONLINE, failure = IllegalStateException("my-failure"))
+            val device = FakeAiProvider(location = AiLocation.DEVICE, answer = "1. Le soleil frappe sur la tôle")
+            val assistant = AiAssistantImpl(
+                providers = setOf(device, online),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(preferredAi = PreferredAi.ONLINE),
+            )
+            val request = VerseRequest(
+                language = PhoneticLanguage.FRENCH,
+                section = "Couplet 1",
+                verse = "Le soleil cogne sur la tôle",
+                before = emptyList(),
+                after = emptyList(),
+                targetSyllables = 8,
+            )
+
+            // when
+            val answer = assistant.rephrase(request)
+
+            // then
+            answer shouldBe AiAnswer(
+                items = listOf(
+                    CheckedSuggestion(text = "Le soleil frappe sur la tôle", syllables = 8, guessed = false),
+                ),
+                location = AiLocation.DEVICE,
+            )
+            online.prompts shouldContainExactly listOf(rephrasePrompt(request))
+        }
+
+        @Test
+        fun `should fail when every model fails`() = runTest {
+            // given
+            val assistant = AiAssistantImpl(
+                providers = setOf(
+                    FakeAiProvider(location = AiLocation.DEVICE, failure = IllegalStateException("my-failure-1")),
+                    FakeAiProvider(location = AiLocation.ONLINE, failure = IllegalStateException("my-failure-2")),
+                ),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(),
+            )
+            val request = VerseRequest(
+                language = PhoneticLanguage.FRENCH,
+                section = "Couplet 1",
+                verse = "Le soleil cogne sur la tôle",
+                before = emptyList(),
+                after = emptyList(),
+                targetSyllables = 8,
+            )
+
+            // when & then
+            shouldThrow<IllegalStateException> { assistant.rephrase(request) } shouldHaveMessage "my-failure-2"
         }
 
         @Test

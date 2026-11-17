@@ -4,6 +4,7 @@ package com.griot.feature.settings
 internal enum class SettingsSheet {
     API_KEY,
     NAME,
+    PREFERRED_AI,
     LANGUAGE,
     LICENCES,
 }

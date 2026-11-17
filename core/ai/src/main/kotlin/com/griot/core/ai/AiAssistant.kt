@@ -1,8 +1,8 @@
 package com.griot.core.ai
 
 /**
- * The AI help on a verse: rephrase it or critique it, from the model on the phone when available and allowed by the
- * settings, online otherwise.
+ * The AI help on a verse: rephrase it or critique it, from the model the author prefers when it can answer, the other
+ * one otherwise or when it fails, among those the settings allow.
  * Every suggestion is checked by the phonetic engine before it is returned.
  */
 interface AiAssistant {

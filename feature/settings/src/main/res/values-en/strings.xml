@@ -8,6 +8,11 @@
     <string name="settings_ai_online">Online AI</string>
     <string name="settings_ai_online_no_key">Add your Anthropic API key to turn it on</string>
     <string name="settings_ai_online_ready">Claude Haiku · your lines go through Anthropic</string>
+    <string name="settings_ai_preferred">Preferred AI</string>
+    <string name="settings_ai_preferred_device">On the phone</string>
+    <string name="settings_ai_preferred_hint">The other one answers when this one cannot: no model on the phone, no key or no network.</string>
+    <string name="settings_ai_preferred_online">Online</string>
+    <string name="settings_ai_preferred_sub">The one that answers first</string>
     <string name="settings_appearance">Appearance</string>
     <string name="settings_auto_sync">Automatic sync</string>
     <string name="settings_auto_sync_sub">On every change</string>

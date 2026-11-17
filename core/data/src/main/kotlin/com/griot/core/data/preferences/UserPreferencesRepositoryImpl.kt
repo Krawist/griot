@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
 import java.time.Instant
 import java.util.Locale
@@ -107,6 +108,14 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         dataStore.edit { it[OnlineAi] = allowed }
     }
 
+    override val preferredAi: Flow<PreferredAi> = dataStore.data.map { preferences ->
+        PreferredAi.entries.firstOrNull { it.name == preferences[PreferredAiKey] } ?: PreferredAi.DEVICE
+    }
+
+    override suspend fun setPreferredAi(preferred: PreferredAi) {
+        dataStore.edit { it[PreferredAiKey] = preferred.name }
+    }
+
     override val onlineAiKey: Flow<String?> = dataStore.data.map { it[OnlineAiKey] }
 
     override suspend fun setOnlineAiKey(secret: String?) {
@@ -129,6 +138,7 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         val OnDeviceAi = booleanPreferencesKey("on_device_ai")
         val OnlineAi = booleanPreferencesKey("online_ai")
         val OnlineAiKey = stringPreferencesKey("online_ai_key")
+        val PreferredAiKey = stringPreferencesKey("preferred_ai")
         val TidyUpRequested = booleanPreferencesKey("tidy_up_requested")
         val DeviceId = stringPreferencesKey("device_id")
         val ExternalMusicExplained = booleanPreferencesKey("external_music_explained")

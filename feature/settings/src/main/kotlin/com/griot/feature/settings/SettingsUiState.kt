@@ -4,6 +4,7 @@ import com.griot.core.ai.AiStatus
 import com.griot.core.ai.online.KeyCheck
 import com.griot.core.data.model.AppLanguage
 import com.griot.core.data.model.ExportFile
+import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.preferences.UserPreferencesRepository
 
 /**
@@ -15,6 +16,7 @@ import com.griot.core.data.preferences.UserPreferencesRepository
  * @property onDeviceAi Whether the AI help may use the model on the phone.
  * @property onDeviceStatus Whether the phone's model can answer, downloads, or this phone cannot have it.
  * @property onlineAi Whether the AI help may use the online model, once a key is saved.
+ * @property preferredAi The model the AI help asks first.
  * @property apiKeySet Whether a key of the online model is saved.
  * @property checkingKey Whether Anthropic is being asked about a pasted key.
  * @property keyCheck What Anthropic said of the last key pasted; `null` until one is, and once the sheet is closed.
@@ -28,6 +30,7 @@ internal data class SettingsUiState(
     val onDeviceAi: Boolean = true,
     val onDeviceStatus: AiStatus = AiStatus.UNAVAILABLE,
     val onlineAi: Boolean = true,
+    val preferredAi: PreferredAi = PreferredAi.DEVICE,
     val apiKeySet: Boolean = false,
     val checkingKey: Boolean = false,
     val keyCheck: KeyCheck? = null,
