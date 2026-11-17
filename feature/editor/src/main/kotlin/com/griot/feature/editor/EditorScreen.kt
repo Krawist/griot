@@ -39,6 +39,7 @@ internal fun EditorScreen(
     onBack: () -> Unit,
     onOpenHistory: (String?) -> Unit,
     onFile: () -> Unit,
+    onOpenAudios: () -> Unit,
     viewModel: EditorViewModel = hiltViewModel<EditorViewModel, EditorViewModel.Factory>(
         key = songId,
         creationCallback = { factory -> factory.create(songId) },
@@ -102,6 +103,7 @@ internal fun EditorScreen(
         },
         menu = menu,
         onMenu = { menu = it },
+        onOpenAudios = onOpenAudios,
         songMenu = {
             SongMenu(
                 uiState = uiState,
@@ -348,6 +350,7 @@ private fun EditorScreenPreview() {
                 verseInput = PreviewVerseInput,
                 menu = null,
                 onMenu = {},
+                onOpenAudios = {},
                 songMenu = {},
                 sectionMenu = {},
                 onAddSection = {},

@@ -2,6 +2,7 @@ package com.griot.core.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.griot.core.data.database.entity.AttachmentEntity
 import com.griot.core.data.database.entity.FolderEntity
 import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.IdeaEntity
@@ -82,6 +83,14 @@ internal interface SyncDao {
     )
     suspend fun pendingSongFolders(): List<SongFolderEntity>
 
+    @Query(
+        """
+        SELECT t.* FROM attachments t LEFT JOIN sync_state s ON s.entityType = 'ATTACHMENT' AND s.entityId = t.id
+        WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt
+        """,
+    )
+    suspend fun pendingAttachments(): List<AttachmentEntity>
+
     /** How many rows have changes to push, updated on every write. */
     @Query(
         """
@@ -101,6 +110,8 @@ internal interface SyncDao {
         + (SELECT COUNT(*) FROM genres t LEFT JOIN sync_state s ON s.entityType = 'GENRE' AND s.entityId = t.id
             WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
         + (SELECT COUNT(*) FROM song_folders t LEFT JOIN sync_state s ON s.entityType = 'SONG_FOLDER'
+            AND s.entityId = t.id WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
+        + (SELECT COUNT(*) FROM attachments t LEFT JOIN sync_state s ON s.entityType = 'ATTACHMENT'
             AND s.entityId = t.id WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
         """,
     )

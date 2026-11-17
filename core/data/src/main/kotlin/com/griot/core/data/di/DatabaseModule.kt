@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.griot.core.data.database.BuiltInRows
 import com.griot.core.data.database.GriotDatabase
 import com.griot.core.data.database.LanguageMigration
+import com.griot.core.data.database.dao.AttachmentDao
 import com.griot.core.data.database.dao.ConflictDao
 import com.griot.core.data.database.dao.FolderDao
 import com.griot.core.data.database.dao.GenreDao
@@ -55,6 +56,9 @@ internal object DatabaseModule {
 
     @Provides
     fun provideGenreDao(database: GriotDatabase): GenreDao = database.genreDao()
+
+    @Provides
+    fun provideAttachmentDao(database: GriotDatabase): AttachmentDao = database.attachmentDao()
 
     @Provides
     fun provideIdeaDao(database: GriotDatabase): IdeaDao = database.ideaDao()

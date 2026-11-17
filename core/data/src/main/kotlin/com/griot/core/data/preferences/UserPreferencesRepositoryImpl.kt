@@ -10,12 +10,15 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.griot.core.data.model.SongLanguage
 import java.time.Instant
 import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /** Default implementation for [UserPreferencesRepository], on DataStore. */
+@Suppress("TooManyFunctions") // One setter per preference.
 @Singleton
 internal class UserPreferencesRepositoryImpl @Inject constructor(private val dataStore: DataStore<Preferences>) :
     UserPreferencesRepository {
@@ -48,6 +51,13 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
 
     override val tidyUpReviewedAt: Flow<Instant?> = dataStore.data.map { preferences ->
         preferences[TidyUpReviewedAt]?.let(Instant::ofEpochMilli)
+    }
+
+    override suspend fun deviceId(): String {
+        dataStore.data.first()[DeviceId]?.let { return it }
+        val id = UUID.randomUUID().toString()
+        dataStore.edit { preferences -> if (preferences[DeviceId] == null) preferences[DeviceId] = id }
+        return checkNotNull(dataStore.data.first()[DeviceId])
     }
 
     override suspend fun requestTidyUp() {
@@ -100,6 +110,7 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         val ShowRhymes = booleanPreferencesKey("show_rhymes")
         val OnDeviceAi = booleanPreferencesKey("on_device_ai")
         val TidyUpRequested = booleanPreferencesKey("tidy_up_requested")
+        val DeviceId = stringPreferencesKey("device_id")
         val TidyUpReviewedAt = longPreferencesKey("tidy_up_reviewed_at")
         val LastSyncedAt = longPreferencesKey("last_synced_at")
         val SyncCursor = stringPreferencesKey("sync_cursor")

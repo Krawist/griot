@@ -3,6 +3,7 @@ package com.griot.core.data.sync
 import androidx.room.immediateTransaction
 import androidx.room.useWriterConnection
 import com.griot.core.data.database.GriotDatabase
+import com.griot.core.data.database.entity.AttachmentEntity
 import com.griot.core.data.database.entity.ConflictEntity
 import com.griot.core.data.database.entity.FolderEntity
 import com.griot.core.data.database.entity.GenreEntity
@@ -90,6 +91,13 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
             update = database.songFolderDao()::update,
             updatedAt = SongFolderEntity::updatedAt,
         ),
+        SyncEntityType.ATTACHMENT to Table(
+            serializer = AttachmentEntity.serializer(),
+            get = database.attachmentDao()::getById,
+            insert = database.attachmentDao()::insert,
+            update = database.attachmentDao()::update,
+            updatedAt = AttachmentEntity::updatedAt,
+        ),
     )
 
     override fun observePendingCount(): Flow<Int> = syncDao.observePendingCount()
@@ -105,6 +113,9 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
                 syncDao.pendingGenres().map { record(SyncEntityType.GENRE, it.id, it.updatedAt, it.deleted, it) } +
                 syncDao.pendingSongFolders().map {
                     record(SyncEntityType.SONG_FOLDER, it.id, it.updatedAt, it.deleted, it)
+                } +
+                syncDao.pendingAttachments().map {
+                    record(SyncEntityType.ATTACHMENT, it.id, it.updatedAt, it.deleted, it)
                 }
         }
     }

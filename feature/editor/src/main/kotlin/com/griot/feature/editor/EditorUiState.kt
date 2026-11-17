@@ -20,6 +20,7 @@ import com.griot.core.data.preferences.UserPreferencesRepository
  * @property showRhymes Whether the rhymes are coloured.
  * @property export The song exported as Markdown, while its share sheet shows; `null` otherwise.
  * @property ideas The ideas linked to the song, newest first, which its « ⋯ » menu offers to add as verses.
+ * @property audioCount How many audios the song has: the count on the top bar's audios button.
  * @property selection The selected verse, which its sheet acts on: the one being edited, or the one whose letter or
  * count was tapped; `null` when none is.
  * @property pasteUndo The last paste split into sections, while its undo bar shows; `null` otherwise.
@@ -39,6 +40,7 @@ internal data class EditorUiState(
     val showRhymes: Boolean = true,
     val pasteUndo: PasteUndo? = null,
     val selection: VerseSelection? = null,
+    val audioCount: Int = 0,
     val export: ExportFile? = null,
     val ideas: List<Idea> = emptyList(),
     val conflicts: List<String> = emptyList(),

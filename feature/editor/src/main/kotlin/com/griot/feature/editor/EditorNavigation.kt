@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.griot.feature.editor.audio.AudiosScreen
 import com.griot.feature.editor.history.HistoryScreen
 import kotlinx.serialization.Serializable
 
@@ -27,6 +28,14 @@ fun NavController.navigateToEditor(songId: String) = navigate(EditorRoute(songId
 internal data class HistoryRoute(val songId: String, val verseId: String?)
 
 /**
+ * The audios of a song (GRI-51).
+ *
+ * @property songId UUID of the song.
+ */
+@Serializable
+internal data class AudiosRoute(val songId: String)
+
+/**
  * Structured editor, verses, font size and paste splitting (GRI-14 to GRI-18).
  *
  * @param onFile Opens « Dossier et genre » for the song with this id.
@@ -39,7 +48,11 @@ fun NavGraphBuilder.editorGraph(navController: NavController, onBack: () -> Unit
             onBack = onBack,
             onOpenHistory = { verseId -> navController.navigate(HistoryRoute(songId = songId, verseId = verseId)) },
             onFile = { onFile(songId) },
+            onOpenAudios = { navController.navigate(AudiosRoute(songId)) },
         )
+    }
+    composable<AudiosRoute> { entry ->
+        AudiosScreen(songId = entry.toRoute<AudiosRoute>().songId, onBack = { navController.popBackStack() })
     }
     composable<HistoryRoute> { entry ->
         val route = entry.toRoute<HistoryRoute>()

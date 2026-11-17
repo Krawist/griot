@@ -349,8 +349,17 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   « Accepter les N restantes »; the proposals count as looked at once every one is decided, so leaving keeps the card.
   Songs without text are not titled. Checked on the S23 (duplicates, merge) and the S25 (genres and a title from
   Gemini Nano).
-- [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
-  need setup).
+- [x] **GRI-51** — `attachments` (database version 8, synced as `ATTACHMENT`): memo, file or link of a song
+  (`AttachmentKind`), optionally of a section or a verse, with its title and length. `AttachmentRepository`
+  (`:core:data` `audio`): a file is never copied (`AudioFiles.take` keeps a persistable read permission and reads its
+  name and length); its row holds the phone's `deviceId` (`UserPreferencesRepository.deviceId()`), so another phone
+  shows « Sur un autre téléphone », and a file moved or deleted shows « Fichier introuvable »; both are relinked by
+  picking the file again. `AudiosScreen` (`AudiosRoute`, from the audios button of the editor's top bar, with the
+  count in a badge): « Beats et musique » and « Mémos vocaux », « Fichier » and « Lien » (`LinkService` names Spotify,
+  YouTube, SoundCloud…; a link opens in its app or the browser), long press to rename, relink or remove.
+  « Enregistrer » and playing a file come with GRI-50 and GRI-52.
+- [ ] **Next tickets:** GRI-50, GRI-52, GRI-53 (audio); GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
+  and GRI-30; GRI-33 (online model: need setup).
 
 Update this section at the end of each ticket.
 

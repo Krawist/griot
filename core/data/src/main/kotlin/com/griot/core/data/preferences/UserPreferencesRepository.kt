@@ -57,6 +57,9 @@ interface UserPreferencesRepository {
     /** When the author last looked at the tidy-up proposals; `null` never. */
     val tidyUpReviewedAt: Flow<Instant?>
 
+    /** The id of this phone, made once: a file added here is on this phone only (GRI-51). */
+    suspend fun deviceId(): String
+
     /** An import asks for a tidy-up. */
     suspend fun requestTidyUp()
 

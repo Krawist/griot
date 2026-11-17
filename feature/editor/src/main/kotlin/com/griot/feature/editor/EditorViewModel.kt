@@ -2,6 +2,7 @@ package com.griot.feature.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.griot.core.data.audio.AttachmentRepository
 import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.idea.IdeaRepository
 import com.griot.core.data.language.SongLanguageDetector
@@ -64,6 +65,7 @@ internal class EditorViewModel @AssistedInject constructor(
     private val versions: VersionRepository,
     private val exporter: MarkdownExporter,
     ideas: IdeaRepository,
+    attachments: AttachmentRepository,
 ) : ViewModel() {
     private val focus = MutableStateFlow<VerseFocus?>(null)
     private val pasteUndo = MutableStateFlow<PasteUndo?>(null)
@@ -112,6 +114,7 @@ internal class EditorViewModel @AssistedInject constructor(
             }
         }
         .combine(focus) { state, focus -> state.copy(focus = focus) }
+        .combine(attachments.observeAttachments(songId)) { state, audios -> state.copy(audioCount = audios.size) }
         .combine(preferences.editorFontSize) { state, size -> state.copy(fontSize = size) }
         .combine(pasteUndo) { state, undo -> state.copy(pasteUndo = undo) }
         .combine(export) { state, file -> state.copy(export = file) }

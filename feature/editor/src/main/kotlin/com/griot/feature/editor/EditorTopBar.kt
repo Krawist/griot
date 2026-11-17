@@ -1,13 +1,16 @@
 package com.griot.feature.editor
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -16,6 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.griot.core.data.model.SongLanguage
@@ -25,8 +31,8 @@ import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 
 /**
- * The editor's top bar: back, the song's title with its language under it, and « ⋯ » with the song's [menu] anchored
- * to it.
+ * The editor's top bar: back, the song's title with its language under it, the audios with their count, and « ⋯ »
+ * with the song's [menu] anchored to it.
  */
 @Suppress("LongParameterList") // The song, its menu, and one callback per button.
 @Composable
@@ -34,8 +40,10 @@ internal fun EditorTopBar(
     title: String,
     language: SongLanguage,
     languageDetected: Boolean,
+    audioCount: Int,
     menuOpen: Boolean,
     onBack: () -> Unit,
+    onAudios: () -> Unit,
     onMenu: () -> Unit,
     onMenuDismiss: () -> Unit,
     menu: @Composable ColumnScope.() -> Unit,
@@ -68,6 +76,7 @@ internal fun EditorTopBar(
                 color = palette.muted,
             )
         }
+        AudiosButton(count = audioCount, onClick = onAudios)
         Box {
             IconButton(onClick = onMenu, modifier = Modifier.size(GriotSpacing.touchTarget)) {
                 Icon(
@@ -80,6 +89,41 @@ internal fun EditorTopBar(
         }
     }
 }
+
+// The audios of the song, with their count in a magenta badge when there are some.
+@Composable
+private fun AudiosButton(count: Int, onClick: () -> Unit) {
+    val palette = GriotTheme.palette
+    val description = stringResource(R.string.audios_count, count)
+    Box {
+        IconButton(
+            onClick = onClick,
+            modifier = Modifier.size(GriotSpacing.touchTarget).semantics { contentDescription = description },
+        ) {
+            Icon(
+                painter = painterResource(DesignR.drawable.ic_nav_songs),
+                contentDescription = null,
+                tint = palette.ink,
+            )
+        }
+        if (count > 0) {
+            Text(
+                text = count.toString(),
+                style = GriotTheme.type.counter,
+                color = palette.onAccent,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 6.dp, end = 5.dp)
+                    .background(palette.accentFill, CircleShape)
+                    .defaultMinSize(minWidth = BadgeSize, minHeight = BadgeSize)
+                    .padding(horizontal = 4.dp),
+            )
+        }
+    }
+}
+
+private val BadgeSize = 16.dp
 
 /** The short code of a language: « FR », « EN ». */
 private fun SongLanguage.codeRes(): Int = when (this) {

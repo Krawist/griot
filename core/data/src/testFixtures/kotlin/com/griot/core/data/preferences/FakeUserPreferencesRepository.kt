@@ -64,6 +64,8 @@ class FakeUserPreferencesRepository(
 
     override val tidyUpReviewedAt = MutableStateFlow<Instant?>(null)
 
+    override suspend fun deviceId() = "this-device-id"
+
     override suspend fun requestTidyUp() {
         tidyUpRequested.value = true
     }

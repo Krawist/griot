@@ -4,6 +4,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.griot.core.data.database.dao.AttachmentDao
 import com.griot.core.data.database.dao.ConflictDao
 import com.griot.core.data.database.dao.FolderDao
 import com.griot.core.data.database.dao.GenreDao
@@ -17,6 +18,7 @@ import com.griot.core.data.database.dao.TidyRefusalDao
 import com.griot.core.data.database.dao.VerseDao
 import com.griot.core.data.database.dao.VersionDao
 import com.griot.core.data.database.dao.WordCorrectionDao
+import com.griot.core.data.database.entity.AttachmentEntity
 import com.griot.core.data.database.entity.ConflictEntity
 import com.griot.core.data.database.entity.FolderEntity
 import com.griot.core.data.database.entity.GenreEntity
@@ -45,14 +47,16 @@ import com.griot.core.data.database.entity.WordCorrectionEntity
         GenreEntity::class,
         SongFolderEntity::class,
         TidyRefusalEntity::class,
+        AttachmentEntity::class,
     ],
-    version = 7,
+    version = 8,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6, spec = SongFoldersMigration::class),
         AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8),
     ],
 )
 @TypeConverters(DatabaseConverters::class)
@@ -83,4 +87,6 @@ internal abstract class GriotDatabase : RoomDatabase() {
     abstract fun songFolderDao(): SongFolderDao
 
     abstract fun tidyRefusalDao(): TidyRefusalDao
+
+    abstract fun attachmentDao(): AttachmentDao
 }

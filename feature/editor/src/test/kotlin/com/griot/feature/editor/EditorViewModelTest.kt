@@ -1,5 +1,6 @@
 package com.griot.feature.editor
 
+import com.griot.core.data.audio.FakeAttachmentRepository
 import com.griot.core.data.export.FakeMarkdownExporter
 import com.griot.core.data.idea.FakeIdeaRepository
 import com.griot.core.data.language.FakeSongLanguageDetector
@@ -89,6 +90,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -133,6 +135,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -162,6 +165,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
 
             // when
@@ -190,6 +194,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
 
             // when
@@ -215,6 +220,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
 
             // when
@@ -251,6 +257,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
 
             // when
@@ -297,6 +304,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -344,6 +352,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -391,6 +400,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -439,6 +449,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -486,6 +497,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -536,6 +548,7 @@ internal class EditorViewModelTest {
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -587,6 +600,7 @@ internal class EditorViewModelTest {
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -618,6 +632,7 @@ internal class EditorViewModelTest {
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -680,6 +695,7 @@ internal class EditorViewModelTest {
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -728,6 +744,7 @@ internal class EditorViewModelTest {
                     versions = FakeVersionRepository(),
                     exporter = FakeMarkdownExporter(),
                     ideas = FakeIdeaRepository(),
+                    attachments = FakeAttachmentRepository(),
                 )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -760,6 +777,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -783,6 +801,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -826,6 +845,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -873,6 +893,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -925,6 +946,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -970,6 +992,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1015,6 +1038,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1040,6 +1064,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1084,6 +1109,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1129,6 +1155,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1174,6 +1201,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -1223,6 +1251,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -1267,6 +1296,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.onVerseSelected("my-verse-id-1")
@@ -1312,6 +1342,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.onVerseSelected("my-verse-id-1")
@@ -1359,6 +1390,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -1402,6 +1434,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -1432,6 +1465,7 @@ internal class EditorViewModelTest {
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1467,6 +1501,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = exporter,
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.launchIn(backgroundScope)
 
@@ -1495,6 +1530,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(conflicts = listOf("my-verse-id-1", "my-verse-id-2")),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1519,6 +1555,7 @@ internal class EditorViewModelTest {
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1543,6 +1580,7 @@ internal class EditorViewModelTest {
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
@@ -1585,6 +1623,7 @@ internal class EditorViewModelTest {
                 versions = FakeVersionRepository(),
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
             viewModel.uiState.first { !it.loading }
             viewModel.onVerseCursor(verseId = "my-verse-id", cursor = 9)
@@ -1617,6 +1656,7 @@ internal class EditorViewModelTest {
                 versions = versions,
                 exporter = FakeMarkdownExporter(),
                 ideas = FakeIdeaRepository(),
+                attachments = FakeAttachmentRepository(),
             )
 
             // when
