@@ -62,14 +62,15 @@ private const val SHAPE_RADIUS = 0.54f
  * One step of the onboarding after the welcome screen: back, the progress, the [title] and its [body], the step's
  * [content], and its [actions] at the bottom, which stay above the keyboard.
  *
- * @param step Rank of the step, from 1 to [ONBOARDING_STEPS].
+ * @param step Rank of the step, from 1 to [ONBOARDING_STEPS]; `null` for a step opened outside the onboarding (the
+ * import, from the settings), which shows no progress.
  * @param actions The buttons at the bottom, usually one `GriotButton`.
  */
 // A layout of every step: its back, its texts and its two slots, all needed.
 @Suppress("LongParameterList")
 @Composable
 internal fun OnboardingStep(
-    step: Int,
+    step: Int?,
     onBack: () -> Unit,
     title: String,
     body: String,
@@ -117,9 +118,9 @@ internal fun OnboardingStep(
 }
 
 @Composable
-private fun Header(step: Int, onBack: () -> Unit) {
+private fun Header(step: Int?, onBack: () -> Unit) {
     val palette = GriotTheme.palette
-    val description = stringResource(R.string.onboarding_step, step, ONBOARDING_STEPS)
+    val description = step?.let { stringResource(R.string.onboarding_step, it, ONBOARDING_STEPS) }
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m)) {
         IconButton(onClick = onBack, modifier = Modifier.offset(x = BackOffset).size(GriotSpacing.touchTarget)) {
             Icon(
@@ -128,6 +129,7 @@ private fun Header(step: Int, onBack: () -> Unit) {
                 tint = palette.ink,
             )
         }
+        if (step == null || description == null) return@Row
         Row(
             modifier = Modifier.weight(1f).semantics { contentDescription = description },
             horizontalArrangement = Arrangement.spacedBy(ProgressGap),

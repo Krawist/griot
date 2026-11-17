@@ -228,8 +228,14 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `IdeaRepository` (`:core:data`).
 - [x] **GRI-39** — the song's « ⋯ » menu lists its linked ideas; a tap adds one as a verse at the end of the song
   (`SongEditorRepository.appendVerse`).
-- [ ] **Next tickets:** GRI-29 (settings), GRI-26/28 (sync interface, merge) (GRI-27 needs a Google Cloud OAuth client;
-  GRI-10 waits for GRI-27).
+- [x] **GRI-29** — `SettingsScreen` from the mockup: grouped glass cards (`SettingsGroup`, `SettingsRow` with a tinted
+  icon box, `SettingsValue`, `SettingsSwitch`, `SettingsButton`). Profil: name (`NameSheet`) and app language
+  (`AppLanguageSheet`; Français or English also sets the language of new songs). Synchronisation and Aide IA are shown
+  dimmed, « Pas encore disponible », until GRI-27 and GRI-32/33. Textes: import (`navigateToImport()`, the onboarding's
+  import without its progress, closing on « Terminé »), export everything, trash. Apparence: theme (the phone's),
+  lyrics size (set with « Aa »), licences (`LicencesSheet`). `PlaceholderScreen` is gone.
+- [ ] **Next tickets:** GRI-26/28 (sync interface, merge) (GRI-27 needs a Google Cloud OAuth client; GRI-10 waits
+  for GRI-27).
 
 Update this section at the end of each ticket.
 

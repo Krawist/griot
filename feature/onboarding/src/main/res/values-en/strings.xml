@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="import_body">Import them now to find everything in one place, with syllables and rhymes.</string>
+    <string name="import_close">Done</string>
     <string name="import_done">Start writing</string>
     <string name="import_failed">“%1$s” is empty or unreadable: nothing was created.</string>
     <string name="import_files_hint">.txt or .md files</string>

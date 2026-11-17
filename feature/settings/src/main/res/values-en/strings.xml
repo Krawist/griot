@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="settings_export_all">Export all songs</string>
-    <string name="settings_language_current">App language: %1$s</string>
-    <string name="settings_language_english">English</string>
-    <string name="settings_language_french">Français</string>
+    <string name="settings_ai">AI help</string>
+    <string name="settings_ai_device">On-device AI</string>
+    <string name="settings_ai_online">Online AI</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_auto_sync">Automatic sync</string>
+    <string name="settings_auto_sync_sub">On every change</string>
+    <string name="settings_export_all">Export everything</string>
+    <string name="settings_export_sub">As Markdown</string>
+    <string name="settings_font_size">Lyrics size</string>
+    <string name="settings_font_size_sub">Change it with « Aa » in the editor</string>
+    <string name="settings_import">Import texts</string>
+    <string name="settings_import_sub">Samsung Notes, files, pasted text</string>
+    <string name="settings_language">App language</string>
+    <string name="settings_language_hint">Français or English also becomes the language of new songs.</string>
+    <string name="settings_language_sub">Default language of songs</string>
     <string name="settings_language_system">Phone language</string>
-    <string name="settings_trash">Trash</string>
+    <string name="settings_licence_cmu_terms">Carnegie Mellon University · BSD licence</string>
+    <string name="settings_licence_inter">Inter font</string>
+    <string name="settings_licence_outfit">Outfit font</string>
+    <string name="settings_licences">Licences</string>
+    <string name="settings_licences_sub">Dictionaries and fonts</string>
+    <string name="settings_name">Name</string>
+    <string name="settings_name_placeholder">Your name or artist name</string>
+    <string name="settings_name_sub">Signs your exports</string>
+    <string name="settings_profile">Profile</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_sync">Sync</string>
+    <string name="settings_sync_now">Sync now</string>
+    <string name="settings_texts">Texts</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_sub">The phone\'s, light or dark</string>
     <string name="settings_title">Settings</string>
+    <string name="settings_trash">Trash</string>
+    <string name="settings_trash_sub">Deleted songs, kept 30 days</string>
+    <string name="settings_unavailable">Not available yet</string>
 </resources>

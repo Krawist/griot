@@ -26,8 +26,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.griot.core.design.component.PlaceholderAction
-import com.griot.core.design.component.PlaceholderScreen
 import com.griot.core.design.theme.GriotPalette
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
@@ -236,18 +234,5 @@ private fun ShapeAndSpacingCatalogPreview() {
                 }
             }
         }
-    }
-}
-
-@Preview(name = "Light")
-@Preview(name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun ComponentCatalogPreview() {
-    GriotTheme {
-        PlaceholderScreen(
-            title = "Tes chansons",
-            subtitle = "Écran à venir",
-            actions = listOf(PlaceholderAction("Nouvelle chanson") {}, PlaceholderAction("Idées") {}),
-        )
     }
 }

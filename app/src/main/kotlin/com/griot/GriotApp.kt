@@ -42,6 +42,7 @@ import com.griot.feature.library.LibraryGraph
 import com.griot.feature.library.libraryGraph
 import com.griot.feature.library.navigateToTrash
 import com.griot.feature.onboarding.OnboardingGraph
+import com.griot.feature.onboarding.navigateToImport
 import com.griot.feature.onboarding.onboardingGraph
 import com.griot.feature.settings.SettingsGraph
 import com.griot.feature.settings.settingsGraph
@@ -115,7 +116,10 @@ private fun GriotNavHost(
                 onBack = { navController.popBackStack() },
             )
             ideasGraph(onOpenSong = { songId -> navController.navigateToEditor(songId) })
-            settingsGraph(onOpenTrash = { navController.navigateToTrash() })
+            settingsGraph(
+                onOpenImport = { navController.navigateToImport() },
+                onOpenTrash = { navController.navigateToTrash() },
+            )
             editorGraph(navController = navController, onBack = { navController.popBackStack() })
         }
     }

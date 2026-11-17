@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="import_body">Importe-les maintenant pour tout retrouver au même endroit, avec syllabes et rimes.</string>
+    <string name="import_close">Terminé</string>
     <string name="import_done">Commencer à écrire</string>
     <string name="import_failed">« %1$s » est vide ou illisible : rien n\'a été créé.</string>
     <string name="import_files_hint">Fichiers .txt ou .md</string>

@@ -24,6 +24,13 @@ internal data object LanguageRoute
 @Serializable
 internal data object ImportRoute
 
+// The import opened from the settings: outside the onboarding's graph, without its progress.
+@Serializable
+internal data object SettingsImportRoute
+
+/** Opens the import of texts, from the settings. */
+fun NavController.navigateToImport() = navigate(SettingsImportRoute)
+
 /**
  * Welcome, name, language, sync and import (GRI-07 to GRI-11).
  *
@@ -42,5 +49,12 @@ fun NavGraphBuilder.onboardingGraph(navController: NavController, onCompleted: (
             LanguageScreen(onBack = { navController.popBackStack() }, onNext = { navController.navigate(ImportRoute) })
         }
         composable<ImportRoute> { ImportScreen(onBack = { navController.popBackStack() }, onDone = onCompleted) }
+    }
+    composable<SettingsImportRoute> {
+        ImportScreen(
+            onBack = { navController.popBackStack() },
+            onDone = { navController.popBackStack() },
+            inOnboarding = false,
+        )
     }
 }

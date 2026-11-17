@@ -25,6 +25,7 @@ import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.GriotButton
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import com.griot.feature.onboarding.ONBOARDING_STEPS
 import com.griot.feature.onboarding.OnboardingStep
 import com.griot.feature.onboarding.R
 
@@ -33,7 +34,12 @@ private val TextTypes = arrayOf("text/*", "application/octet-stream")
 
 /** Step 4 of the onboarding: texts written elsewhere become songs, from Samsung Notes, files or a paste. */
 @Composable
-internal fun ImportScreen(onBack: () -> Unit, onDone: () -> Unit, viewModel: ImportViewModel = hiltViewModel()) {
+internal fun ImportScreen(
+    onBack: () -> Unit,
+    onDone: () -> Unit,
+    inOnboarding: Boolean = true,
+    viewModel: ImportViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var sheet by rememberSaveable { mutableStateOf<ImportSheet?>(null) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
@@ -41,6 +47,7 @@ internal fun ImportScreen(onBack: () -> Unit, onDone: () -> Unit, viewModel: Imp
     }
     ImportContent(
         uiState = uiState,
+        step = ONBOARDING_STEPS.takeIf { inOnboarding },
         onBack = onBack,
         onDone = onDone,
         onSamsungNotes = { sheet = ImportSheet.SAMSUNG_NOTES },
@@ -70,6 +77,7 @@ internal fun ImportScreen(onBack: () -> Unit, onDone: () -> Unit, viewModel: Imp
 @Composable
 private fun ImportContent(
     uiState: ImportUiState,
+    step: Int?,
     onBack: () -> Unit,
     onDone: () -> Unit,
     onSamsungNotes: () -> Unit,
@@ -78,19 +86,25 @@ private fun ImportContent(
 ) {
     val palette = GriotTheme.palette
     OnboardingStep(
-        step = 4,
+        step = step,
         onBack = onBack,
         title = stringResource(R.string.import_title),
         body = stringResource(R.string.import_body),
         actions = {
-            Text(
-                text = stringResource(R.string.import_later),
-                style = MaterialTheme.typography.bodySmall,
-                color = palette.muted,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
+            // Opened from the settings, the import has no later and closes on « Terminé ».
+            if (step != null) {
+                Text(
+                    text = stringResource(R.string.import_later),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = palette.muted,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            GriotButton(
+                text = stringResource(if (step != null) R.string.import_done else R.string.import_close),
+                onClick = onDone,
             )
-            GriotButton(text = stringResource(R.string.import_done), onClick = onDone)
         },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(GriotSpacing.m)) {
@@ -157,6 +171,7 @@ private fun ImportScreenPreview() {
     GriotTheme {
         ImportContent(
             uiState = ImportUiState(result = ImportResult(songs = 3, sections = 12, failed = listOf("Brouillon vide"))),
+            step = ONBOARDING_STEPS,
             onBack = {},
             onDone = {},
             onSamsungNotes = {},

@@ -5,26 +5,54 @@ import androidx.lifecycle.viewModelScope
 import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.language.AppLanguageRepository
 import com.griot.core.data.model.AppLanguage
+import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.preferences.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
     private val appLanguage: AppLanguageRepository,
+    private val preferences: UserPreferencesRepository,
     private val exporter: MarkdownExporter,
 ) : ViewModel() {
     private val state = MutableStateFlow(SettingsUiState(language = appLanguage.current()))
     val uiState: StateFlow<SettingsUiState> = state.asStateFlow()
 
-    /** Applies [language] to the interface at once. */
+    init {
+        combine(preferences.authorName, preferences.editorFontSize) { name, size ->
+            state.update { it.copy(authorName = name.orEmpty(), fontSize = size) }
+        }.launchIn(viewModelScope)
+    }
+
+    /** Saves [name] without the spaces around it; an empty name keeps the one before. */
+    fun onNameChange(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        viewModelScope.launch { preferences.setAuthorName(trimmed) }
+    }
+
+    /**
+     * Applies [language] to the interface; French or English also becomes the language of new songs, as in the
+     * onboarding. The preference is saved first, as Android redraws the screens once the language applies.
+     */
     fun onLanguageSelected(language: AppLanguage) {
-        appLanguage.set(language)
-        state.update { it.copy(language = language) }
+        viewModelScope.launch {
+            when (language) {
+                AppLanguage.FRENCH -> preferences.setDefaultSongLanguage(SongLanguage.FRENCH)
+                AppLanguage.ENGLISH -> preferences.setDefaultSongLanguage(SongLanguage.ENGLISH)
+                AppLanguage.SYSTEM -> Unit
+            }
+            state.update { it.copy(language = language) }
+            appLanguage.set(language)
+        }
     }
 
     /** Exports every song as Markdown in a zip, then shows what to do with the file. */
