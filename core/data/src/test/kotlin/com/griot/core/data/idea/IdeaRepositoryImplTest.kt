@@ -27,6 +27,8 @@ internal class IdeaRepositoryImplTest {
         songDao = database.songDao(),
         sectionDao = database.sectionDao(),
         verseDao = database.verseDao(),
+        songGenreDao = database.songGenreDao(),
+        favoriteDao = database.favoriteDao(),
         preferences = FakeUserPreferencesRepository(),
         detector = FakeSongLanguageDetector(),
         clock = clock,

@@ -44,8 +44,8 @@ internal fun FolderColor.tint(): Pair<Color, Color> {
 private const val YELLOW_FILL_ALPHA = 0.22f
 
 /**
- * What a card says of a song: « EP 2027, Brouillons · Afro · il y a 2 h ». [showFolders] adds its folders, or « Sans
- * dossier », where the songs of several folders mix.
+ * What a card says of a song: « EP 2027, Brouillons · Afro, Rap · il y a 2 h ». [showFolders] adds its folders, or
+ * « Sans dossier », where the songs of several folders mix.
  */
 @Composable
 internal fun LibraryItem.meta(showFolders: Boolean): String = listOfNotNull(
@@ -56,6 +56,6 @@ internal fun LibraryItem.meta(showFolders: Boolean): String = listOfNotNull(
     } else {
         null
     },
-    genre?.displayName(),
+    genres.map { it.displayName() }.joinToString(separator = ", ").ifEmpty { null },
     updated.text(),
 ).joinToString(separator = " · ")

@@ -21,9 +21,13 @@ import com.griot.core.design.theme.GriotTheme
 
 private val ChipHeight = 34.dp
 
-/** A chip of a filter or a choice, filled when [selected]. */
+/**
+ * A chip of a filter or a choice, filled when [selected].
+ *
+ * @param mixed Whether it holds for some of the songs selected only: outlined in magenta.
+ */
 @Composable
-internal fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
+internal fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit, mixed: Boolean = false) {
     val palette = GriotTheme.palette
     val motion = GriotTheme.motion
     val fill by animateColorAsState(
@@ -42,7 +46,13 @@ internal fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
             .clip(CircleShape)
             .selectable(selected = selected, role = Role.Tab, onClick = onClick)
             .background(fill, CircleShape)
-            .then(if (selected) Modifier else Modifier.border(1.dp, palette.line, CircleShape))
+            .then(
+                when {
+                    selected -> Modifier
+                    mixed -> Modifier.border(1.5.dp, palette.accent, CircleShape)
+                    else -> Modifier.border(1.dp, palette.line, CircleShape)
+                },
+            )
             .padding(horizontal = GriotSpacing.m + 2.dp),
         contentAlignment = Alignment.Center,
     ) {

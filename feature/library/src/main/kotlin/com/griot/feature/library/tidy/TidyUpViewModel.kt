@@ -149,7 +149,9 @@ internal class TidyUpViewModel @Inject constructor(
                 proposal.folder?.let {
                     folders.fileSongs(songIds = proposal.songIds, add = setOf(it.id), remove = emptySet())
                 }
-                proposal.genre?.let { songs.setGenre(ids = proposal.songIds, genreId = it.id) }
+                proposal.genre?.let {
+                    genres.tagSongs(songIds = proposal.songIds, add = setOf(it.id), remove = emptySet())
+                }
             }
             TidyUpKind.TITLE -> proposal.title?.let { songs.renameSong(id = proposal.songIds.first(), title = it) }
             TidyUpKind.DUPLICATE ->

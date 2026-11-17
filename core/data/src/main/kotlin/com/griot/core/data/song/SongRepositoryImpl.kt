@@ -1,11 +1,15 @@
 package com.griot.core.data.song
 
+import com.griot.core.data.database.dao.FavoriteDao
 import com.griot.core.data.database.dao.LibrarySongRow
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
+import com.griot.core.data.database.dao.SongGenreDao
 import com.griot.core.data.database.dao.VerseDao
+import com.griot.core.data.database.entity.FavoriteEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
+import com.griot.core.data.database.entity.SongGenreEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.language.SongLanguageDetector
 import com.griot.core.data.model.LibrarySong
@@ -28,12 +32,14 @@ import kotlinx.coroutines.flow.map
 
 /** Default implementation for [SongRepository], on the Room database. */
 // One function per change of the library: create, import, detect, tag, rename, duplicate, delete, restore, purge.
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "LongParameterList") // And one DAO per table it writes.
 @Singleton
 internal class SongRepositoryImpl @Inject constructor(
     private val songDao: SongDao,
     private val sectionDao: SectionDao,
     private val verseDao: VerseDao,
+    private val songGenreDao: SongGenreDao,
+    private val favoriteDao: FavoriteDao,
     private val preferences: UserPreferencesRepository,
     private val detector: SongLanguageDetector,
     private val clock: Clock,
@@ -104,8 +110,9 @@ internal class SongRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun setGenre(ids: List<String>, genreId: String?) {
-        songDao.setGenre(ids = ids, genreId = genreId, at = Instant.now(clock))
+    override suspend fun setFavorite(ids: List<String>, favorite: Boolean) {
+        val now = Instant.now(clock)
+        ids.forEach { favoriteDao.upsert(FavoriteEntity(songId = it, updatedAt = now, deleted = !favorite)) }
     }
 
     override suspend fun renameSong(id: String, title: String) {
@@ -133,6 +140,17 @@ internal class SongRepositoryImpl @Inject constructor(
             verse.copy(id = newId(), sectionId = sectionIds.getValue(verse.sectionId), updatedAt = now)
         }
         songDao.insertWithContent(song = copy, sections = copiedSections, verses = copiedVerses)
+        // The copy keeps the genres of the original.
+        songGenreDao.genresOf(id).forEach { genreId ->
+            songGenreDao.upsert(
+                SongGenreEntity(
+                    id = SongGenreEntity.idOf(songId = copy.id, genreId = genreId),
+                    songId = copy.id,
+                    genreId = genreId,
+                    updatedAt = now,
+                ),
+            )
+        }
         return copy.id
     }
 
@@ -156,7 +174,8 @@ internal class SongRepositoryImpl @Inject constructor(
         language = language,
         status = status,
         folderIds = folderIds?.split(',').orEmpty(),
-        genreId = genreId,
+        genreIds = genreIds?.split(',').orEmpty(),
+        favorite = favorite,
         updatedAt = updatedAt,
         sectionCount = sectionCount,
         firstVerse = firstVerse,

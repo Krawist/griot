@@ -5,12 +5,14 @@ import androidx.room.useWriterConnection
 import com.griot.core.data.database.GriotDatabase
 import com.griot.core.data.database.entity.AttachmentEntity
 import com.griot.core.data.database.entity.ConflictEntity
+import com.griot.core.data.database.entity.FavoriteEntity
 import com.griot.core.data.database.entity.FolderEntity
 import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.IdeaEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.SongFolderEntity
+import com.griot.core.data.database.entity.SongGenreEntity
 import com.griot.core.data.database.entity.SyncStateEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.database.entity.VersionEntity
@@ -98,6 +100,20 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
             update = database.attachmentDao()::update,
             updatedAt = AttachmentEntity::updatedAt,
         ),
+        SyncEntityType.SONG_GENRE to Table(
+            serializer = SongGenreEntity.serializer(),
+            get = database.songGenreDao()::getById,
+            insert = database.songGenreDao()::insert,
+            update = database.songGenreDao()::update,
+            updatedAt = SongGenreEntity::updatedAt,
+        ),
+        SyncEntityType.FAVORITE to Table(
+            serializer = FavoriteEntity.serializer(),
+            get = database.favoriteDao()::getById,
+            insert = database.favoriteDao()::insert,
+            update = database.favoriteDao()::update,
+            updatedAt = FavoriteEntity::updatedAt,
+        ),
     )
 
     override fun observePendingCount(): Flow<Int> = syncDao.observePendingCount()
@@ -116,6 +132,12 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
                 } +
                 syncDao.pendingAttachments().map {
                     record(SyncEntityType.ATTACHMENT, it.id, it.updatedAt, it.deleted, it)
+                } +
+                syncDao.pendingSongGenres().map {
+                    record(SyncEntityType.SONG_GENRE, it.id, it.updatedAt, it.deleted, it)
+                } +
+                syncDao.pendingFavorites().map {
+                    record(SyncEntityType.FAVORITE, it.songId, it.updatedAt, it.deleted, it)
                 }
         }
     }

@@ -71,6 +71,7 @@ internal class LibraryViewModel @Inject constructor(
             results = if (query.isBlank()) emptyList() else all.filter { it.song.matches(query) },
             today = recent.take(TODAY_SONGS),
             recentCount = recent.size,
+            favoriteCount = library.count { it.favorite },
             resume = all.firstOrNull()?.takeIf { recent.isEmpty() }?.let { item ->
                 ResumeSong(item = item, verses = item.song.firstSection.filter { it.isNotBlank() }.take(RESUME_VERSES))
             },

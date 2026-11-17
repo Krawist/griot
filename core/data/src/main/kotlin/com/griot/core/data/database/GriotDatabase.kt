@@ -6,12 +6,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.griot.core.data.database.dao.AttachmentDao
 import com.griot.core.data.database.dao.ConflictDao
+import com.griot.core.data.database.dao.FavoriteDao
 import com.griot.core.data.database.dao.FolderDao
 import com.griot.core.data.database.dao.GenreDao
 import com.griot.core.data.database.dao.IdeaDao
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
 import com.griot.core.data.database.dao.SongFolderDao
+import com.griot.core.data.database.dao.SongGenreDao
 import com.griot.core.data.database.dao.SyncDao
 import com.griot.core.data.database.dao.SyncStateDao
 import com.griot.core.data.database.dao.TidyRefusalDao
@@ -20,12 +22,14 @@ import com.griot.core.data.database.dao.VersionDao
 import com.griot.core.data.database.dao.WordCorrectionDao
 import com.griot.core.data.database.entity.AttachmentEntity
 import com.griot.core.data.database.entity.ConflictEntity
+import com.griot.core.data.database.entity.FavoriteEntity
 import com.griot.core.data.database.entity.FolderEntity
 import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.IdeaEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.SongFolderEntity
+import com.griot.core.data.database.entity.SongGenreEntity
 import com.griot.core.data.database.entity.SyncStateEntity
 import com.griot.core.data.database.entity.TidyRefusalEntity
 import com.griot.core.data.database.entity.VerseEntity
@@ -48,8 +52,10 @@ import com.griot.core.data.database.entity.WordCorrectionEntity
         SongFolderEntity::class,
         TidyRefusalEntity::class,
         AttachmentEntity::class,
+        SongGenreEntity::class,
+        FavoriteEntity::class,
     ],
-    version = 9,
+    version = 11,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -58,6 +64,8 @@ import com.griot.core.data.database.entity.WordCorrectionEntity
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 8, to = 9),
+        AutoMigration(from = 9, to = 10, spec = SongGenresMigration::class),
+        AutoMigration(from = 10, to = 11, spec = SongGenreColumnMigration::class),
     ],
 )
 @TypeConverters(DatabaseConverters::class)
@@ -70,6 +78,10 @@ internal abstract class GriotDatabase : RoomDatabase() {
     abstract fun verseDao(): VerseDao
 
     abstract fun versionDao(): VersionDao
+
+    abstract fun songGenreDao(): SongGenreDao
+
+    abstract fun favoriteDao(): FavoriteDao
 
     abstract fun ideaDao(): IdeaDao
 

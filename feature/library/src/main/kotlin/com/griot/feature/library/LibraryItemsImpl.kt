@@ -22,7 +22,7 @@ internal class LibraryItemsImpl @Inject constructor(private val engines: Phoneti
         updated = relativeTime(song.updatedAt, now = now, zone = clock.zone),
         rhymes = rhymesOf(song),
         folders = folders.filter { it.id in song.folderIds },
-        genre = genres.firstOrNull { it.id == song.genreId },
+        genres = genres.filter { it.id in song.genreIds },
     )
 
     // The rhyme ranks of the first section, read in English for an English song and in French otherwise: each engine

@@ -3,7 +3,9 @@ package com.griot.core.data.tidy
 import androidx.room.immediateTransaction
 import androidx.room.useWriterConnection
 import com.griot.core.data.database.GriotDatabase
+import com.griot.core.data.database.entity.FavoriteEntity
 import com.griot.core.data.database.entity.SongFolderEntity
+import com.griot.core.data.database.entity.SongGenreEntity
 import com.griot.core.data.database.entity.TidyRefusalEntity
 import com.griot.core.data.model.TidyUpCandidates
 import com.griot.core.data.model.TidyUpKind
@@ -46,7 +48,7 @@ internal class TidyUpRepositoryImpl @Inject constructor(
                         allowed(TidyUpKind.TITLE, it.id)
                 },
                 unclassified = library.filter {
-                    it.folderIds.isEmpty() && it.genreId == null && allowed(TidyUpKind.CLASSIFY, it.id)
+                    it.folderIds.isEmpty() && it.genreIds.isEmpty() && allowed(TidyUpKind.CLASSIFY, it.id)
                 },
             )
         }
@@ -61,7 +63,9 @@ internal class TidyUpRepositoryImpl @Inject constructor(
     override suspend fun mergeDuplicates(keepId: String, duplicates: List<String>) {
         val now = Instant.now(clock)
         val library = songs.observeLibrary().first()
-        val folders = library.filter { it.id in duplicates }.flatMap { it.folderIds }.toSet()
+        val merged = library.filter { it.id in duplicates }
+        val folders = merged.flatMap { it.folderIds }.toSet()
+        val genres = merged.flatMap { it.genreIds }.toSet()
         database.useWriterConnection { transactor ->
             transactor.immediateTransaction {
                 duplicates.forEach { id ->
@@ -77,6 +81,20 @@ internal class TidyUpRepositoryImpl @Inject constructor(
                             updatedAt = now,
                         ),
                     )
+                }
+                genres.forEach { genreId ->
+                    database.songGenreDao().upsert(
+                        SongGenreEntity(
+                            id = SongGenreEntity.idOf(songId = keepId, genreId = genreId),
+                            songId = keepId,
+                            genreId = genreId,
+                            updatedAt = now,
+                        ),
+                    )
+                }
+                // A duplicate in the favourites puts the song kept there.
+                if (merged.any { it.favorite }) {
+                    database.favoriteDao().upsert(FavoriteEntity(songId = keepId, updatedAt = now))
                 }
             }
         }

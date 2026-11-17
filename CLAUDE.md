@@ -415,6 +415,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   f/v, s/z, ch/j, th/dh): « clean / sublime », « vite / vide » rhyme. `chooseRhymes` keeps the `RHYMES_SHOWN` (10)
   strongest suggestions: one word per pronunciation, no homophone of the verse's word, common words first, rich rhymes
   (`richness`: a sound shared before the ending, not the whole word) first among them, grouped by syllables.
+- [x] **GRI-62** — favourites (`favorites`, one row per song, synced as `FAVORITE`; `SongRepository.setFavorite`, not
+  dating the song) and several genres per song (`song_genres`, synced as `SONG_GENRE`; `GenreRepository.tagSongs`).
+  Database version 10 copies `songs.genreId` into `song_genres` (`SongGenresMigration`), 11 drops it
+  (`SongGenreColumnMigration`); `SongGenresMigrationTest` builds a version-9 file from `9.json` and opens it.
+  `LibrarySong.genreIds`, `favorite`. « Favoris » (`FAVORITES_FOLDER_ID`, `isVirtualFolder`) after « Récents »; heart
+  on the card; « Ajouter aux favoris » first in `SongActionsSheet`; `FilingSheet` genres checked like folders
+  (`FilingCheck`, `FilingGenre`, outlined `FilterChip(mixed)`). An empty folder says how to fill it.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10
   and GRI-30.
 

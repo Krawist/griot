@@ -44,8 +44,10 @@ internal interface SongDao {
     /** The songs out of the trash with what the library shows of them, last changed first. */
     @Query(
         """
-        SELECT s.id, s.title, s.language, s.status, s.genreId, s.updatedAt,
+        SELECT s.id, s.title, s.language, s.status, s.updatedAt,
             (SELECT GROUP_CONCAT(f.folderId) FROM song_folders f WHERE f.songId = s.id AND f.deleted = 0) AS folderIds,
+            (SELECT GROUP_CONCAT(g.genreId) FROM song_genres g WHERE g.songId = s.id AND g.deleted = 0) AS genreIds,
+            EXISTS (SELECT 1 FROM favorites h WHERE h.songId = s.id AND h.deleted = 0) AS favorite,
             (SELECT COUNT(*) FROM sections c WHERE c.songId = s.id AND c.deleted = 0) AS sectionCount,
             (
                 SELECT v.text FROM verses v JOIN sections c ON v.sectionId = c.id
@@ -90,14 +92,6 @@ internal interface SongDao {
     /** Sets the writing language of the song at [at]. */
     @Query("UPDATE songs SET language = :language, languageDetected = :detected, updatedAt = :at WHERE id = :id")
     suspend fun setLanguage(id: String, language: SongLanguage, detected: Boolean, at: Instant)
-
-    /** Tags the songs [ids] with the genre [genreId] (none when `null`) at [at]. */
-    @Query("UPDATE songs SET genreId = :genreId, updatedAt = :at WHERE id IN (:ids)")
-    suspend fun setGenre(ids: List<String>, genreId: String?, at: Instant)
-
-    /** Removes the genre [genreId] from every song at [at]. */
-    @Query("UPDATE songs SET genreId = NULL, updatedAt = :at WHERE genreId = :genreId")
-    suspend fun clearGenre(genreId: String, at: Instant)
 
     /** The songs out of the trash whose language is detected from their lyrics. */
     @Query("SELECT * FROM songs WHERE languageDetected = 1 AND deleted = 0")

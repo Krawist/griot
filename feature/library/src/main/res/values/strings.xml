@@ -24,6 +24,9 @@
     <string name="folder_color_yellow">Jaune</string>
     <string name="folder_delete">Supprimer le dossier</string>
     <string name="folder_delete_title">Supprimer « %1$s » ?</string>
+    <string name="folder_empty_body">Range une chanson ici d\'un appui long, avec « Dossier et genre ».</string>
+    <string name="folder_empty_favorites">Ajoute une chanson aux favoris d\'un appui long.</string>
+    <string name="folder_empty_title">Pas encore de chanson ici</string>
     <string name="folder_file">Ranger (%1$d)</string>
     <string name="folder_language">Langue</string>
     <string name="folder_language_filter">Filtrer par langue</string>
@@ -37,6 +40,7 @@
     <string name="genre_pop">Pop</string>
     <string name="genre_rap">Rap</string>
     <string name="genre_rnb">R&amp;B</string>
+    <string name="library_add_favorite">Ajouter aux favoris</string>
     <string name="library_all_texts">Tous les textes · %1$d</string>
     <string name="library_archives">Archives</string>
     <string name="library_copy_title">%1$s (copie)</string>
@@ -46,6 +50,8 @@
     <string name="library_duplicate">Dupliquer</string>
     <string name="library_empty_body">Touche « + » pour écrire ta première chanson.</string>
     <string name="library_empty_title">Pas encore de chanson</string>
+    <string name="library_favorite">Favori</string>
+    <string name="library_favorites">Favoris</string>
     <string name="library_file">Dossier et genre</string>
     <string name="library_filter_all">Toutes</string>
     <string name="library_filter_english">English</string>
@@ -63,6 +69,7 @@
     <string name="library_no_result_title">Aucune chanson ne correspond</string>
     <string name="library_no_text">Pas encore de texte</string>
     <string name="library_recent">Récents</string>
+    <string name="library_remove_favorite">Retirer des favoris</string>
     <string name="library_rename">Renommer</string>
     <string name="library_rename_label">Titre</string>
     <string name="library_resume">Reprendre</string>

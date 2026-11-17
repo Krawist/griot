@@ -7,7 +7,14 @@ import java.time.Instant
 /** The id of « Récents », the folder of the songs changed in the last 24 hours: always there, never stored. */
 internal const val RECENT_FOLDER_ID = "recent"
 
+/** The id of « Favoris », the folder of the author's favourite songs: always there, never stored. */
+internal const val FAVORITES_FOLDER_ID = "favorites"
+
 private val RecentWindow = Duration.ofHours(24)
 
 /** Whether the song changed in the 24 hours before [now]: a rolling window, so a song changed 25 hours ago is not. */
 internal fun LibrarySong.isRecent(now: Instant): Boolean = Duration.between(updatedAt, now) < RecentWindow
+
+/** Whether [folderId] is « Récents » or « Favoris », which cannot be renamed, recoloured or deleted. */
+internal fun isVirtualFolder(folderId: String): Boolean =
+    folderId == RECENT_FOLDER_ID || folderId == FAVORITES_FOLDER_ID

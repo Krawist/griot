@@ -36,8 +36,8 @@ class FakeSongRepository(library: List<LibrarySong> = emptyList(), trash: List<T
         calls += "detect languages"
     }
 
-    override suspend fun setGenre(ids: List<String>, genreId: String?) {
-        calls += "genre ${ids.joinToString()} $genreId"
+    override suspend fun setFavorite(ids: List<String>, favorite: Boolean) {
+        calls += "favorite ${ids.joinToString()} $favorite"
     }
 
     override suspend fun renameSong(id: String, title: String) {

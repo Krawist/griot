@@ -180,11 +180,11 @@ private fun Folders(
             .background(palette.glass, shape)
             .border(1.dp, palette.line, shape),
     ) {
-        val none = folders.none { it.check != FolderCheck.UNCHECKED }
+        val none = folders.none { it.check != FilingCheck.UNCHECKED }
         FolderRow(
             name = stringResource(R.string.filing_no_folder),
             color = FolderColor.NEUTRAL,
-            check = if (none) FolderCheck.CHECKED else FolderCheck.UNCHECKED,
+            check = if (none) FilingCheck.CHECKED else FilingCheck.UNCHECKED,
             onClick = onNoFolder,
         )
         folders.forEach { filing ->
@@ -222,7 +222,7 @@ private fun Folders(
 }
 
 @Composable
-private fun FolderRow(name: String, color: FolderColor, check: FolderCheck, onClick: () -> Unit) {
+private fun FolderRow(name: String, color: FolderColor, check: FilingCheck, onClick: () -> Unit) {
     val palette = GriotTheme.palette
     val (fill, content) = color.tint()
     Row(
@@ -259,16 +259,16 @@ private fun FolderRow(name: String, color: FolderColor, check: FolderCheck, onCl
 
 // A filled magenta circle with a check (or a dash for some of the songs only), an empty ring otherwise.
 @Composable
-private fun Check(check: FolderCheck) {
+private fun Check(check: FilingCheck) {
     val palette = GriotTheme.palette
     val description = stringResource(
         when (check) {
-            FolderCheck.CHECKED -> R.string.filing_checked
-            FolderCheck.UNCHECKED -> R.string.filing_unchecked
-            FolderCheck.MIXED -> R.string.filing_mixed
+            FilingCheck.CHECKED -> R.string.filing_checked
+            FilingCheck.UNCHECKED -> R.string.filing_unchecked
+            FilingCheck.MIXED -> R.string.filing_mixed
         },
     )
-    val on = check != FolderCheck.UNCHECKED
+    val on = check != FilingCheck.UNCHECKED
     Box(
         modifier = Modifier
             .size(CheckSize)
@@ -281,7 +281,7 @@ private fun Check(check: FolderCheck) {
             Icon(
                 painter = painterResource(
                     if (check ==
-                        FolderCheck.MIXED
+                        FilingCheck.MIXED
                     ) {
                         DesignR.drawable.ic_minus
                     } else {
@@ -296,7 +296,8 @@ private fun Check(check: FolderCheck) {
     }
 }
 
-// The genres as chips, the chosen one filled, then « + » for a genre of the author.
+// The genres as chips, those of the songs filled (outlined in magenta for some of them only), then « + » for a genre of
+// the author.
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun Genres(uiState: FilingUiState, onGenre: (String) -> Unit, onNewGenre: () -> Unit) {
@@ -306,10 +307,13 @@ private fun Genres(uiState: FilingUiState, onGenre: (String) -> Unit, onNewGenre
         horizontalArrangement = Arrangement.spacedBy(GriotSpacing.s),
         verticalArrangement = Arrangement.spacedBy(GriotSpacing.s),
     ) {
-        uiState.genres.forEach { genre ->
-            FilterChip(label = genre.displayName(), selected = uiState.genre == genre.id, onClick = {
-                onGenre(genre.id)
-            })
+        uiState.genres.forEach { (genre, check) ->
+            FilterChip(
+                label = genre.displayName(),
+                selected = check == FilingCheck.CHECKED,
+                mixed = check == FilingCheck.MIXED,
+                onClick = { onGenre(genre.id) },
+            )
         }
         Box(
             modifier = Modifier

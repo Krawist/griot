@@ -21,6 +21,11 @@ internal class SongActions(private val songs: SongRepository, private val scope:
         scope.launch { songs.renameSong(id = id, title = title.trim()) }
     }
 
+    /** Puts the song in the favourites, or takes it out when [favorite] is `false`. */
+    fun onFavorite(id: String, favorite: Boolean) {
+        scope.launch { songs.setFavorite(ids = listOf(id), favorite = favorite) }
+    }
+
     /** Copies the song under [title], such as « Les néons (copie) ». */
     fun onDuplicate(id: String, title: String) {
         scope.launch { songs.duplicateSong(id = id, title = title) }

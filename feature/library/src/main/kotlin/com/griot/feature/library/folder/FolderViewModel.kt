@@ -7,10 +7,12 @@ import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.organisation.FolderRepository
 import com.griot.core.data.organisation.GenreRepository
 import com.griot.core.data.song.SongRepository
+import com.griot.feature.library.FAVORITES_FOLDER_ID
 import com.griot.feature.library.LibraryItems
 import com.griot.feature.library.RECENT_FOLDER_ID
 import com.griot.feature.library.SongActions
 import com.griot.feature.library.isRecent
+import com.griot.feature.library.isVirtualFolder
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -28,8 +30,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * The songs of the folder [folderId], of « Récents » ([RECENT_FOLDER_ID]: the songs changed in the last 24 hours), or
- * of the whole library when it is `null`, with their filters.
+ * The songs of the folder [folderId], of « Récents » ([RECENT_FOLDER_ID]: the songs changed in the last 24 hours), of
+ * « Favoris » ([FAVORITES_FOLDER_ID]), or of the whole library when it is `null`, with their filters.
  */
 @HiltViewModel(assistedFactory = FolderViewModel.Factory::class)
 internal class FolderViewModel @AssistedInject constructor(
@@ -66,10 +68,11 @@ internal class FolderViewModel @AssistedInject constructor(
             when (folderId) {
                 null -> true
                 RECENT_FOLDER_ID -> song.isRecent(now)
+                FAVORITES_FOLDER_ID -> song.favorite
                 else -> folderId in song.folderIds
             }
         }
-        val present = inFolder.mapNotNull { it.genreId }.toSet()
+        val present = inFolder.flatMap { it.genreIds }.toSet()
         FolderUiState(
             folder = folder,
             songCount = inFolder.size,
@@ -77,14 +80,14 @@ internal class FolderViewModel @AssistedInject constructor(
             genre = filters.genre,
             language = filters.language,
             items = inFolder
-                .filter { filters.genre == null || it.genreId == filters.genre }
+                .filter { filters.genre == null || filters.genre in it.genreIds }
                 .filter { filters.language == null || it.language == filters.language }
                 .map { items.itemOf(song = it, folders = folders, genres = genres, now = now) },
             selecting = selection != null,
             selected = selection.orEmpty(),
             loading = false,
-            recent = folderId == RECENT_FOLDER_ID,
-            missing = folderId != null && folderId != RECENT_FOLDER_ID && folder == null,
+            virtual = folderId?.takeIf(::isVirtualFolder),
+            missing = folderId != null && !isVirtualFolder(folderId) && folder == null,
             deleted = deleted,
         )
     }
@@ -113,18 +116,18 @@ internal class FolderViewModel @AssistedInject constructor(
     }
 
     fun onRenameFolder(name: String) {
-        val id = folderId?.takeIf { it != RECENT_FOLDER_ID } ?: return
+        val id = folderId?.takeUnless(::isVirtualFolder) ?: return
         if (name.isNotBlank()) viewModelScope.launch { folders.renameFolder(id = id, name = name) }
     }
 
     fun onFolderColor(color: FolderColor) {
-        val id = folderId?.takeIf { it != RECENT_FOLDER_ID } ?: return
+        val id = folderId?.takeUnless(::isVirtualFolder) ?: return
         viewModelScope.launch { folders.setFolderColor(id = id, color = color) }
     }
 
     /** Deletes the folder; its songs go back to « Aucun dossier ». */
     fun onDeleteFolder() {
-        val id = folderId?.takeIf { it != RECENT_FOLDER_ID } ?: return
+        val id = folderId?.takeUnless(::isVirtualFolder) ?: return
         viewModelScope.launch { folders.deleteFolder(id) }
     }
 

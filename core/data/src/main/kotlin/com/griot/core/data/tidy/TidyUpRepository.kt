@@ -16,8 +16,9 @@ interface TidyUpRepository {
     suspend fun refuse(kind: TidyUpKind, keys: List<String>)
 
     /**
-     * Merges the [duplicates] into the song [keepId]: their versions become its own, their folders are added to it,
-     * and they go to the trash. Nothing is deleted for good.
+     * Merges the [duplicates] into the song [keepId]: their versions become its own, their folders and genres are
+     * added to it (and its place in the favourites when one of them has one), and they go to the trash. Nothing is
+     * deleted for good.
      */
     suspend fun mergeDuplicates(keepId: String, duplicates: List<String>)
 

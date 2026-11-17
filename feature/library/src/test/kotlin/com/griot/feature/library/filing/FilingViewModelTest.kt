@@ -13,7 +13,6 @@ import com.griot.core.data.organisation.FakeGenreRepository
 import com.griot.core.data.song.FakeSongRepository
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import java.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +53,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1", "my-folder-id-2"),
-                        genreId = "afro",
+                        genreIds = listOf("afro"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -66,7 +65,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1"),
-                        genreId = "rap",
+                        genreIds = listOf("rap"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -95,11 +94,11 @@ internal class FilingViewModelTest {
 
             // then
             state.folders.map { it.check } shouldContainExactly
-                listOf(FolderCheck.CHECKED, FolderCheck.MIXED, FolderCheck.UNCHECKED)
+                listOf(FilingCheck.CHECKED, FilingCheck.MIXED, FilingCheck.UNCHECKED)
         }
 
         @Test
-        fun `should choose no genre while the songs do not share one`() = runTest {
+        fun `should show a genre some of the songs have as mixed`() = runTest {
             // given
             val songs = FakeSongRepository(
                 library = listOf(
@@ -109,7 +108,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1", "my-folder-id-2"),
-                        genreId = "afro",
+                        genreIds = listOf("afro"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -121,7 +120,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1"),
-                        genreId = "rap",
+                        genreIds = listOf("rap"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -149,7 +148,7 @@ internal class FilingViewModelTest {
             val state = viewModel.uiState.value
 
             // then
-            state.genre.shouldBeNull()
+            state.genres.map { it.check } shouldContainExactly listOf(FilingCheck.MIXED)
             state.songCount shouldBe 2
         }
     }
@@ -167,7 +166,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1", "my-folder-id-2"),
-                        genreId = "afro",
+                        genreIds = listOf("afro"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -179,7 +178,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1"),
-                        genreId = "rap",
+                        genreIds = listOf("rap"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -209,7 +208,7 @@ internal class FilingViewModelTest {
 
             // then
             viewModel.uiState.value.folders.map { it.check } shouldContainExactly
-                listOf(FolderCheck.UNCHECKED, FolderCheck.CHECKED, FolderCheck.UNCHECKED)
+                listOf(FilingCheck.UNCHECKED, FilingCheck.CHECKED, FilingCheck.UNCHECKED)
         }
     }
 
@@ -226,7 +225,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1", "my-folder-id-2"),
-                        genreId = "afro",
+                        genreIds = listOf("afro"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -238,7 +237,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1"),
-                        genreId = "rap",
+                        genreIds = listOf("rap"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -267,14 +266,14 @@ internal class FilingViewModelTest {
 
             // then
             viewModel.uiState.value.folders.map { it.check }.distinct() shouldContainExactly
-                listOf(FolderCheck.UNCHECKED)
+                listOf(FilingCheck.UNCHECKED)
         }
     }
 
     @Nested
     inner class OnGenreTapped {
         @Test
-        fun `should choose the genre, and clear it when tapped again`() = runTest {
+        fun `should check the genre, and uncheck it when tapped again`() = runTest {
             // given
             val songs = FakeSongRepository(
                 library = listOf(
@@ -284,7 +283,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1", "my-folder-id-2"),
-                        genreId = "afro",
+                        genreIds = listOf("afro"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -296,7 +295,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1"),
-                        genreId = "rap",
+                        genreIds = listOf("rap"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -322,19 +321,19 @@ internal class FilingViewModelTest {
 
             // when
             viewModel.onGenreTapped("afro")
-            val chosen = viewModel.uiState.value.genre
+            val checked = viewModel.uiState.value.genres.single().check
             viewModel.onGenreTapped("afro")
 
             // then
-            chosen shouldBe "afro"
-            viewModel.uiState.value.genre.shouldBeNull()
+            checked shouldBe FilingCheck.CHECKED
+            viewModel.uiState.value.genres.single().check shouldBe FilingCheck.UNCHECKED
         }
     }
 
     @Nested
     inner class OnValidate {
         @Test
-        fun `should apply the folders and the genre tapped`() = runTest {
+        fun `should apply the folders and the genres tapped`() = runTest {
             // given
             val songs = FakeSongRepository(
                 library = listOf(
@@ -344,7 +343,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1", "my-folder-id-2"),
-                        genreId = "afro",
+                        genreIds = listOf("afro"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -356,7 +355,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1"),
-                        genreId = "rap",
+                        genreIds = listOf("rap"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -369,13 +368,13 @@ internal class FilingViewModelTest {
                     Folder(id = it, name = it, color = FolderColor.MAGENTA, kind = FolderKind.CUSTOM, songCount = 1)
                 },
             )
+            val genres =
+                FakeGenreRepository(genres = listOf(Genre(id = "afro", name = "", builtIn = BuiltInGenre.AFRO)))
             val viewModel = FilingViewModel(
                 songIds = listOf("my-song-id-1", "my-song-id-2"),
                 songs = songs,
                 folders = folders,
-                genres = FakeGenreRepository(
-                    genres = listOf(Genre(id = "afro", name = "", builtIn = BuiltInGenre.AFRO)),
-                ),
+                genres = genres,
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -392,7 +391,7 @@ internal class FilingViewModelTest {
             folders.calls shouldContainExactly listOf(
                 "file my-song-id-1, my-song-id-2 +my-folder-id-3 -my-folder-id-1",
             )
-            songs.calls shouldContainExactly listOf("genre my-song-id-1, my-song-id-2 afro")
+            genres.calls shouldContainExactly listOf("tag my-song-id-1, my-song-id-2 +afro -")
         }
 
         @Test
@@ -406,7 +405,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1", "my-folder-id-2"),
-                        genreId = "afro",
+                        genreIds = listOf("afro"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -418,7 +417,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1"),
-                        genreId = "rap",
+                        genreIds = listOf("rap"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -431,13 +430,13 @@ internal class FilingViewModelTest {
                     Folder(id = it, name = it, color = FolderColor.MAGENTA, kind = FolderKind.CUSTOM, songCount = 1)
                 },
             )
+            val genres =
+                FakeGenreRepository(genres = listOf(Genre(id = "afro", name = "", builtIn = BuiltInGenre.AFRO)))
             val viewModel = FilingViewModel(
                 songIds = listOf("my-song-id-1", "my-song-id-2"),
                 songs = songs,
                 folders = folders,
-                genres = FakeGenreRepository(
-                    genres = listOf(Genre(id = "afro", name = "", builtIn = BuiltInGenre.AFRO)),
-                ),
+                genres = genres,
             )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.uiState.first { !it.loading }
@@ -447,7 +446,7 @@ internal class FilingViewModelTest {
 
             // then
             folders.calls.shouldBeEmpty()
-            songs.calls.shouldBeEmpty()
+            genres.calls.shouldBeEmpty()
         }
     }
 
@@ -464,7 +463,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1", "my-folder-id-2"),
-                        genreId = "afro",
+                        genreIds = listOf("afro"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -476,7 +475,7 @@ internal class FilingViewModelTest {
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
                         folderIds = listOf("my-folder-id-1"),
-                        genreId = "rap",
+                        genreIds = listOf("rap"),
                         updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                         sectionCount = 1,
                         firstVerse = null,
@@ -512,7 +511,7 @@ internal class FilingViewModelTest {
 
             // then
             folders.calls shouldContainExactly listOf("create my-name")
-            viewModel.uiState.value.folders.last().check shouldBe FolderCheck.CHECKED
+            viewModel.uiState.value.folders.last().check shouldBe FilingCheck.CHECKED
         }
     }
 }

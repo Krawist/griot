@@ -12,20 +12,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.griot.core.data.model.SongLanguage
+import com.griot.core.design.R as DesignR
 import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 
 private val DotSize = 8.dp
+private val FavoriteSize = 16.dp
 private const val MAX_DOTS = 8
 
 /**
@@ -61,6 +65,14 @@ internal fun SongCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
+                if (song.favorite) {
+                    Icon(
+                        painter = painterResource(DesignR.drawable.ic_heart),
+                        contentDescription = stringResource(R.string.library_favorite),
+                        tint = palette.accent,
+                        modifier = Modifier.size(FavoriteSize),
+                    )
+                }
                 LanguageBadge(language = song.language)
             }
             Text(

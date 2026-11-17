@@ -16,4 +16,7 @@ interface GenreRepository {
 
     /** Deletes the author's genre [id] and removes it from its songs; a built-in genre stays. */
     suspend fun deleteGenre(id: String)
+
+    /** Tags the songs [songIds] with the genres [add], and takes the genres [remove] off them; the others stay. */
+    suspend fun tagSongs(songIds: List<String>, add: Set<String>, remove: Set<String>)
 }

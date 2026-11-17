@@ -18,49 +18,41 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Files the songs [songIds] in folders and tags them with a genre, in one go: nothing changes before « Valider ». A
- * folder holding some of the songs only, or a genre they do not share, stays as it is unless the author taps it.
+ * Files the songs [songIds] in folders and tags them with genres, in one go: nothing changes before « Valider ». A
+ * folder holding some of the songs only, or a genre some of them have, stays as it is unless the author taps it.
  */
 @HiltViewModel(assistedFactory = FilingViewModel.Factory::class)
 internal class FilingViewModel @AssistedInject constructor(
     @Assisted private val songIds: List<String>,
-    private val songs: SongRepository,
+    songs: SongRepository,
     private val folders: FolderRepository,
     private val genres: GenreRepository,
 ) : ViewModel() {
     // The folders tapped, checked or not; the others keep the songs' state.
     private val folderChoices = MutableStateFlow<Map<String, Boolean>>(emptyMap())
 
-    // The genre tapped: `null` until one is, then the genre's id, or « none » for no genre.
-    private val genreChoice = MutableStateFlow<GenreChoice?>(null)
+    // The genres tapped, checked or not; the others keep the songs' state.
+    private val genreChoices = MutableStateFlow<Map<String, Boolean>>(emptyMap())
 
     val uiState: StateFlow<FilingUiState> = combine(
         songs.observeLibrary(),
         folders.observeFolders(),
         genres.observeGenres(),
         folderChoices,
-        genreChoice,
-    ) { library, folders, genres, folderChoices, genreChoice ->
+        genreChoices,
+    ) { library, folders, genres, folderChoices, genreChoices ->
         val filed = library.filter { it.id in songIds }
-        val sharedGenre = filed.map { it.genreId }.distinct().singleOrNull()
         FilingUiState(
             title = filed.singleOrNull()?.title,
             songCount = filed.size,
             folders = folders.map { folder ->
                 val holding = filed.count { folder.id in it.folderIds }
-                val check = when (folderChoices[folder.id]) {
-                    true -> FolderCheck.CHECKED
-                    false -> FolderCheck.UNCHECKED
-                    null -> when (holding) {
-                        0 -> FolderCheck.UNCHECKED
-                        filed.size -> FolderCheck.CHECKED
-                        else -> FolderCheck.MIXED
-                    }
-                }
-                FilingFolder(folder = folder, check = check)
+                FilingFolder(folder = folder, check = checkOf(folderChoices[folder.id], holding, filed.size))
             },
-            genres = genres,
-            genre = if (genreChoice != null) genreChoice.genreId else sharedGenre,
+            genres = genres.map { genre ->
+                val tagged = filed.count { genre.id in it.genreIds }
+                FilingGenre(genre = genre, check = checkOf(genreChoices[genre.id], tagged, filed.size))
+            },
             loading = false,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), FilingUiState())
@@ -68,7 +60,7 @@ internal class FilingViewModel @AssistedInject constructor(
     /** Checks the folder [folderId], or unchecks it when the songs are all in it. */
     fun onFolderTapped(folderId: String) {
         val check = uiState.value.folders.firstOrNull { it.folder.id == folderId }?.check ?: return
-        folderChoices.update { it + (folderId to (check != FolderCheck.CHECKED)) }
+        folderChoices.update { it + (folderId to (check != FilingCheck.CHECKED)) }
     }
 
     /** « Aucun dossier »: unchecks every folder. */
@@ -76,10 +68,10 @@ internal class FilingViewModel @AssistedInject constructor(
         folderChoices.value = uiState.value.folders.associate { it.folder.id to false }
     }
 
-    /** Chooses the genre [genreId]; a tap on the genre chosen clears it. */
+    /** Tags the songs with the genre [genreId], or takes it off when they all have it. */
     fun onGenreTapped(genreId: String) {
-        val chosen = uiState.value.genre == genreId
-        genreChoice.value = GenreChoice(genreId = genreId.takeUnless { chosen })
+        val check = uiState.value.genres.firstOrNull { it.genre.id == genreId }?.check ?: return
+        genreChoices.update { it + (genreId to (check != FilingCheck.CHECKED)) }
     }
 
     /** Creates a folder named [name] and checks it. */
@@ -91,28 +83,43 @@ internal class FilingViewModel @AssistedInject constructor(
         }
     }
 
-    /** Creates a genre named [name] and chooses it. */
+    /** Creates a genre named [name] and checks it. */
     fun onNewGenre(name: String) {
         if (name.isBlank()) return
-        viewModelScope.launch { genreChoice.value = GenreChoice(genreId = genres.createGenre(name)) }
+        viewModelScope.launch {
+            val id = genres.createGenre(name)
+            genreChoices.update { it + (id to true) }
+        }
     }
 
-    /** Applies the folders and the genre tapped to the songs, then [onDone]. */
+    /** Applies the folders and the genres tapped to the songs, then [onDone]. */
     fun onValidate(onDone: () -> Unit) {
-        val state = uiState.value
-        val add = state.folders.filter { folderChoices.value[it.folder.id] == true }.map { it.folder.id }.toSet()
-        val remove = state.folders.filter { folderChoices.value[it.folder.id] == false }.map { it.folder.id }.toSet()
-        val genre = genreChoice.value
+        val folderTaps = folderChoices.value
+        val genreTaps = genreChoices.value
         viewModelScope.launch {
-            if (add.isNotEmpty() ||
-                remove.isNotEmpty()
-            ) {
-                folders.fileSongs(songIds = songIds, add = add, remove = remove)
+            if (folderTaps.isNotEmpty()) {
+                folders.fileSongs(songIds = songIds, add = folderTaps.checked(true), remove = folderTaps.checked(false))
             }
-            if (genre != null) songs.setGenre(ids = songIds, genreId = genre.genreId)
+            if (genreTaps.isNotEmpty()) {
+                genres.tagSongs(songIds = songIds, add = genreTaps.checked(true), remove = genreTaps.checked(false))
+            }
             onDone()
         }
     }
+
+    // Tapped: as tapped; else all the songs, none, or some only, by how many of the [total] are [holding].
+    private fun checkOf(tapped: Boolean?, holding: Int, total: Int) = when (tapped) {
+        true -> FilingCheck.CHECKED
+        false -> FilingCheck.UNCHECKED
+        null -> when (holding) {
+            0 -> FilingCheck.UNCHECKED
+            total -> FilingCheck.CHECKED
+            else -> FilingCheck.MIXED
+        }
+    }
+
+    // The ids tapped to [checked].
+    private fun Map<String, Boolean>.checked(checked: Boolean) = filterValues { it == checked }.keys
 
     @AssistedFactory
     interface Factory {

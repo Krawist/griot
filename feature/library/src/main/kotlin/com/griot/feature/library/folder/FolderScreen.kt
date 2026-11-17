@@ -33,6 +33,7 @@ import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.library.EmptyState
+import com.griot.feature.library.FAVORITES_FOLDER_ID
 import com.griot.feature.library.R
 import com.griot.feature.library.SongActionsHost
 import com.griot.feature.library.SongCard
@@ -129,10 +130,21 @@ private fun SongList(uiState: FolderUiState, onOpenSong: (String) -> Unit, onSon
     ) {
         if (!uiState.loading && uiState.items.isEmpty()) {
             item(key = "empty") {
-                EmptyState(
-                    title = stringResource(R.string.library_no_result_title),
-                    body = stringResource(R.string.library_no_result_body),
-                )
+                // An empty folder says how to fill it; one emptied by the filters, to change them.
+                when {
+                    uiState.songCount > 0 -> EmptyState(
+                        title = stringResource(R.string.library_no_result_title),
+                        body = stringResource(R.string.library_no_result_body),
+                    )
+                    uiState.virtual == FAVORITES_FOLDER_ID -> EmptyState(
+                        title = stringResource(R.string.folder_empty_title),
+                        body = stringResource(R.string.folder_empty_favorites),
+                    )
+                    else -> EmptyState(
+                        title = stringResource(R.string.folder_empty_title),
+                        body = stringResource(R.string.folder_empty_body),
+                    )
+                }
             }
         }
         items(items = uiState.items, key = { it.song.id }) { item ->

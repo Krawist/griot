@@ -88,25 +88,31 @@ internal fun FolderCard(
     }
 }
 
-/** « Récents » (the songs of the last 24 hours, [recentCount]), then the folders, two by two. */
+/**
+ * « Récents » (the songs of the last 24 hours, [recentCount]) and « Favoris » ([favoriteCount]), then the folders, two
+ * by two.
+ */
 @Composable
-internal fun FolderGrid(folders: List<Folder>, recentCount: Int, onOpenFolder: (String) -> Unit) {
-    val cells: List<Folder?> = listOf(null) + folders
+internal fun FolderGrid(folders: List<Folder>, recentCount: Int, favoriteCount: Int, onOpenFolder: (String) -> Unit) {
+    // `null` cells are « Récents » and « Favoris », by their id.
+    val cells: List<Pair<String, Folder?>> =
+        listOf(RECENT_FOLDER_ID to null, FAVORITES_FOLDER_ID to null) + folders.map { it.id to it }
     Column(verticalArrangement = Arrangement.spacedBy(GriotSpacing.m - 2.dp)) {
         cells.chunked(2).forEach { row ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m - 2.dp),
             ) {
-                row.forEach { folder ->
+                row.forEach { (id, folder) ->
                     val cell = Modifier.weight(1f)
                     if (folder == null) {
+                        val recent = id == RECENT_FOLDER_ID
                         FolderCard(
-                            name = stringResource(R.string.library_recent),
-                            count = recentCount,
-                            color = FolderColor.TURQUOISE,
-                            icon = DesignR.drawable.ic_history,
-                            onClick = { onOpenFolder(RECENT_FOLDER_ID) },
+                            name = stringResource(if (recent) R.string.library_recent else R.string.library_favorites),
+                            count = if (recent) recentCount else favoriteCount,
+                            color = if (recent) FolderColor.TURQUOISE else FolderColor.MAGENTA,
+                            icon = if (recent) DesignR.drawable.ic_history else DesignR.drawable.ic_heart,
+                            onClick = { onOpenFolder(id) },
                             modifier = cell,
                         )
                     } else {

@@ -11,4 +11,6 @@ enum class SyncEntityType {
     GENRE,
     SONG_FOLDER,
     ATTACHMENT,
+    SONG_GENRE,
+    FAVORITE,
 }

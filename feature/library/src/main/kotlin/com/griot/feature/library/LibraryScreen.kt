@@ -249,6 +249,7 @@ private fun HomeList(
                     FolderGrid(
                         folders = uiState.folders,
                         recentCount = uiState.recentCount,
+                        favoriteCount = uiState.favoriteCount,
                         onOpenFolder = onOpenFolder,
                     )
                     DashedAddButton(label = stringResource(R.string.library_new_folder), onClick = onNewFolder)

@@ -608,6 +608,17 @@ After the last vowel, consonants heard close rhyme like the same one: the nasals
 
 Size: S. Dependencies: GRI-35, GRI-60.
 
+### GRI-62 · Favourites and several genres per song
+
+A song can be in the author's favourites and have several genres.
+
+- « Ajouter aux favoris » / « Retirer des favoris » is the first action of a long press on a song. A favourite shows a heart on its card; the others show none. Marking a favourite does not date the song.
+- « Favoris » is a virtual folder after « Récents » on the home screen, always there, with its count; it opens like a folder, without its « ⋯ » menu. Empty, it says how to add a song.
+- « Dossier et genre » checks several genres; a genre some of the songs selected have is outlined, unchanged unless tapped. Cards read « Afro, Rap », and a folder's genre chip keeps every song that has the genre.
+- The genre each song had is kept (database migration). Favourites and genres sync; a duplicate merged by the tidy-up gives its genres and its place in the favourites to the song kept.
+
+Size: M. Dependencies: GRI-55, GRI-56, GRI-57, GRI-58.
+
 ## Phase 3 · After the MVP
 
 ### GRI-40 · Learn the author's style

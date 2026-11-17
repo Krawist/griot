@@ -4,6 +4,7 @@ import androidx.room.immediateTransaction
 import androidx.room.useWriterConnection
 import com.griot.core.data.database.GriotDatabase
 import com.griot.core.data.database.entity.GenreEntity
+import com.griot.core.data.database.entity.SongGenreEntity
 import com.griot.core.data.model.Genre
 import java.time.Clock
 import java.time.Instant
@@ -35,8 +36,25 @@ internal class GenreRepositoryImpl @Inject constructor(private val database: Gri
     override suspend fun deleteGenre(id: String) = write { now ->
         if (isCustom(id)) {
             genreDao.markDeleted(id = id, at = now)
-            database.songDao().clearGenre(genreId = id, at = now)
+            database.songGenreDao().removeGenre(genreId = id, at = now)
         }
+    }
+
+    override suspend fun tagSongs(songIds: List<String>, add: Set<String>, remove: Set<String>) = write { now ->
+        val songGenreDao = database.songGenreDao()
+        add.forEach { genreId ->
+            songIds.forEach { songId ->
+                songGenreDao.upsert(
+                    SongGenreEntity(
+                        id = SongGenreEntity.idOf(songId = songId, genreId = genreId),
+                        songId = songId,
+                        genreId = genreId,
+                        updatedAt = now,
+                    ),
+                )
+            }
+        }
+        remove.forEach { songGenreDao.remove(songIds = songIds, genreId = it, at = now) }
     }
 
     // A genre of the author: the built-in ones cannot be renamed or deleted.

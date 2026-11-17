@@ -11,6 +11,7 @@ import com.griot.core.data.organisation.FakeFolderRepository
 import com.griot.core.data.organisation.FakeGenreRepository
 import com.griot.core.data.song.FakeSongRepository
 import com.griot.core.phonetics.PhoneticEngines
+import com.griot.feature.library.FAVORITES_FOLDER_ID
 import com.griot.feature.library.LibraryItemsImpl
 import com.griot.feature.library.RECENT_FOLDER_ID
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -66,7 +67,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "afro",
+                    genreIds = listOf("afro"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -78,7 +79,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.ENGLISH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "rap",
+                    genreIds = listOf("rap"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -90,7 +91,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = emptyList(),
-                    genreId = null,
+                    genreIds = emptyList(),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -132,7 +133,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "afro",
+                    genreIds = listOf("afro"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -144,7 +145,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.ENGLISH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "rap",
+                    genreIds = listOf("rap"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -156,7 +157,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = emptyList(),
-                    genreId = null,
+                    genreIds = emptyList(),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -178,6 +179,41 @@ internal class FolderViewModelTest {
 
             // then
             state.items.map { it.song.id } shouldContainExactly listOf("my-song-id-1", "my-song-id-2", "my-song-id-3")
+        }
+
+        @Test
+        fun `should list the favourite songs for Favoris`() = runTest {
+            // given
+            val library = listOf(true, false).mapIndexed { index, favorite ->
+                LibrarySong(
+                    id = "my-song-id-${index + 1}",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    favorite = favorite,
+                    updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "",
+                )
+            }
+            val viewModel = FolderViewModel(
+                folderId = FAVORITES_FOLDER_ID,
+                songs = FakeSongRepository(library = library),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            val state = viewModel.uiState.first { !it.loading }
+
+            // then
+            state.items.map { it.song.id } shouldContainExactly listOf("my-song-id-1")
+            state.virtual shouldBe FAVORITES_FOLDER_ID
+            state.missing shouldBe false
         }
 
         @Test
@@ -210,7 +246,7 @@ internal class FolderViewModelTest {
 
             // then
             state.items.map { it.song.id } shouldContainExactly listOf("my-song-id-1")
-            state.recent shouldBe true
+            state.virtual shouldBe RECENT_FOLDER_ID
             state.missing shouldBe false
         }
 
@@ -231,7 +267,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "afro",
+                    genreIds = listOf("afro"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -243,7 +279,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.ENGLISH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "rap",
+                    genreIds = listOf("rap"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -311,7 +347,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "afro",
+                    genreIds = listOf("afro"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -323,7 +359,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.ENGLISH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "rap",
+                    genreIds = listOf("rap"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -335,7 +371,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = emptyList(),
-                    genreId = null,
+                    genreIds = emptyList(),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -380,7 +416,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "afro",
+                    genreIds = listOf("afro"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -392,7 +428,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.ENGLISH,
                     status = SongStatus.DRAFT,
                     folderIds = listOf("my-folder-id"),
-                    genreId = "rap",
+                    genreIds = listOf("rap"),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,
@@ -404,7 +440,7 @@ internal class FolderViewModelTest {
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
                     folderIds = emptyList(),
-                    genreId = null,
+                    genreIds = emptyList(),
                     updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                     sectionCount = 1,
                     firstVerse = null,

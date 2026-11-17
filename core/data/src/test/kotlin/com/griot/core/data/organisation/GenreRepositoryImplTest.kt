@@ -2,6 +2,7 @@ package com.griot.core.data.organisation
 
 import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.SongEntity
+import com.griot.core.data.database.entity.SongGenreEntity
 import com.griot.core.data.database.inMemoryDatabase
 import com.griot.core.data.model.BuiltInGenre
 import com.griot.core.data.model.Genre
@@ -151,8 +152,15 @@ internal class GenreRepositoryImplTest {
                     title = "my-title",
                     language = SongLanguage.FRENCH,
                     status = SongStatus.DRAFT,
-                    genreId = "my-genre-id",
                     createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+            )
+            database.songGenreDao().insert(
+                SongGenreEntity(
+                    id = "my-song-id:my-genre-id",
+                    songId = "my-song-id",
+                    genreId = "my-genre-id",
                     updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
                 ),
             )
@@ -162,8 +170,8 @@ internal class GenreRepositoryImplTest {
 
             // then
             database.genreDao().getById("my-genre-id")?.deleted shouldBe true
-            database.songDao().getById("my-song-id")?.let { it.genreId to it.updatedAt } shouldBe
-                (null to Instant.parse("2026-11-17T10:00:00Z"))
+            database.songGenreDao().getById("my-song-id:my-genre-id")?.let { it.deleted to it.updatedAt } shouldBe
+                (true to Instant.parse("2026-11-17T10:00:00Z"))
         }
 
         @Test
@@ -183,6 +191,50 @@ internal class GenreRepositoryImplTest {
 
             // then
             database.genreDao().getById("afro") shouldBe afro
+        }
+    }
+
+    @Nested
+    inner class TagSongs {
+        @Test
+        fun `should tag the songs with the genres added`() = runTest {
+            // when
+            repository.tagSongs(
+                songIds = listOf("my-song-id-1", "my-song-id-2"),
+                add = setOf("my-genre-id"),
+                remove = emptySet(),
+            )
+
+            // then
+            database.songGenreDao().getById("my-song-id-2:my-genre-id") shouldBe SongGenreEntity(
+                id = "my-song-id-2:my-genre-id",
+                songId = "my-song-id-2",
+                genreId = "my-genre-id",
+                updatedAt = Instant.parse("2026-11-17T10:00:00Z"),
+            )
+            database.songGenreDao().getById("my-song-id-1:my-genre-id")?.deleted shouldBe false
+        }
+
+        @Test
+        fun `should take the genres removed off the songs and keep the others`() = runTest {
+            // given
+            listOf("my-genre-id-1", "my-genre-id-2").forEach { genreId ->
+                database.songGenreDao().insert(
+                    SongGenreEntity(
+                        id = "my-song-id:$genreId",
+                        songId = "my-song-id",
+                        genreId = genreId,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                )
+            }
+
+            // when
+            repository.tagSongs(songIds = listOf("my-song-id"), add = emptySet(), remove = setOf("my-genre-id-1"))
+
+            // then
+            database.songGenreDao().getById("my-song-id:my-genre-id-1")?.deleted shouldBe true
+            database.songGenreDao().getById("my-song-id:my-genre-id-2")?.deleted shouldBe false
         }
     }
 }

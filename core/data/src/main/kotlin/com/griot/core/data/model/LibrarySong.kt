@@ -10,7 +10,8 @@ import java.time.Instant
  * @property language Writing language.
  * @property status Draft or in progress.
  * @property folderIds The folders it is in; empty for « Sans dossier ».
- * @property genreId Its genre; `null` without one.
+ * @property genreIds Its genres; empty without one.
+ * @property favorite Whether it is in the author's favourites (« Favoris », a heart on its card).
  * @property updatedAt Last change of the song.
  * @property sectionCount Number of sections, repeats included.
  * @property firstVerse First verse that is not empty; `null` for a song with no text yet.
@@ -23,7 +24,8 @@ data class LibrarySong(
     val language: SongLanguage,
     val status: SongStatus,
     val folderIds: List<String> = emptyList(),
-    val genreId: String? = null,
+    val genreIds: List<String> = emptyList(),
+    val favorite: Boolean = false,
     val updatedAt: Instant,
     val sectionCount: Int,
     val firstVerse: String?,

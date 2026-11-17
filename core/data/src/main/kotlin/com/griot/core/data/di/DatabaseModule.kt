@@ -7,11 +7,13 @@ import com.griot.core.data.database.GriotDatabase
 import com.griot.core.data.database.LanguageMigration
 import com.griot.core.data.database.dao.AttachmentDao
 import com.griot.core.data.database.dao.ConflictDao
+import com.griot.core.data.database.dao.FavoriteDao
 import com.griot.core.data.database.dao.FolderDao
 import com.griot.core.data.database.dao.GenreDao
 import com.griot.core.data.database.dao.IdeaDao
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
+import com.griot.core.data.database.dao.SongGenreDao
 import com.griot.core.data.database.dao.SyncDao
 import com.griot.core.data.database.dao.SyncStateDao
 import com.griot.core.data.database.dao.VerseDao
@@ -56,6 +58,12 @@ internal object DatabaseModule {
 
     @Provides
     fun provideGenreDao(database: GriotDatabase): GenreDao = database.genreDao()
+
+    @Provides
+    fun provideSongGenreDao(database: GriotDatabase): SongGenreDao = database.songGenreDao()
+
+    @Provides
+    fun provideFavoriteDao(database: GriotDatabase): FavoriteDao = database.favoriteDao()
 
     @Provides
     fun provideAttachmentDao(database: GriotDatabase): AttachmentDao = database.attachmentDao()

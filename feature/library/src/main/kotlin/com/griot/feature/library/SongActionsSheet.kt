@@ -21,17 +21,20 @@ import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 
 /**
- * What a long press on a song offers: file it (« Dossier et genre »), rename, duplicate and delete. « Renommer » turns
- * the sheet into a title field.
+ * What a long press on a song offers: add it to the favourites or take it out, file it (« Dossier et genre »),
+ * rename, duplicate and delete. « Renommer » turns the sheet into a title field.
  *
  * @param title The song's title, empty for a song not named.
  * @param displayTitle The title as shown, « Sans titre » for a song not named.
+ * @param favorite Whether the song is in the favourites.
  */
 @Suppress("LongParameterList") // The song's titles and one callback per action.
 @Composable
 internal fun SongActionsSheet(
     title: String,
     displayTitle: String,
+    favorite: Boolean,
+    onFavorite: () -> Unit,
     onFile: () -> Unit,
     onRename: (String) -> Unit,
     onDuplicate: () -> Unit,
@@ -60,6 +63,13 @@ internal fun SongActionsSheet(
                 )
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(GriotSpacing.s)) {
+                    SheetAction(
+                        icon = DesignR.drawable.ic_heart,
+                        label = stringResource(
+                            if (favorite) R.string.library_remove_favorite else R.string.library_add_favorite,
+                        ),
+                        onClick = onFavorite,
+                    )
                     SheetAction(
                         icon = DesignR.drawable.ic_folder,
                         label = stringResource(R.string.library_file),

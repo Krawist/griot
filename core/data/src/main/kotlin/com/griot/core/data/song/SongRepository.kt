@@ -33,8 +33,8 @@ interface SongRepository {
      */
     suspend fun detectLanguages()
 
-    /** Tags the songs [ids] with the genre [genreId], or with none when it is `null`. */
-    suspend fun setGenre(ids: List<String>, genreId: String?)
+    /** Puts the songs [ids] in the author's favourites, or takes them out when [favorite] is `false`. */
+    suspend fun setFavorite(ids: List<String>, favorite: Boolean)
 
     /** Gives the song [id] the [title]. */
     suspend fun renameSong(id: String, title: String)

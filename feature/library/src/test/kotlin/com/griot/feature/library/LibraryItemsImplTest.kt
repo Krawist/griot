@@ -33,7 +33,7 @@ internal class LibraryItemsImplTest {
                 language = SongLanguage.FRENCH,
                 status = SongStatus.DRAFT,
                 folderIds = listOf("my-folder-id-2"),
-                genreId = "afro",
+                genreIds = listOf("afro"),
                 updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                 sectionCount = 1,
                 firstVerse = null,
@@ -52,7 +52,7 @@ internal class LibraryItemsImplTest {
                 song = song,
                 updated = RelativeTime.HoursAgo(2),
                 folders = listOf(folders[1]),
-                genre = genre,
+                genres = listOf(genre),
             )
         }
 

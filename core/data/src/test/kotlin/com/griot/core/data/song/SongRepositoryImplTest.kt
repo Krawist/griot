@@ -1,11 +1,14 @@
 package com.griot.core.data.song
 
+import com.griot.core.data.database.dao.FavoriteDao
 import com.griot.core.data.database.dao.FirstSectionVerseRow
 import com.griot.core.data.database.dao.LibrarySongRow
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
+import com.griot.core.data.database.dao.SongGenreDao
 import com.griot.core.data.database.dao.TrashedSongRow
 import com.griot.core.data.database.dao.VerseDao
+import com.griot.core.data.database.entity.FavoriteEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
 import com.griot.core.data.database.entity.VerseEntity
@@ -44,6 +47,8 @@ internal class SongRepositoryImplTest {
     private val songDao = mockk<SongDao>()
     private val sectionDao = mockk<SectionDao>()
     private val verseDao = mockk<VerseDao>()
+    private val songGenreDao = mockk<SongGenreDao>()
+    private val favoriteDao = mockk<FavoriteDao>()
     private val preferences = mockk<UserPreferencesRepository>()
     private val detector = mockk<SongLanguageDetector>()
     private val clock = Clock.fixed(Instant.parse("2026-11-16T10:00:00Z"), ZoneOffset.UTC)
@@ -51,6 +56,8 @@ internal class SongRepositoryImplTest {
         songDao = songDao,
         sectionDao = sectionDao,
         verseDao = verseDao,
+        songGenreDao = songGenreDao,
+        favoriteDao = favoriteDao,
         preferences = preferences,
         detector = detector,
         clock = clock,
@@ -259,18 +266,40 @@ internal class SongRepositoryImplTest {
     }
 
     @Nested
-    inner class SetGenre {
+    inner class SetFavorite {
         @Test
-        fun `should tag the songs with the genre`() = runTest {
+        fun `should put the songs in the favourites`() = runTest {
             // given
-            coJustRun { songDao.setGenre(any(), any(), any()) }
+            coJustRun { favoriteDao.upsert(any()) }
 
             // when
-            repository.setGenre(ids = listOf("my-song-id"), genreId = null)
+            repository.setFavorite(ids = listOf("my-song-id"), favorite = true)
 
             // then
             coVerifySequence {
-                songDao.setGenre(ids = listOf("my-song-id"), genreId = null, at = Instant.parse("2026-11-16T10:00:00Z"))
+                favoriteDao.upsert(
+                    FavoriteEntity(songId = "my-song-id", updatedAt = Instant.parse("2026-11-16T10:00:00Z")),
+                )
+            }
+        }
+
+        @Test
+        fun `should take the songs out of the favourites`() = runTest {
+            // given
+            coJustRun { favoriteDao.upsert(any()) }
+
+            // when
+            repository.setFavorite(ids = listOf("my-song-id"), favorite = false)
+
+            // then
+            coVerifySequence {
+                favoriteDao.upsert(
+                    FavoriteEntity(
+                        songId = "my-song-id",
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                        deleted = true,
+                    ),
+                )
             }
         }
     }
@@ -298,6 +327,8 @@ internal class SongRepositoryImplTest {
             songDao = database.songDao(),
             sectionDao = database.sectionDao(),
             verseDao = database.verseDao(),
+            songGenreDao = database.songGenreDao(),
+            favoriteDao = database.favoriteDao(),
             preferences = preferences,
             detector = detector,
             clock = clock,
@@ -398,6 +429,8 @@ internal class SongRepositoryImplTest {
             songDao = database.songDao(),
             sectionDao = database.sectionDao(),
             verseDao = database.verseDao(),
+            songGenreDao = database.songGenreDao(),
+            favoriteDao = database.favoriteDao(),
             preferences = preferences,
             detector = detector,
             clock = clock,
@@ -486,6 +519,8 @@ internal class SongRepositoryImplTest {
             songDao = database.songDao(),
             sectionDao = database.sectionDao(),
             verseDao = database.verseDao(),
+            songGenreDao = database.songGenreDao(),
+            favoriteDao = database.favoriteDao(),
             preferences = preferences,
             detector = detector,
             clock = clock,

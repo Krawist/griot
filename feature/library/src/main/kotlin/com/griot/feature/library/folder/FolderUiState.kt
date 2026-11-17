@@ -9,8 +9,9 @@ import com.griot.feature.library.LibraryItem
 /**
  * What the folder screen shows: a folder's songs, or every song (« Tous les textes »).
  *
- * @property folder The folder shown; `null` for « Tous les textes » and « Récents ».
- * @property recent Whether it shows « Récents », the songs changed in the last 24 hours.
+ * @property folder The folder shown; `null` for « Tous les textes », « Récents » and « Favoris ».
+ * @property virtual [com.griot.feature.library.RECENT_FOLDER_ID] or [com.griot.feature.library.FAVORITES_FOLDER_ID]
+ *   for « Récents » (the songs changed in the last 24 hours) or « Favoris »; `null` otherwise.
  * @property songCount How many songs the folder (or the library) holds, before the filters.
  * @property genres The genres its songs have, in the genres' order: the chips after « Tous ».
  * @property genre The id of the genre chip selected; `null` for « Tous ».
@@ -24,7 +25,7 @@ import com.griot.feature.library.LibraryItem
  */
 internal data class FolderUiState(
     val folder: Folder? = null,
-    val recent: Boolean = false,
+    val virtual: String? = null,
     val songCount: Int = 0,
     val genres: List<Genre> = emptyList(),
     val genre: String? = null,

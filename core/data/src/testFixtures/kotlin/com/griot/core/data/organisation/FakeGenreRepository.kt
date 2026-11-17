@@ -26,4 +26,8 @@ class FakeGenreRepository(genres: List<Genre> = emptyList()) : GenreRepository {
     override suspend fun deleteGenre(id: String) {
         calls += "delete $id"
     }
+
+    override suspend fun tagSongs(songIds: List<String>, add: Set<String>, remove: Set<String>) {
+        calls += "tag ${songIds.joinToString()} +${add.sorted().joinToString()} -${remove.sorted().joinToString()}"
+    }
 }

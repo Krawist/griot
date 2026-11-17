@@ -14,6 +14,11 @@ internal fun SongActionsHost(song: LibrarySong, actions: SongActions, onFile: ()
     SongActionsSheet(
         title = song.title,
         displayTitle = displayTitle,
+        favorite = song.favorite,
+        onFavorite = {
+            actions.onFavorite(id = song.id, favorite = !song.favorite)
+            onClosed()
+        },
         onFile = {
             onClosed()
             onFile()

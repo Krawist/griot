@@ -13,12 +13,12 @@ import com.griot.core.design.format.RelativeTime
  * @property rhymes The rhyme ranks of the verses of its first section that have a rhyme, in order (0 for A): its
  * dots, coloured as in the editor.
  * @property folders The folders it is in; empty for « Sans dossier ».
- * @property genre Its genre; `null` without one.
+ * @property genres Its genres, in the order of the genres; empty without one.
  */
 internal data class LibraryItem(
     val song: LibrarySong,
     val updated: RelativeTime,
     val rhymes: List<Int> = emptyList(),
     val folders: List<Folder> = emptyList(),
-    val genre: Genre? = null,
+    val genres: List<Genre> = emptyList(),
 )

@@ -34,7 +34,9 @@ import com.griot.core.design.component.GriotMenuItem
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import com.griot.feature.library.FAVORITES_FOLDER_ID
 import com.griot.feature.library.R
+import com.griot.feature.library.RECENT_FOLDER_ID
 import com.griot.feature.library.displayName
 
 /**
@@ -61,7 +63,8 @@ internal fun FolderTopBar(
                     pluralStringResource(R.plurals.folder_selected, uiState.selected.size, uiState.selected.size)
                 } else {
                     when {
-                        uiState.recent -> stringResource(R.string.library_recent)
+                        uiState.virtual == RECENT_FOLDER_ID -> stringResource(R.string.library_recent)
+                        uiState.virtual == FAVORITES_FOLDER_ID -> stringResource(R.string.library_favorites)
                         else -> uiState.folder?.displayName() ?: stringResource(R.string.folder_all_texts)
                     }
                 },

@@ -166,5 +166,38 @@ internal class TidyUpRepositoryImplTest {
             database.songFolderDao().getById("my-song-id-1:my-folder-id")?.deleted shouldBe false
             database.songDao().getById("my-song-id-2")?.deleted shouldBe true
         }
+
+        @Test
+        fun `should give the duplicate's genres and its place in the favourites to the song kept`() = runTest {
+            // given
+            val library = listOf("my-song-id-1", "my-song-id-2").map {
+                LibrarySong(
+                    id = it,
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.IN_PROGRESS,
+                    genreIds = if (it == "my-song-id-2") listOf("my-genre-id") else emptyList(),
+                    favorite = it == "my-song-id-2",
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "",
+                )
+            }
+            val repository =
+                TidyUpRepositoryImpl(
+                    database,
+                    FakeSongRepository(library = library),
+                    FakeUserPreferencesRepository(),
+                    clock,
+                )
+
+            // when
+            repository.mergeDuplicates(keepId = "my-song-id-1", duplicates = listOf("my-song-id-2"))
+
+            // then
+            database.songGenreDao().getById("my-song-id-1:my-genre-id")?.deleted shouldBe false
+            database.favoriteDao().getById("my-song-id-1")?.deleted shouldBe false
+        }
     }
 }
