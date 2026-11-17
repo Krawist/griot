@@ -7,6 +7,8 @@
     <string name="settings_ai_device_ready">Disponible · ton texte reste sur le téléphone</string>
     <string name="settings_ai_device_unsupported">Pas disponible sur ce téléphone</string>
     <string name="settings_ai_online">IA en ligne</string>
+    <string name="settings_ai_online_no_key">Ajoute ta clé API Anthropic pour l\'activer</string>
+    <string name="settings_ai_online_ready">Claude Haiku · tes vers passent par Anthropic</string>
     <string name="settings_appearance">Apparence</string>
     <string name="settings_auto_sync">Synchro automatique</string>
     <string name="settings_auto_sync_letter" translatable="false">A</string>
@@ -21,6 +23,19 @@
     <string name="settings_font_size_value" translatable="false">%1$d sp</string>
     <string name="settings_import">Importer des textes</string>
     <string name="settings_import_sub">Samsung Notes, fichiers, texte collé</string>
+    <string name="settings_key">Clé API Anthropic</string>
+    <string name="settings_key_add">Ajouter</string>
+    <string name="settings_key_body">Crée une clé API sur console.anthropic.com, puis colle-la ici. Elle reste chiffrée sur ce téléphone ; Griot ne l\'envoie qu\'à Anthropic.</string>
+    <string name="settings_key_checking">Vérification…</string>
+    <string name="settings_key_clear">Supprimer la clé</string>
+    <string name="settings_key_label">Clé API</string>
+    <string name="settings_key_placeholder">Colle ta clé ici</string>
+    <string name="settings_key_refused">Anthropic refuse cette clé. Vérifie que c\'est bien une clé API.</string>
+    <string name="settings_key_save">Vérifier et enregistrer</string>
+    <string name="settings_key_saved">Enregistrée</string>
+    <string name="settings_key_sub">Chiffrée sur ce téléphone</string>
+    <string name="settings_key_title">Clé API Anthropic</string>
+    <string name="settings_key_unreachable">Impossible de joindre Anthropic. Vérifie ta connexion et réessaie.</string>
     <string name="settings_language">Langue de l\'app</string>
     <string name="settings_language_english" translatable="false">English</string>
     <string name="settings_language_french" translatable="false">Français</string>

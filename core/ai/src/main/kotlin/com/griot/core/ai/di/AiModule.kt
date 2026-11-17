@@ -4,6 +4,13 @@ import com.griot.core.ai.AiAssistant
 import com.griot.core.ai.AiAssistantImpl
 import com.griot.core.ai.AiProvider
 import com.griot.core.ai.OnDeviceProvider
+import com.griot.core.ai.online.ApiKeyRepository
+import com.griot.core.ai.online.ApiKeyRepositoryImpl
+import com.griot.core.ai.online.ClaudeApi
+import com.griot.core.ai.online.ClaudeApiImpl
+import com.griot.core.ai.online.OnlineProvider
+import com.griot.core.ai.online.SecretCipher
+import com.griot.core.ai.online.SecretCipherImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,11 +24,23 @@ internal interface AiModule {
     @Binds
     fun bindAiAssistant(impl: AiAssistantImpl): AiAssistant
 
-    // The online provider (GRI-33) joins this set.
     @Multibinds
     fun aiProviders(): Set<AiProvider>
 
     @Binds
     @IntoSet
     fun bindOnDeviceProvider(impl: OnDeviceProvider): AiProvider
+
+    @Binds
+    @IntoSet
+    fun bindOnlineProvider(impl: OnlineProvider): AiProvider
+
+    @Binds
+    fun bindApiKeyRepository(impl: ApiKeyRepositoryImpl): ApiKeyRepository
+
+    @Binds
+    fun bindSecretCipher(impl: SecretCipherImpl): SecretCipher
+
+    @Binds
+    fun bindClaudeApi(impl: ClaudeApiImpl): ClaudeApi
 }

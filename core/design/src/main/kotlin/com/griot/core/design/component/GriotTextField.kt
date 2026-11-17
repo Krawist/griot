@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
@@ -46,6 +47,7 @@ private val TextPadding = 18.dp
  *
  * @param error What is wrong with the value, shown under the field; `null` when nothing is.
  * @param autoFocus Whether the field takes the focus, and opens the keyboard, when it first shows.
+ * @param visualTransformation How the text is drawn, such as dots for a secret.
  */
 @Composable
 fun GriotTextField(
@@ -58,6 +60,7 @@ fun GriotTextField(
     autoFocus: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     val palette = GriotTheme.palette
     val motion = GriotTheme.motion
@@ -91,6 +94,7 @@ fun GriotTextField(
             cursorBrush = SolidColor(palette.accent),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
+            visualTransformation = visualTransformation,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(FieldHeight)

@@ -41,6 +41,8 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
 
     override val onDeviceAi: Flow<Boolean> = dataStore.data.map { it[OnDeviceAi] ?: true }
 
+    override val onlineAi: Flow<Boolean> = dataStore.data.map { it[OnlineAi] ?: true }
+
     override val lastSyncedAt: Flow<Instant?> = dataStore.data.map { preferences ->
         preferences[LastSyncedAt]?.let(Instant::ofEpochMilli)
     }
@@ -101,6 +103,16 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         dataStore.edit { it[OnDeviceAi] = allowed }
     }
 
+    override suspend fun setOnlineAi(allowed: Boolean) {
+        dataStore.edit { it[OnlineAi] = allowed }
+    }
+
+    override val onlineAiKey: Flow<String?> = dataStore.data.map { it[OnlineAiKey] }
+
+    override suspend fun setOnlineAiKey(secret: String?) {
+        dataStore.edit { if (secret == null) it.remove(OnlineAiKey) else it[OnlineAiKey] = secret }
+    }
+
     override suspend fun setSynced(at: Instant, cursor: String?) {
         dataStore.edit { preferences ->
             preferences[LastSyncedAt] = at.toEpochMilli()
@@ -115,6 +127,8 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         val EditorFontSize = intPreferencesKey("editor_font_size")
         val ShowRhymes = booleanPreferencesKey("show_rhymes")
         val OnDeviceAi = booleanPreferencesKey("on_device_ai")
+        val OnlineAi = booleanPreferencesKey("online_ai")
+        val OnlineAiKey = stringPreferencesKey("online_ai_key")
         val TidyUpRequested = booleanPreferencesKey("tidy_up_requested")
         val DeviceId = stringPreferencesKey("device_id")
         val ExternalMusicExplained = booleanPreferencesKey("external_music_explained")

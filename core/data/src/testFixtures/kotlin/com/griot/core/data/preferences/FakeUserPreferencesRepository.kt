@@ -12,6 +12,7 @@ class FakeUserPreferencesRepository(
     editorFontSize: Int = UserPreferencesRepository.DEFAULT_EDITOR_FONT_SIZE,
     showRhymes: Boolean = true,
     onDeviceAi: Boolean = true,
+    onlineAi: Boolean = true,
     lastSyncedAt: Instant? = null,
     syncCursor: String? = null,
 ) : UserPreferencesRepository {
@@ -26,6 +27,8 @@ class FakeUserPreferencesRepository(
     override val showRhymes = MutableStateFlow(showRhymes)
 
     override val onDeviceAi = MutableStateFlow(onDeviceAi)
+
+    override val onlineAi = MutableStateFlow(onlineAi)
 
     override val lastSyncedAt = MutableStateFlow(lastSyncedAt)
 
@@ -53,6 +56,16 @@ class FakeUserPreferencesRepository(
 
     override suspend fun setOnDeviceAi(allowed: Boolean) {
         onDeviceAi.value = allowed
+    }
+
+    override suspend fun setOnlineAi(allowed: Boolean) {
+        onlineAi.value = allowed
+    }
+
+    override val onlineAiKey = MutableStateFlow<String?>(null)
+
+    override suspend fun setOnlineAiKey(secret: String?) {
+        onlineAiKey.value = secret
     }
 
     override suspend fun setSynced(at: Instant, cursor: String?) {

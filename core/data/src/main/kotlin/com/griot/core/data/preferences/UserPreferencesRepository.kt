@@ -25,6 +25,9 @@ interface UserPreferencesRepository {
     /** Whether the AI help may use the model on the phone; `true` until the user turns it off. */
     val onDeviceAi: Flow<Boolean>
 
+    /** Whether the AI help may send the verses to the online model once its key is set; `true` until turned off. */
+    val onlineAi: Flow<Boolean>
+
     /** When the last sync with the remote store succeeded; `null` until the first one. */
     val lastSyncedAt: Flow<Instant?>
 
@@ -48,6 +51,18 @@ interface UserPreferencesRepository {
 
     /** Allows or forbids the AI help to use the model on the phone. */
     suspend fun setOnDeviceAi(allowed: Boolean)
+
+    /** Allows or forbids the AI help to use the online model. */
+    suspend fun setOnlineAi(allowed: Boolean)
+
+    /**
+     * The key of the online model, encrypted by a key of the Android Keystore (never the key itself); `null` until one
+     * is saved.
+     */
+    val onlineAiKey: Flow<String?>
+
+    /** Saves the encrypted key of the online model, or forgets it when [secret] is `null`. */
+    suspend fun setOnlineAiKey(secret: String?)
 
     /** Records a successful sync at [at], and the [cursor] of the remote changes read so far. */
     suspend fun setSynced(at: Instant, cursor: String?)

@@ -68,6 +68,22 @@ internal class AiAssistantImplTest {
         }
 
         @Test
+        fun `should leave out the online model when the settings forbid it`() = runTest {
+            // given
+            val assistant = AiAssistantImpl(
+                providers = setOf(FakeAiProvider(AiLocation.ONLINE)),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(onlineAi = false),
+            )
+
+            // when
+            val availability = assistant.availability()
+
+            // then
+            availability shouldBe AiAvailability(location = null, preparing = false)
+        }
+
+        @Test
         fun `should have none without a model`() = runTest {
             // given
             val assistant = AiAssistantImpl(

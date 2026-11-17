@@ -16,7 +16,7 @@
     <string name="ai_source_device">IA · sur ton téléphone, ton texte n\'en sort pas</string>
     <string name="ai_source_dictionary">Dictionnaire de rimes · sur ton téléphone</string>
     <string name="ai_source_none">Aucune IA disponible pour l\'instant</string>
-    <string name="ai_source_online">IA · en ligne</string>
+    <string name="ai_source_online">IA · en ligne, ton vers passe par Anthropic</string>
     <string name="ai_source_preparing">IA · le modèle se télécharge sur ton téléphone</string>
     <string name="ai_suggestion_note">%1$s · %2$s · garde la rime</string>
     <string name="ai_tab_critique">Critiquer</string>

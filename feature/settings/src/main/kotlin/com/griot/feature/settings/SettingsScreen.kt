@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,6 +25,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.ai.AiStatus
+import com.griot.core.ai.online.KeyCheck
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.FileShareSheet
 import com.griot.core.design.component.GriotSwitch
@@ -64,9 +66,10 @@ internal fun SettingsScreen(
         ProfileGroup(uiState = uiState, onSheet = { sheet = it })
         SyncGroup()
         AiGroup(
-            onDeviceAi = uiState.onDeviceAi,
-            onDeviceStatus = uiState.onDeviceStatus,
+            uiState = uiState,
             onOnDeviceAiChange = viewModel::onOnDeviceAiChange,
+            onOnlineAiChange = viewModel::onOnlineAiChange,
+            onApiKey = { sheet = SettingsSheet.API_KEY },
         )
         MusicGroup(controlled = uiState.externalMusic)
         TextsGroup(onImport = onOpenImport, onExport = viewModel::onExportAll, onTrash = onOpenTrash)
@@ -128,7 +131,6 @@ private fun SyncGroup() {
     }
 }
 
-// Gemini Nano on the phone, when the phone can have it; the online AI comes with GRI-33.
 // « Contrôle des autres apps »: its status, and the phone's notification access setting on a tap.
 @Composable
 private fun MusicGroup(controlled: Boolean) {
@@ -154,17 +156,22 @@ private fun MusicGroup(controlled: Boolean) {
     }
 }
 
+// Gemini Nano on the phone, when the phone can have it; Claude online, once the author's key is saved.
 @Composable
-private fun AiGroup(onDeviceAi: Boolean, onDeviceStatus: AiStatus, onOnDeviceAiChange: (Boolean) -> Unit) {
-    val unavailable = stringResource(R.string.settings_unavailable)
-    val supported = onDeviceStatus != AiStatus.UNAVAILABLE
+private fun AiGroup(
+    uiState: SettingsUiState,
+    onOnDeviceAiChange: (Boolean) -> Unit,
+    onOnlineAiChange: (Boolean) -> Unit,
+    onApiKey: () -> Unit,
+) {
+    val supported = uiState.onDeviceStatus != AiStatus.UNAVAILABLE
     SettingsGroup(title = stringResource(R.string.settings_ai)) {
         SettingsRow(
             letter = stringResource(R.string.settings_ai_device_letter),
             tone = SettingsTone.AI,
             label = stringResource(R.string.settings_ai_device),
             sub = stringResource(
-                when (onDeviceStatus) {
+                when (uiState.onDeviceStatus) {
                     AiStatus.READY -> R.string.settings_ai_device_ready
                     AiStatus.PREPARING -> R.string.settings_ai_device_preparing
                     AiStatus.UNAVAILABLE -> R.string.settings_ai_device_unsupported
@@ -172,19 +179,47 @@ private fun AiGroup(onDeviceAi: Boolean, onDeviceStatus: AiStatus, onOnDeviceAiC
             ),
             first = true,
             enabled = supported,
-            onClick = { onOnDeviceAiChange(!onDeviceAi) },
+            onClick = { onOnDeviceAiChange(!uiState.onDeviceAi) },
         ) {
-            GriotSwitch(checked = supported && onDeviceAi, onCheckedChange = onOnDeviceAiChange, enabled = supported)
+            GriotSwitch(
+                checked = supported && uiState.onDeviceAi,
+                onCheckedChange = onOnDeviceAiChange,
+                enabled = supported,
+            )
         }
         SettingsRow(
             letter = "",
             icon = DesignR.drawable.ic_cloud,
             tone = SettingsTone.AI,
             label = stringResource(R.string.settings_ai_online),
-            sub = unavailable,
+            sub = stringResource(
+                if (uiState.apiKeySet) R.string.settings_ai_online_ready else R.string.settings_ai_online_no_key,
+            ),
             first = false,
-            enabled = false,
-        ) { GriotSwitch(checked = false, onCheckedChange = {}, enabled = false) }
+            enabled = uiState.apiKeySet,
+            onClick = { onOnlineAiChange(!uiState.onlineAi) },
+        ) {
+            GriotSwitch(
+                checked = uiState.apiKeySet && uiState.onlineAi,
+                onCheckedChange = onOnlineAiChange,
+                enabled = uiState.apiKeySet,
+            )
+        }
+        SettingsRow(
+            letter = "",
+            icon = DesignR.drawable.ic_key,
+            tone = SettingsTone.AI,
+            label = stringResource(R.string.settings_key),
+            sub = stringResource(R.string.settings_key_sub),
+            first = false,
+            onClick = onApiKey,
+        ) {
+            SettingsValue(
+                value = stringResource(
+                    if (uiState.apiKeySet) R.string.settings_key_saved else R.string.settings_key_add,
+                ),
+            )
+        }
     }
 }
 
@@ -278,6 +313,23 @@ private fun SettingsSheets(
             onDismiss = onClose,
         )
         SettingsSheet.LICENCES -> LicencesSheet(onDismiss = onClose)
+        SettingsSheet.API_KEY -> {
+            val close = {
+                viewModel.onApiKeyClosed()
+                onClose()
+            }
+            // An accepted key closes the sheet.
+            LaunchedEffect(uiState.keyCheck) { if (uiState.keyCheck == KeyCheck.ACCEPTED) close() }
+            ApiKeySheet(
+                uiState = uiState,
+                onSave = viewModel::onApiKeySave,
+                onClear = {
+                    viewModel.onApiKeyClear()
+                    close()
+                },
+                onDismiss = close,
+            )
+        }
         null -> Unit
     }
     uiState.export?.let { file ->

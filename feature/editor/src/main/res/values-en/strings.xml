@@ -16,7 +16,7 @@
     <string name="ai_source_device">AI · on your phone, your text stays there</string>
     <string name="ai_source_dictionary">Rhyme dictionary · on your phone</string>
     <string name="ai_source_none">No AI available yet</string>
-    <string name="ai_source_online">AI · online</string>
+    <string name="ai_source_online">AI · online, your line goes through Anthropic</string>
     <string name="ai_source_preparing">AI · the model is downloading on your phone</string>
     <string name="ai_suggestion_note">%1$s · %2$s · keeps the rhyme</string>
     <string name="ai_tab_critique">Critique</string>

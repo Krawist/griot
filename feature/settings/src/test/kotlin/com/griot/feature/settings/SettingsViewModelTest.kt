@@ -2,6 +2,8 @@ package com.griot.feature.settings
 
 import com.griot.core.ai.AiStatus
 import com.griot.core.ai.FakeAiAssistant
+import com.griot.core.ai.online.FakeApiKeyRepository
+import com.griot.core.ai.online.KeyCheck
 import com.griot.core.data.audio.FakeExternalMusic
 import com.griot.core.data.export.FakeMarkdownExporter
 import com.griot.core.data.language.FakeAppLanguageRepository
@@ -50,6 +52,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // then
@@ -72,6 +75,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // then
@@ -91,6 +95,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // when
@@ -111,6 +116,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // when
@@ -133,6 +139,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // when
@@ -158,6 +165,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // when
@@ -177,6 +185,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // when
@@ -199,6 +208,7 @@ internal class SettingsViewModelTest {
                 exporter = exporter,
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // when
@@ -221,6 +231,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(deviceStatus = AiStatus.PREPARING),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // then
@@ -238,6 +249,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(deviceStatus = AiStatus.READY),
                 externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // when
@@ -245,6 +257,98 @@ internal class SettingsViewModelTest {
 
             // then
             preferences.onDeviceAi.value shouldBe false
+        }
+    }
+
+    @Nested
+    inner class OnOnlineAiChange {
+        @Test
+        fun `should save whether the AI help may use the online model`() = runTest {
+            // given
+            val preferences = FakeUserPreferencesRepository(onlineAi = true)
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = preferences,
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(key = "my-key"),
+            )
+
+            // when
+            viewModel.onOnlineAiChange(false)
+
+            // then
+            preferences.onlineAi.value shouldBe false
+        }
+    }
+
+    @Nested
+    inner class OnApiKeySave {
+        @Test
+        fun `should show the key as saved once Anthropic accepts it`() = runTest {
+            // given
+            val keys = FakeApiKeyRepository()
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = keys,
+            )
+
+            // when
+            viewModel.onApiKeySave("my-key")
+
+            // then
+            viewModel.uiState.value.apiKeySet shouldBe true
+            viewModel.uiState.value.keyCheck shouldBe KeyCheck.ACCEPTED
+            keys.key.value shouldBe "my-key"
+        }
+
+        @Test
+        fun `should tell when Anthropic refuses the key`() = runTest {
+            // given
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(check = KeyCheck.REFUSED),
+            )
+
+            // when
+            viewModel.onApiKeySave("my-key")
+
+            // then
+            viewModel.uiState.value.apiKeySet shouldBe false
+            viewModel.uiState.value.keyCheck shouldBe KeyCheck.REFUSED
+        }
+    }
+
+    @Nested
+    inner class OnApiKeyClear {
+        @Test
+        fun `should forget the key`() = runTest {
+            // given
+            val keys = FakeApiKeyRepository(key = "my-key")
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = keys,
+            )
+
+            // when
+            viewModel.onApiKeyClear()
+
+            // then
+            keys.key.value shouldBe null
+            viewModel.uiState.value.apiKeySet shouldBe false
         }
     }
 
@@ -259,6 +363,7 @@ internal class SettingsViewModelTest {
                 exporter = FakeMarkdownExporter(),
                 assistant = FakeAiAssistant(),
                 externalMusic = FakeExternalMusic(access = true),
+                apiKeys = FakeApiKeyRepository(),
             )
 
             // when

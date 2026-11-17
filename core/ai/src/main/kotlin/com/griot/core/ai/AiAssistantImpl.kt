@@ -60,6 +60,14 @@ internal class AiAssistantImpl @Inject constructor(
     // The models the settings allow, the phone's first.
     private suspend fun allowed(): List<AiProvider> {
         val onDevice = preferences.onDeviceAi.first()
-        return providers.filter { it.location != AiLocation.DEVICE || onDevice }.sortedBy { it.location.ordinal }
+        val online = preferences.onlineAi.first()
+        return providers
+            .filter {
+                when (it.location) {
+                    AiLocation.DEVICE -> onDevice
+                    AiLocation.ONLINE -> online
+                }
+            }
+            .sortedBy { it.location.ordinal }
     }
 }

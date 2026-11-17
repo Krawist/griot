@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.ai.AiAssistant
 import com.griot.core.ai.AiLocation
+import com.griot.core.ai.online.ApiKeyRepository
 import com.griot.core.data.audio.ExternalMusic
 import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.language.AppLanguageRepository
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@Suppress("TooManyFunctions") // One action per setting.
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
     private val appLanguage: AppLanguageRepository,
@@ -27,6 +29,7 @@ internal class SettingsViewModel @Inject constructor(
     private val exporter: MarkdownExporter,
     private val assistant: AiAssistant,
     private val externalMusic: ExternalMusic,
+    private val apiKeys: ApiKeyRepository,
 ) : ViewModel() {
     private val state = MutableStateFlow(SettingsUiState(language = appLanguage.current()))
     val uiState: StateFlow<SettingsUiState> = state.asStateFlow()
@@ -34,6 +37,9 @@ internal class SettingsViewModel @Inject constructor(
     init {
         combine(preferences.authorName, preferences.editorFontSize, preferences.onDeviceAi) { name, size, onDevice ->
             state.update { it.copy(authorName = name.orEmpty(), fontSize = size, onDeviceAi = onDevice) }
+        }.launchIn(viewModelScope)
+        combine(preferences.onlineAi, apiKeys.isSet) { online, keySet ->
+            state.update { it.copy(onlineAi = online, apiKeySet = keySet) }
         }.launchIn(viewModelScope)
         viewModelScope.launch {
             val status = assistant.status(AiLocation.DEVICE)
@@ -72,6 +78,31 @@ internal class SettingsViewModel @Inject constructor(
     /** Allows or forbids the AI help to use the model on the phone. */
     fun onOnDeviceAiChange(allowed: Boolean) {
         viewModelScope.launch { preferences.setOnDeviceAi(allowed) }
+    }
+
+    /** Allows or forbids the AI help to use the online model. */
+    fun onOnlineAiChange(allowed: Boolean) {
+        viewModelScope.launch { preferences.setOnlineAi(allowed) }
+    }
+
+    /** Asks Anthropic about the pasted [key], and saves it once accepted. */
+    fun onApiKeySave(key: String) {
+        if (state.value.checkingKey) return
+        state.update { it.copy(checkingKey = true, keyCheck = null) }
+        viewModelScope.launch {
+            val check = apiKeys.save(key)
+            state.update { it.copy(checkingKey = false, keyCheck = check) }
+        }
+    }
+
+    /** Forgets the key of the online model. */
+    fun onApiKeyClear() {
+        viewModelScope.launch { apiKeys.clear() }
+    }
+
+    /** The key sheet is closed: what Anthropic said is forgotten. */
+    fun onApiKeyClosed() {
+        state.update { it.copy(keyCheck = null) }
     }
 
     /** Exports every song as Markdown in a zip, then shows what to do with the file. */
