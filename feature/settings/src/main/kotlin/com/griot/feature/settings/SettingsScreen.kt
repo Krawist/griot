@@ -26,8 +26,10 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.ai.AiStatus
 import com.griot.core.ai.online.KeyCheck
+import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.FileShareSheet
+import com.griot.core.design.component.FontSizeSheet
 import com.griot.core.design.component.GriotSwitch
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
@@ -73,7 +75,7 @@ internal fun SettingsScreen(
         )
         MusicGroup(controlled = uiState.externalMusic)
         TextsGroup(onImport = onOpenImport, onExport = viewModel::onExportAll, onTrash = onOpenTrash)
-        AppearanceGroup(fontSize = uiState.fontSize, onLicences = { sheet = SettingsSheet.LICENCES })
+        AppearanceGroup(uiState = uiState, onSheet = { sheet = it })
     }
     SettingsSheets(uiState = uiState, sheet = sheet, viewModel = viewModel, onClose = { sheet = null })
 }
@@ -280,9 +282,9 @@ private fun TextsGroup(onImport: () -> Unit, onExport: () -> Unit, onTrash: () -
     }
 }
 
-// The theme follows the phone; the lyrics size is set with « Aa » in the editor.
+// The theme, the size of the lyrics of every song (the editor's « Aa » sheet), and the licences.
 @Composable
-private fun AppearanceGroup(fontSize: Int, onLicences: () -> Unit) {
+private fun AppearanceGroup(uiState: SettingsUiState, onSheet: (SettingsSheet) -> Unit) {
     SettingsGroup(title = stringResource(R.string.settings_appearance)) {
         SettingsRow(
             letter = "",
@@ -291,14 +293,16 @@ private fun AppearanceGroup(fontSize: Int, onLicences: () -> Unit) {
             label = stringResource(R.string.settings_theme),
             sub = stringResource(R.string.settings_theme_sub),
             first = true,
-        )
+            onClick = { onSheet(SettingsSheet.THEME) },
+        ) { SettingsValue(value = stringResource(uiState.themeMode.labelRes())) }
         SettingsRow(
             letter = stringResource(R.string.settings_font_size_letter),
             tone = SettingsTone.BRAND,
             label = stringResource(R.string.settings_font_size),
             sub = stringResource(R.string.settings_font_size_sub),
             first = false,
-        ) { SettingsValue(value = stringResource(R.string.settings_font_size_value, fontSize), chevron = false) }
+            onClick = { onSheet(SettingsSheet.FONT_SIZE) },
+        ) { SettingsValue(value = stringResource(R.string.settings_font_size_value, uiState.fontSize)) }
         SettingsRow(
             letter = "",
             icon = DesignR.drawable.ic_licence,
@@ -306,7 +310,7 @@ private fun AppearanceGroup(fontSize: Int, onLicences: () -> Unit) {
             label = stringResource(R.string.settings_licences),
             sub = stringResource(R.string.settings_licences_sub),
             first = false,
-            onClick = onLicences,
+            onClick = { onSheet(SettingsSheet.LICENCES) },
         ) { SettingsValue(value = "") }
     }
 }
@@ -337,6 +341,20 @@ private fun SettingsSheets(
             onDismiss = onClose,
         )
         SettingsSheet.LICENCES -> LicencesSheet(onDismiss = onClose)
+        SettingsSheet.THEME -> ThemeSheet(
+            mode = uiState.themeMode,
+            onSelect = { mode ->
+                viewModel.onThemeModeChange(mode)
+                onClose()
+            },
+            onDismiss = onClose,
+        )
+        SettingsSheet.FONT_SIZE -> FontSizeSheet(
+            size = uiState.fontSize,
+            sizes = UserPreferencesRepository.EDITOR_FONT_SIZES,
+            onSizeChange = viewModel::onFontSizeChange,
+            onDismiss = onClose,
+        )
         SettingsSheet.PREFERRED_AI -> PreferredAiSheet(
             preferred = uiState.preferredAi,
             onSelect = { preferred ->
@@ -345,23 +363,7 @@ private fun SettingsSheets(
             },
             onDismiss = onClose,
         )
-        SettingsSheet.API_KEY -> {
-            val close = {
-                viewModel.onApiKeyClosed()
-                onClose()
-            }
-            // An accepted key closes the sheet.
-            LaunchedEffect(uiState.keyCheck) { if (uiState.keyCheck == KeyCheck.ACCEPTED) close() }
-            ApiKeySheet(
-                uiState = uiState,
-                onSave = viewModel::onApiKeySave,
-                onClear = {
-                    viewModel.onApiKeyClear()
-                    close()
-                },
-                onDismiss = close,
-            )
-        }
+        SettingsSheet.API_KEY -> ApiKeySheetHost(uiState = uiState, viewModel = viewModel, onClose = onClose)
         null -> Unit
     }
     uiState.export?.let { file ->
@@ -373,4 +375,23 @@ private fun SettingsSheets(
             onDismiss = viewModel::onExportClosed,
         )
     }
+}
+
+// The key sheet: what Anthropic said is forgotten once it closes, and an accepted key closes it.
+@Composable
+private fun ApiKeySheetHost(uiState: SettingsUiState, viewModel: SettingsViewModel, onClose: () -> Unit) {
+    val close = {
+        viewModel.onApiKeyClosed()
+        onClose()
+    }
+    LaunchedEffect(uiState.keyCheck) { if (uiState.keyCheck == KeyCheck.ACCEPTED) close() }
+    ApiKeySheet(
+        uiState = uiState,
+        onSave = viewModel::onApiKeySave,
+        onClear = {
+            viewModel.onApiKeyClear()
+            close()
+        },
+        onDismiss = close,
+    )
 }

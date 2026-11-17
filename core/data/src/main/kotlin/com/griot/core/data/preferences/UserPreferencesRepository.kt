@@ -2,6 +2,7 @@ package com.griot.core.data.preferences
 
 import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.model.ThemeMode
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
@@ -44,8 +45,14 @@ interface UserPreferencesRepository {
     /** Saves the writing [language] of new songs. */
     suspend fun setDefaultSongLanguage(language: SongLanguage)
 
-    /** Saves the [size] of the lyrics in the editor, in sp. */
+    /** Saves the [size] of the lyrics in the editor, in sp, kept within [EDITOR_FONT_SIZES]. */
     suspend fun setEditorFontSize(size: Int)
+
+    /** Whether Griot is light, dark, or as the phone; [ThemeMode.SYSTEM] until the author picks one. */
+    val themeMode: Flow<ThemeMode>
+
+    /** Saves whether Griot is light, dark, or as the phone. */
+    suspend fun setThemeMode(mode: ThemeMode)
 
     /** Shows or hides the colours of the rhymes in the editor. */
     suspend fun setShowRhymes(show: Boolean)
@@ -98,5 +105,8 @@ interface UserPreferencesRepository {
     companion object {
         /** Size of the lyrics, in sp, before the user changes it. */
         const val DEFAULT_EDITOR_FONT_SIZE = 18
+
+        /** The sizes the lyrics can take, in sp. */
+        val EDITOR_FONT_SIZES = 14..28
     }
 }

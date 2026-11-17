@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="licence_bsd" translatable="false">BSD</string>
+    <string name="licence_cc_by_sa" translatable="false">CC BY-SA 4.0</string>
+    <string name="licence_ofl" translatable="false">SIL OFL 1.1</string>
     <string name="settings_ai">Aide IA</string>
     <string name="settings_ai_device">IA sur le téléphone</string>
     <string name="settings_ai_device_letter" translatable="false">IA</string>
@@ -25,7 +28,7 @@
     <string name="settings_export_sub">En Markdown</string>
     <string name="settings_font_size">Taille des paroles</string>
     <string name="settings_font_size_letter" translatable="false">A</string>
-    <string name="settings_font_size_sub">Change-la avec « Aa » dans l\'éditeur</string>
+    <string name="settings_font_size_sub">Pour les paroles de toutes les chansons</string>
     <string name="settings_font_size_value" translatable="false">%1$d sp</string>
     <string name="settings_import">Importer des textes</string>
     <string name="settings_import_sub">Samsung Notes, fichiers, texte collé</string>
@@ -44,23 +47,32 @@
     <string name="settings_key_unreachable">Impossible de joindre Anthropic. Vérifie ta connexion et réessaie.</string>
     <string name="settings_language">Langue de l\'app</string>
     <string name="settings_language_english" translatable="false">English</string>
+    <string name="settings_language_english_code" translatable="false">EN</string>
+    <string name="settings_language_english_hint" translatable="false">The interface in English</string>
     <string name="settings_language_french" translatable="false">Français</string>
+    <string name="settings_language_french_code" translatable="false">FR</string>
+    <string name="settings_language_french_hint" translatable="false">L\'interface en français</string>
     <string name="settings_language_hint">Français ou English devient aussi la langue des nouvelles chansons.</string>
     <string name="settings_language_letter" translatable="false">Aa</string>
     <string name="settings_language_sub">Langue par défaut des chansons</string>
     <string name="settings_language_system">Langue du téléphone</string>
+    <string name="settings_language_system_hint">Suit la langue réglée sur le téléphone</string>
     <string name="settings_licence_cmu" translatable="false">CMU Pronouncing Dictionary</string>
-    <string name="settings_licence_cmu_terms">Carnegie Mellon University · licence BSD</string>
+    <string name="settings_licence_cmu_authors" translatable="false">Carnegie Mellon University</string>
+    <string name="settings_licence_font_letter" translatable="false">Aa</string>
     <string name="settings_licence_frequency">Fréquences des mots anglais</string>
-    <string name="settings_licence_frequency_terms" translatable="false">FrequencyWords, Hermit Dave (OpenSubtitles 2018) · CC BY-SA 4.0</string>
-    <string name="settings_licence_inter">Police Inter</string>
-    <string name="settings_licence_inter_terms" translatable="false">The Inter Project Authors · SIL Open Font License 1.1</string>
+    <string name="settings_licence_frequency_authors" translatable="false">Hermit Dave · OpenSubtitles 2018</string>
+    <string name="settings_licence_inter" translatable="false">Inter</string>
+    <string name="settings_licence_inter_authors" translatable="false">The Inter Project Authors</string>
     <string name="settings_licence_lexique" translatable="false">Lexique 3.83</string>
-    <string name="settings_licence_lexique_terms" translatable="false">Boris New, Christophe Pallier · CC BY-SA 4.0 · lexique.org</string>
-    <string name="settings_licence_outfit">Police Outfit</string>
-    <string name="settings_licence_outfit_terms" translatable="false">The Outfit Project Authors · SIL Open Font License 1.1</string>
+    <string name="settings_licence_lexique_authors" translatable="false">Boris New, Christophe Pallier · lexique.org</string>
+    <string name="settings_licence_outfit" translatable="false">Outfit</string>
+    <string name="settings_licence_outfit_authors" translatable="false">The Outfit Project Authors</string>
     <string name="settings_licences">Licences</string>
+    <string name="settings_licences_dictionaries">Dictionnaires</string>
+    <string name="settings_licences_fonts">Polices</string>
     <string name="settings_licences_sub">Dictionnaires et polices</string>
+    <string name="settings_licences_thanks">Griot s\'appuie sur ces œuvres libres. Merci à leurs auteurs.</string>
     <string name="settings_music">Musique</string>
     <string name="settings_music_control">Contrôle des autres apps</string>
     <string name="settings_music_control_sub">Titre, pause, recul de 15 s</string>
@@ -76,7 +88,13 @@
     <string name="settings_sync_now">Synchroniser</string>
     <string name="settings_texts">Textes</string>
     <string name="settings_theme">Thème</string>
-    <string name="settings_theme_sub">Celui du téléphone, clair ou sombre</string>
+    <string name="settings_theme_dark">Sombre</string>
+    <string name="settings_theme_dark_hint">Toujours sur fond sombre</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_light_hint">Toujours sur fond clair</string>
+    <string name="settings_theme_sub">Clair, sombre ou comme le téléphone</string>
+    <string name="settings_theme_system">Comme le téléphone</string>
+    <string name="settings_theme_system_hint">Clair ou sombre, selon le réglage du téléphone</string>
     <string name="settings_title">Réglages</string>
     <string name="settings_trash">Corbeille</string>
     <string name="settings_trash_sub">Chansons supprimées, gardées 30 jours</string>

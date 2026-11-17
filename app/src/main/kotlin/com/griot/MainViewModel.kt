@@ -3,6 +3,7 @@ package com.griot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.ai.AiAssistant
+import com.griot.core.data.model.ThemeMode
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongRepository
 import com.griot.core.data.song.VersionRepository
@@ -24,6 +25,10 @@ internal class MainViewModel @Inject constructor(
     val uiState: StateFlow<MainUiState> = preferences.onboardingCompleted
         .map { MainUiState.Ready(onboardingCompleted = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), MainUiState.Loading)
+
+    /** Whether Griot is light, dark, or as the phone; as the phone until the preference is read. */
+    val themeMode: StateFlow<ThemeMode> = preferences.themeMode
+        .stateIn(viewModelScope, SharingStarted.Eagerly, ThemeMode.SYSTEM)
 
     init {
         // Once per launch: the songs in the trash for more than 30 days are removed for good, the old versions are

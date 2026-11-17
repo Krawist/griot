@@ -23,8 +23,10 @@ import com.griot.core.data.model.SectionKind
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongSection
 import com.griot.core.data.model.SongVerse
+import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SectionLabel
 import com.griot.core.design.component.FileShareSheet
+import com.griot.core.design.component.FontSizeSheet
 import com.griot.core.design.component.GriotSheet
 import com.griot.core.design.component.TextInputForm
 import com.griot.core.design.theme.GriotTheme
@@ -270,6 +272,7 @@ private fun OpenSheet(sheet: EditorSheet?, uiState: EditorUiState, viewModel: Ed
     when (sheet) {
         EditorSheet.FONT_SIZE -> FontSizeSheet(
             size = uiState.fontSize,
+            sizes = UserPreferencesRepository.EDITOR_FONT_SIZES,
             onSizeChange = viewModel::onFontSizeChange,
             onDismiss = onClosed,
         )

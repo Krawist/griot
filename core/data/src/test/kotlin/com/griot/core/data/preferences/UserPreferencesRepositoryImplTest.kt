@@ -2,6 +2,7 @@ package com.griot.core.data.preferences
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.model.ThemeMode
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.nulls.shouldBeNull
@@ -20,6 +21,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class UserPreferencesRepositoryImplTest {
     @TempDir
@@ -138,13 +142,36 @@ internal class UserPreferencesRepositoryImplTest {
             size shouldBe 18
         }
 
-        @Test
-        fun `should keep the size saved`() = runTest {
+        @ParameterizedTest
+        @CsvSource("14, 14", "24, 24", "28, 28", "10, 14", "40, 28")
+        fun `should keep the size saved, between 14 and 28 sp`(size: Int, saved: Int) = runTest {
             // when
-            repository.setEditorFontSize(24)
+            repository.setEditorFontSize(size)
 
             // then
-            repository.editorFontSize.first() shouldBe 24
+            repository.editorFontSize.first() shouldBe saved
+        }
+    }
+
+    @Nested
+    inner class Theme {
+        @Test
+        fun `should follow the phone on a new install`() = runTest {
+            // when
+            val mode = repository.themeMode.first()
+
+            // then
+            mode shouldBe ThemeMode.SYSTEM
+        }
+
+        @ParameterizedTest
+        @EnumSource(ThemeMode::class)
+        fun `should keep the theme saved`(mode: ThemeMode) = runTest {
+            // when
+            repository.setThemeMode(mode)
+
+            // then
+            repository.themeMode.first() shouldBe mode
         }
     }
 

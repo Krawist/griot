@@ -4,6 +4,10 @@
     <string name="export_saved">Fichier enregistré</string>
     <string name="export_share">Partager</string>
     <string name="export_title">Exporter en Markdown</string>
+    <string name="font_size">Taille du texte</string>
+    <string name="font_size_letter" translatable="false">A</string>
+    <string name="font_size_sample">Je marche seul dans la ville</string>
+    <string name="font_size_value">%1$d sp</string>
     <string name="time_hours_ago">il y a %1$d h</string>
     <string name="time_just_now">à l\'instant</string>
     <string name="time_minutes_ago">il y a %1$d min</string>

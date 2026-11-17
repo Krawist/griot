@@ -12,6 +12,7 @@ import com.griot.core.data.language.AppLanguageRepository
 import com.griot.core.data.model.AppLanguage
 import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.model.ThemeMode
 import com.griot.core.data.preferences.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -40,6 +42,7 @@ internal class SettingsViewModel @Inject constructor(
         combine(preferences.authorName, preferences.editorFontSize, preferences.onDeviceAi) { name, size, onDevice ->
             state.update { it.copy(authorName = name.orEmpty(), fontSize = size, onDeviceAi = onDevice).withUsableAi() }
         }.launchIn(viewModelScope)
+        preferences.themeMode.onEach { mode -> state.update { it.copy(themeMode = mode) } }.launchIn(viewModelScope)
         combine(preferences.onlineAi, preferences.preferredAi, apiKeys.isSet) { online, preferred, keySet ->
             state.update { it.copy(onlineAi = online, preferredAi = preferred, apiKeySet = keySet).withUsableAi() }
         }.launchIn(viewModelScope)
@@ -75,6 +78,16 @@ internal class SettingsViewModel @Inject constructor(
             state.update { it.copy(language = language) }
             appLanguage.set(language)
         }
+    }
+
+    /** Makes Griot light, dark, or as the phone, at once. */
+    fun onThemeModeChange(mode: ThemeMode) {
+        viewModelScope.launch { preferences.setThemeMode(mode) }
+    }
+
+    /** Shows the lyrics of every song at [size] sp. */
+    fun onFontSizeChange(size: Int) {
+        viewModelScope.launch { preferences.setEditorFontSize(size) }
     }
 
     /** Allows or forbids the AI help to use the model on the phone. */

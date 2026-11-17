@@ -4,6 +4,9 @@
     <string name="export_saved">File saved</string>
     <string name="export_share">Share</string>
     <string name="export_title">Export as Markdown</string>
+    <string name="font_size">Text size</string>
+    <string name="font_size_sample">I walk alone through the city</string>
+    <string name="font_size_value">%1$d sp</string>
     <string name="time_hours_ago">%1$d h ago</string>
     <string name="time_just_now">just now</string>
     <string name="time_minutes_ago">%1$d min ago</string>

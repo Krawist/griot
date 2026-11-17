@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -131,6 +132,21 @@ private fun SettingsTone.colors(): Pair<Color, Color> {
         SettingsTone.SYNC -> palette.syncSoft to palette.syncText
         SettingsTone.AI -> palette.aiSoft to palette.aiText
     }
+}
+
+/** A short label in a pill of the row's [tone], such as a licence. */
+@Composable
+internal fun SettingsPill(label: String, tone: SettingsTone) {
+    val (background, foreground) = tone.colors()
+    Text(
+        text = label,
+        style = GriotTheme.type.captionStrong,
+        color = foreground,
+        maxLines = 1,
+        modifier = Modifier
+            .background(background, CircleShape)
+            .padding(horizontal = GriotSpacing.s + 2.dp, vertical = GriotSpacing.xs),
+    )
 }
 
 /** The row's current value in muted text, with a chevron when the row opens something. */

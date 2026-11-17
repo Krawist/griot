@@ -2,6 +2,7 @@ package com.griot.core.data.preferences
 
 import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.model.ThemeMode
 import java.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -15,6 +16,7 @@ class FakeUserPreferencesRepository(
     onDeviceAi: Boolean = true,
     onlineAi: Boolean = true,
     preferredAi: PreferredAi = PreferredAi.DEVICE,
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
     lastSyncedAt: Instant? = null,
     syncCursor: String? = null,
 ) : UserPreferencesRepository {
@@ -65,6 +67,12 @@ class FakeUserPreferencesRepository(
     }
 
     override val preferredAi = MutableStateFlow(preferredAi)
+
+    override val themeMode = MutableStateFlow(themeMode)
+
+    override suspend fun setThemeMode(mode: ThemeMode) {
+        themeMode.value = mode
+    }
 
     override suspend fun setPreferredAi(preferred: PreferredAi) {
         preferredAi.value = preferred

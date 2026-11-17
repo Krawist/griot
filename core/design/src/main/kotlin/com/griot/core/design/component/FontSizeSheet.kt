@@ -1,4 +1,4 @@
-package com.griot.feature.editor
+package com.griot.core.design.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,40 +12,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import com.griot.core.design.component.GriotSheet
+import com.griot.core.design.R
 import com.griot.core.design.theme.GriotTheme
 import kotlin.math.roundToInt
 
-/** The « Aa » menu: a slider for the size of the lyrics, from 14 to 28 sp, with a verse shown at that size. */
+/**
+ * The size of the lyrics, from the editor's « Aa » and from the settings: a slider over [sizes], in sp, with a verse
+ * shown at the [size] chosen.
+ */
 @Composable
-internal fun FontSizeSheet(size: Int, onSizeChange: (Int) -> Unit, onDismiss: () -> Unit) {
+fun FontSizeSheet(size: Int, sizes: IntRange, onSizeChange: (Int) -> Unit, onDismiss: () -> Unit) {
     val palette = GriotTheme.palette
-    val description = stringResource(R.string.editor_font_size)
+    val description = stringResource(R.string.font_size)
     GriotSheet(onDismiss = onDismiss) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = description, style = GriotTheme.type.sheetTitle, color = palette.ink)
             Text(
-                text = stringResource(R.string.editor_font_size_value, size),
+                text = stringResource(R.string.font_size_value, size),
                 style = GriotTheme.type.body,
                 color = palette.muted,
             )
         }
         Text(
-            text = stringResource(R.string.editor_font_size_sample),
+            text = stringResource(R.string.font_size_sample),
             style = GriotTheme.type.lyrics(size = size),
             color = palette.ink,
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = stringResource(R.string.editor_font_size_letter),
-                style = GriotTheme.type.lyrics(size = EditorViewModel.MIN_FONT_SIZE),
+                text = stringResource(R.string.font_size_letter),
+                style = GriotTheme.type.lyrics(size = sizes.first),
                 color = palette.muted,
             )
             Slider(
                 value = size.toFloat(),
                 onValueChange = { onSizeChange(it.roundToInt()) },
-                valueRange = EditorViewModel.MIN_FONT_SIZE.toFloat()..EditorViewModel.MAX_FONT_SIZE.toFloat(),
-                steps = EditorViewModel.MAX_FONT_SIZE - EditorViewModel.MIN_FONT_SIZE - 1,
+                valueRange = sizes.first.toFloat()..sizes.last.toFloat(),
+                steps = sizes.last - sizes.first - 1,
                 colors = SliderDefaults.colors(
                     thumbColor = palette.accent,
                     activeTrackColor = palette.accent,
@@ -56,8 +59,8 @@ internal fun FontSizeSheet(size: Int, onSizeChange: (Int) -> Unit, onDismiss: ()
                 modifier = Modifier.weight(1f).semantics { contentDescription = description },
             )
             Text(
-                text = stringResource(R.string.editor_font_size_letter),
-                style = GriotTheme.type.lyrics(size = EditorViewModel.MAX_FONT_SIZE),
+                text = stringResource(R.string.font_size_letter),
+                style = GriotTheme.type.lyrics(size = sizes.last),
                 color = palette.muted,
             )
         }

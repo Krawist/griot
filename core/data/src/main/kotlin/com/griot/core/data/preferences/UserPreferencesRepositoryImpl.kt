@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.model.ThemeMode
 import java.time.Instant
 import java.util.Locale
 import java.util.UUID
@@ -93,7 +94,7 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
     }
 
     override suspend fun setEditorFontSize(size: Int) {
-        dataStore.edit { it[EditorFontSize] = size }
+        dataStore.edit { it[EditorFontSize] = size.coerceIn(UserPreferencesRepository.EDITOR_FONT_SIZES) }
     }
 
     override suspend fun setShowRhymes(show: Boolean) {
@@ -106,6 +107,14 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
 
     override suspend fun setOnlineAi(allowed: Boolean) {
         dataStore.edit { it[OnlineAi] = allowed }
+    }
+
+    override val themeMode: Flow<ThemeMode> = dataStore.data.map { preferences ->
+        ThemeMode.entries.firstOrNull { it.name == preferences[ThemeModeKey] } ?: ThemeMode.SYSTEM
+    }
+
+    override suspend fun setThemeMode(mode: ThemeMode) {
+        dataStore.edit { it[ThemeModeKey] = mode.name }
     }
 
     override val preferredAi: Flow<PreferredAi> = dataStore.data.map { preferences ->
@@ -139,6 +148,7 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         val OnlineAi = booleanPreferencesKey("online_ai")
         val OnlineAiKey = stringPreferencesKey("online_ai_key")
         val PreferredAiKey = stringPreferencesKey("preferred_ai")
+        val ThemeModeKey = stringPreferencesKey("theme_mode")
         val TidyUpRequested = booleanPreferencesKey("tidy_up_requested")
         val DeviceId = stringPreferencesKey("device_id")
         val ExternalMusicExplained = booleanPreferencesKey("external_music_explained")

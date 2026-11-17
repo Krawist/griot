@@ -235,6 +235,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   dimmed, « Pas encore disponible », until GRI-27 and GRI-32/33. Textes: import (`navigateToImport()`, the onboarding's
   import without its progress, closing on « Terminé »), export everything, trash. Apparence: theme (the phone's),
   lyrics size (set with « Aa »), licences (`LicencesSheet`). `PlaceholderScreen` is gone.
+- [x] **GRI-29 (follow-up)** — choices are `ChoiceCard`s in a `ChoiceGroup` (`:core:design`, from the onboarding's
+  language step): app language, preferred AI, theme, song language. « Thème » (`ThemeMode`: phone, light, dark;
+  `UserPreferencesRepository.themeMode`) applies at once from `MainActivity` (theme and system bars; `GriotSheet` sets
+  its window's bar icons from Griot's palette). « Taille des paroles » opens `FontSizeSheet` (now in `:core:design`,
+  shared with the editor's « Aa »; `EDITOR_FONT_SIZES` 14–28 kept by the repository). Licences in glass groups
+  (« Dictionnaires », « Polices ») with a licence pill (`SettingsPill`).
 - [x] **GRI-26** — `:core:sync`: `SyncRepository` (`status` flow: off, syncing, synced, pending, offline, error, with
   the pending count and the last sync; `sync()` pulls, applies, then pushes) on a `RemoteStore` interface
   (`push`, `pull(cursor)`), bound optionally (`@BindsOptionalOf`): without one, sync is off. `NetworkMonitor` on

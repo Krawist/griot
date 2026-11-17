@@ -10,6 +10,7 @@ import com.griot.core.data.language.FakeAppLanguageRepository
 import com.griot.core.data.model.AppLanguage
 import com.griot.core.data.model.PreferredAi
 import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.model.ThemeMode
 import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -441,6 +442,54 @@ internal class SettingsViewModelTest {
             // then
             keys.key.value shouldBe null
             viewModel.uiState.value.apiKeySet shouldBe false
+        }
+    }
+
+    @Nested
+    inner class OnThemeModeChange {
+        @Test
+        fun `should save and show the theme chosen`() = runTest {
+            // given
+            val preferences = FakeUserPreferencesRepository()
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = preferences,
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
+            )
+
+            // when
+            viewModel.onThemeModeChange(ThemeMode.DARK)
+
+            // then
+            preferences.themeMode.value shouldBe ThemeMode.DARK
+            viewModel.uiState.value.themeMode shouldBe ThemeMode.DARK
+        }
+    }
+
+    @Nested
+    inner class OnFontSizeChange {
+        @Test
+        fun `should save and show the size of the lyrics`() = runTest {
+            // given
+            val preferences = FakeUserPreferencesRepository()
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = preferences,
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
+                externalMusic = FakeExternalMusic(),
+                apiKeys = FakeApiKeyRepository(),
+            )
+
+            // when
+            viewModel.onFontSizeChange(24)
+
+            // then
+            preferences.editorFontSize.value shouldBe 24
+            viewModel.uiState.value.fontSize shouldBe 24
         }
     }
 

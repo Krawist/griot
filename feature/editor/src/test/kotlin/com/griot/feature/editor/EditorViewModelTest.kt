@@ -36,8 +36,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class EditorViewModelTest {
@@ -761,9 +759,8 @@ internal class EditorViewModelTest {
 
     @Nested
     inner class OnFontSizeChange {
-        @ParameterizedTest
-        @CsvSource("14, 14", "24, 24", "28, 28", "10, 14", "40, 28")
-        fun `should save the size, kept between 14 and 28 sp`(size: Int, saved: Int) = runTest {
+        @Test
+        fun `should save the size`() = runTest {
             // given
             val preferences = FakeUserPreferencesRepository()
             val viewModel = EditorViewModel(
@@ -781,10 +778,10 @@ internal class EditorViewModelTest {
             )
 
             // when
-            viewModel.onFontSizeChange(size)
+            viewModel.onFontSizeChange(24)
 
             // then
-            preferences.editorFontSize.value shouldBe saved
+            preferences.editorFontSize.value shouldBe 24
         }
 
         @Test

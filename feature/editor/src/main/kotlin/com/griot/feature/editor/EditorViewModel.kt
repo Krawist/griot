@@ -379,9 +379,9 @@ internal class EditorViewModel @AssistedInject constructor(
         }
     }
 
-    /** Shows the lyrics at [size] sp in every song, kept between [MIN_FONT_SIZE] and [MAX_FONT_SIZE]. */
+    /** Shows the lyrics at [size] sp in every song. */
     fun onFontSizeChange(size: Int) {
-        viewModelScope.launch { preferences.setEditorFontSize(size.coerceIn(MIN_FONT_SIZE, MAX_FONT_SIZE)) }
+        viewModelScope.launch { preferences.setEditorFontSize(size) }
     }
 
     /** The field asked to take the focus has it. */
@@ -459,12 +459,6 @@ internal class EditorViewModel @AssistedInject constructor(
     }
 
     companion object {
-        /** Smallest size of the lyrics, in sp. */
-        const val MIN_FONT_SIZE = 14
-
-        /** Largest size of the lyrics, in sp. */
-        const val MAX_FONT_SIZE = 28
-
         private const val STOP_TIMEOUT_MILLIS = 5_000L
         private const val DETECTION_DELAY_MILLIS = 2_000L
         private const val VERSION_PAUSE_MILLIS = 2_000L
