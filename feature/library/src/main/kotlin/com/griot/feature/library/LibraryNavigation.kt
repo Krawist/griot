@@ -59,8 +59,6 @@ fun NavGraphBuilder.libraryGraph(
             folderId = entry.toRoute<FolderRoute>().folderId,
             onBack = onBack,
             onOpenSong = onOpenSong,
-            // « Dossier et genre » comes with GRI-58.
-            onFile = {},
         )
     }
 }

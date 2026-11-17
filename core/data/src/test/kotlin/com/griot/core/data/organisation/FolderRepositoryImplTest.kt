@@ -139,7 +139,7 @@ internal class FolderRepositoryImplTest {
     @Nested
     inner class CreateFolder {
         @Test
-        fun `should create the folder after the others`() = runTest {
+        fun `should create the folder after the others, in the next accent`() = runTest {
             // given
             database.folderDao().insert(
                 FolderEntity(
@@ -152,7 +152,7 @@ internal class FolderRepositoryImplTest {
             )
 
             // when
-            val id = repository.createFolder(name = " my-name-2 ", color = FolderColor.TURQUOISE)
+            val id = repository.createFolder(" my-name-2 ")
 
             // then
             database.folderDao().getById(id) shouldBe FolderEntity(

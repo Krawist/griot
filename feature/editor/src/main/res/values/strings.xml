@@ -54,6 +54,7 @@
     <string name="editor_language_french_name" translatable="false">Français</string>
     <string name="editor_language_title">Langue de la chanson</string>
     <string name="editor_menu">Plus d\'options</string>
+    <string name="editor_menu_file">Dossier et genre</string>
     <string name="editor_menu_hide_rhymes">Masquer les rimes</string>
     <string name="editor_menu_language">Langue · %1$s</string>
     <string name="editor_menu_rename_song">Renommer la chanson</string>

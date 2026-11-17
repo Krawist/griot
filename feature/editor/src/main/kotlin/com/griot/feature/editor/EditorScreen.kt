@@ -38,6 +38,7 @@ internal fun EditorScreen(
     songId: String,
     onBack: () -> Unit,
     onOpenHistory: (String?) -> Unit,
+    onFile: () -> Unit,
     viewModel: EditorViewModel = hiltViewModel<EditorViewModel, EditorViewModel.Factory>(
         key = songId,
         creationCallback = { factory -> factory.create(songId) },
@@ -108,6 +109,7 @@ internal fun EditorScreen(
                 onClose = { menu = null },
                 onSheet = openSheet,
                 onOpenHistory = onOpenHistory,
+                onFile = onFile,
             )
         },
         sectionMenu = { section ->

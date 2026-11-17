@@ -26,14 +26,19 @@ fun NavController.navigateToEditor(songId: String) = navigate(EditorRoute(songId
 @Serializable
 internal data class HistoryRoute(val songId: String, val verseId: String?)
 
-/** Structured editor, verses, font size and paste splitting (GRI-14 to GRI-18). */
-fun NavGraphBuilder.editorGraph(navController: NavController, onBack: () -> Unit) {
+/**
+ * Structured editor, verses, font size and paste splitting (GRI-14 to GRI-18).
+ *
+ * @param onFile Opens « Dossier et genre » for the song with this id.
+ */
+fun NavGraphBuilder.editorGraph(navController: NavController, onBack: () -> Unit, onFile: (String) -> Unit) {
     composable<EditorRoute> { entry ->
         val songId = entry.toRoute<EditorRoute>().songId
         EditorScreen(
             songId = songId,
             onBack = onBack,
             onOpenHistory = { verseId -> navController.navigate(HistoryRoute(songId = songId, verseId = verseId)) },
+            onFile = { onFile(songId) },
         )
     }
     composable<HistoryRoute> { entry ->

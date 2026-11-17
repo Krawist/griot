@@ -2,8 +2,6 @@ package com.griot.feature.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.griot.core.data.model.FolderColor
-import com.griot.core.data.model.FolderKind
 import com.griot.core.data.organisation.FolderRepository
 import com.griot.core.data.organisation.GenreRepository
 import com.griot.core.data.preferences.UserPreferencesRepository
@@ -81,11 +79,9 @@ internal class LibraryViewModel @Inject constructor(
         viewModelScope.launch { onCreated(songs.createSong()) }
     }
 
-    /** Creates a folder named [name], in the next of the accent colours. */
+    /** Creates a folder named [name]. */
     fun onNewFolder(name: String) {
-        if (name.isBlank()) return
-        val count = uiState.value.folders.count { it.kind == FolderKind.CUSTOM }
-        viewModelScope.launch { folders.createFolder(name = name, color = FolderColors[count % FolderColors.size]) }
+        if (name.isNotBlank()) viewModelScope.launch { folders.createFolder(name) }
     }
 
     private companion object {
@@ -94,8 +90,5 @@ internal class LibraryViewModel @Inject constructor(
 
         // The home screen shows the last three: « Récents » holds the others.
         const val TODAY_SONGS = 3
-
-        // New folders take the accents in turn.
-        val FolderColors = listOf(FolderColor.MAGENTA, FolderColor.TURQUOISE, FolderColor.ORANGE, FolderColor.YELLOW)
     }
 }

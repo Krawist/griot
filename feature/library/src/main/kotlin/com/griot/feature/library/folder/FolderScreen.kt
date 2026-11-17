@@ -36,6 +36,7 @@ import com.griot.feature.library.EmptyState
 import com.griot.feature.library.R
 import com.griot.feature.library.SongActionsHost
 import com.griot.feature.library.SongCard
+import com.griot.feature.library.filing.FilingSheet
 import com.griot.feature.library.meta
 
 private val SelectionLine = 2.dp
@@ -43,14 +44,13 @@ private val ListBottom = 120.dp
 
 /**
  * The songs of the folder [folderId], or every song (« Tous les textes ») when it is `null`: genre chips and a
- * language filter, the folder's « ⋯ » menu, and « Sélectionner » to file several songs at once with [onFile].
+ * language filter, the folder's « ⋯ » menu, and « Sélectionner » to file several songs at once.
  */
 @Composable
 internal fun FolderScreen(
     folderId: String?,
     onBack: () -> Unit,
     onOpenSong: (String) -> Unit,
-    onFile: (List<String>) -> Unit,
     viewModel: FolderViewModel = hiltViewModel<FolderViewModel, FolderViewModel.Factory>(
         key = folderId ?: "all",
         creationCallback = { factory -> factory.create(folderId) },
@@ -61,6 +61,8 @@ internal fun FolderScreen(
     LaunchedEffect(uiState.missing) { if (uiState.missing) onBack() }
     var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
     var sheet by rememberSaveable { mutableStateOf<FolderSheet?>(null) }
+    // The songs being filed, from a long press or « Ranger ».
+    var filing by rememberSaveable { mutableStateOf<List<String>?>(null) }
     Box(modifier = Modifier.fillMaxSize().focusable()) {
         Column(
             modifier = Modifier
@@ -88,13 +90,27 @@ internal fun FolderScreen(
         }
         BottomActions(
             uiState = uiState,
-            onFile = { onFile(uiState.selected.toList()) },
+            onFile = { filing = uiState.selected.toList() },
             onUndoDelete = viewModel.actions::onUndoDelete,
             onUndoDismissed = viewModel.actions::onUndoDismissed,
         )
     }
     uiState.items.firstOrNull { it.song.id == actionsFor }?.let { item ->
-        SongActionsHost(song = item.song, actions = viewModel.actions, onClosed = { actionsFor = null })
+        SongActionsHost(
+            song = item.song,
+            actions = viewModel.actions,
+            onFile = { filing = listOf(item.song.id) },
+            onClosed = { actionsFor = null },
+        )
+    }
+    filing?.let { songIds ->
+        FilingSheet(
+            songIds = songIds,
+            onDismiss = {
+                filing = null
+                viewModel.onSelecting(false)
+            },
+        )
     }
     uiState.folder?.let { folder ->
         FolderSheetContent(sheet = sheet, folder = folder, viewModel = viewModel, onClosed = { sheet = null })

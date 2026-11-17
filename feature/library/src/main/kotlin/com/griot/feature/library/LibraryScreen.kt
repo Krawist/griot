@@ -55,6 +55,7 @@ import com.griot.core.design.format.RelativeTime
 import com.griot.core.design.format.text
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import com.griot.feature.library.filing.FilingSheet
 import java.time.Instant
 import kotlinx.coroutines.launch
 
@@ -86,6 +87,7 @@ internal fun LibraryScreen(
     // The song whose actions show after a long press.
     var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
     var newFolder by rememberSaveable { mutableStateOf(false) }
+    var filing by rememberSaveable { mutableStateOf<String?>(null) }
     LibraryContent(
         uiState = uiState,
         list = list,
@@ -102,8 +104,14 @@ internal fun LibraryScreen(
     (uiState.today + uiState.results + listOfNotNull(uiState.resume?.item))
         .firstOrNull { it.song.id == actionsFor }
         ?.let { item ->
-            SongActionsHost(song = item.song, actions = viewModel.actions, onClosed = { actionsFor = null })
+            SongActionsHost(
+                song = item.song,
+                actions = viewModel.actions,
+                onFile = { filing = item.song.id },
+                onClosed = { actionsFor = null },
+            )
         }
+    filing?.let { songId -> FilingSheet(songIds = listOf(songId), onDismiss = { filing = null }) }
     if (newFolder) {
         GriotSheet(onDismiss = { newFolder = false }) {
             TextInputForm(

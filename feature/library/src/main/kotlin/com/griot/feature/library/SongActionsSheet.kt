@@ -21,7 +21,8 @@ import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 
 /**
- * What a long press on a song offers: rename, duplicate and delete. « Renommer » turns the sheet into a title field.
+ * What a long press on a song offers: file it (« Dossier et genre »), rename, duplicate and delete. « Renommer » turns
+ * the sheet into a title field.
  *
  * @param title The song's title, empty for a song not named.
  * @param displayTitle The title as shown, « Sans titre » for a song not named.
@@ -31,6 +32,7 @@ import com.griot.core.design.theme.GriotTheme
 internal fun SongActionsSheet(
     title: String,
     displayTitle: String,
+    onFile: () -> Unit,
     onRename: (String) -> Unit,
     onDuplicate: () -> Unit,
     onDelete: () -> Unit,
@@ -58,6 +60,11 @@ internal fun SongActionsSheet(
                 )
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(GriotSpacing.s)) {
+                    SheetAction(
+                        icon = DesignR.drawable.ic_folder,
+                        label = stringResource(R.string.library_file),
+                        onClick = onFile,
+                    )
                     SheetAction(
                         icon = DesignR.drawable.ic_edit,
                         label = stringResource(R.string.library_rename),

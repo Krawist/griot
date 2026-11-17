@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 
 // The items of the song's menu: each one closes it, and opens its [onSheet] when it has one.
+@Suppress("LongParameterList") // The song, and how each item closes the menu and goes on.
 @Composable
 internal fun SongMenu(
     uiState: EditorUiState,
@@ -11,6 +12,7 @@ internal fun SongMenu(
     onClose: () -> Unit,
     onSheet: (EditorSheet) -> Unit,
     onOpenHistory: (String?) -> Unit,
+    onFile: () -> Unit,
 ) {
     SongMenuItems(
         language = stringResource(uiState.languageChoice.nameRes()),
@@ -31,6 +33,10 @@ internal fun SongMenu(
             viewModel.onExport()
         },
         onRename = { onSheet(EditorSheet.RENAME_SONG) },
+        onFile = {
+            onClose()
+            onFile()
+        },
         onAddIdea = { text ->
             onClose()
             viewModel.onAddIdea(text)

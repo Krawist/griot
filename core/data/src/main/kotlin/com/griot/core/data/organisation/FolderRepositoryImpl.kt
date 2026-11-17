@@ -26,7 +26,8 @@ internal class FolderRepositoryImpl @Inject constructor(private val database: Gr
         rows.map { Folder(id = it.id, name = it.name, color = it.color, kind = it.kind, songCount = it.songCount) }
     }
 
-    override suspend fun createFolder(name: String, color: FolderColor): String = write { now ->
+    override suspend fun createFolder(name: String): String = write { now ->
+        val color = Accents[folderDao.countCustom() % Accents.size]
         val folder =
             FolderEntity(name = name.trim(), color = color, position = folderDao.nextPosition(), updatedAt = now)
         folderDao.insert(folder)
@@ -69,5 +70,9 @@ internal class FolderRepositoryImpl @Inject constructor(private val database: Gr
     private suspend fun <T> write(change: suspend (Instant) -> T): T {
         val now = Instant.now(clock)
         return database.useWriterConnection { transactor -> transactor.immediateTransaction { change(now) } }
+    }
+
+    private companion object {
+        val Accents = listOf(FolderColor.MAGENTA, FolderColor.TURQUOISE, FolderColor.ORANGE, FolderColor.YELLOW)
     }
 }

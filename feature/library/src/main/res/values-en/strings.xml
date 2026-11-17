@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="filing_checked">In this folder</string>
+    <string name="filing_folder">Folder</string>
+    <string name="filing_genre">Genre</string>
+    <string name="filing_mixed">Some of the texts are in this folder</string>
+    <string name="filing_new_genre">Add a genre</string>
+    <string name="filing_new_genre_label">Genre name</string>
+    <string name="filing_no_folder">No folder</string>
+    <string name="filing_title">Folder and genre</string>
+    <string name="filing_unchecked">Not in this folder</string>
+    <string name="filing_validate">Done</string>
     <string name="folder_all_genres">All</string>
     <string name="folder_all_languages">All</string>
     <string name="folder_all_texts">All texts</string>
@@ -36,6 +46,7 @@
     <string name="library_duplicate">Duplicate</string>
     <string name="library_empty_body">Tap « + » to write your first song.</string>
     <string name="library_empty_title">No songs yet</string>
+    <string name="library_file">Folder and genre</string>
     <string name="library_filter_all">All</string>
     <string name="library_filter_english">English</string>
     <string name="library_filter_french">Français</string>

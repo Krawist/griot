@@ -9,8 +9,11 @@ interface FolderRepository {
     /** The folders in order, « Archives » last, each with its count of songs. */
     fun observeFolders(): Flow<List<Folder>>
 
-    /** Creates a folder named [name] in [color] after the others, and returns its id. */
-    suspend fun createFolder(name: String, color: FolderColor): String
+    /**
+     * Creates a folder named [name] after the others, and returns its id. Its colour is the next of the accents in
+     * turn (magenta, turquoise, orange, yellow), so that the folders tell apart.
+     */
+    suspend fun createFolder(name: String): String
 
     /** Renames the folder [id]; « Archives » keeps its name. */
     suspend fun renameFolder(id: String, name: String)

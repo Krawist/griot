@@ -35,6 +35,10 @@ internal interface FolderDao {
     )
     fun observeWithCounts(): Flow<List<FolderRow>>
 
+    /** How many folders of the author there are, deleted ones included: new folders take the accents in turn. */
+    @Query("SELECT COUNT(*) FROM folders WHERE kind = 'CUSTOM'")
+    suspend fun countCustom(): Int
+
     /** The place after the last folder. */
     @Query("SELECT COALESCE(MAX(position) + 1, 0) FROM folders")
     suspend fun nextPosition(): Int

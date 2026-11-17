@@ -40,6 +40,7 @@ import com.griot.feature.editor.navigateToEditor
 import com.griot.feature.ideas.IdeasGraph
 import com.griot.feature.ideas.ideasGraph
 import com.griot.feature.library.LibraryGraph
+import com.griot.feature.library.filing.FilingSheet
 import com.griot.feature.library.libraryGraph
 import com.griot.feature.library.navigateToTrash
 import com.griot.feature.onboarding.OnboardingGraph
@@ -90,6 +91,8 @@ private fun GriotNavHost(
     val motion = GriotTheme.motion
     // The library hides the bar while its songs scroll down.
     var barHidden by remember { mutableStateOf(false) }
+    // The song the editor asked to file in « Dossier et genre », a sheet of the library.
+    var filing by rememberSaveable { mutableStateOf<String?>(null) }
     GlassScreen(
         // Drawn once behind every screen, which are transparent: glass cards and the bar blur these shapes.
         background = { Box(Modifier.fillMaxSize().backdrop(screenBackdropShapes())) },
@@ -125,9 +128,14 @@ private fun GriotNavHost(
                 onOpenImport = { navController.navigateToImport() },
                 onOpenTrash = { navController.navigateToTrash() },
             )
-            editorGraph(navController = navController, onBack = { navController.popBackStack() })
+            editorGraph(
+                navController = navController,
+                onBack = { navController.popBackStack() },
+                onFile = { songId -> filing = songId },
+            )
         }
     }
+    filing?.let { songId -> FilingSheet(songIds = listOf(songId), onDismiss = { filing = null }) }
 }
 
 // The bottom bar, only on the tabs: it goes down during the onboarding, in the editor, and while [hidden] by a tab.

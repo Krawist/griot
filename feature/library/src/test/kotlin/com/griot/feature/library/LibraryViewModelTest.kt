@@ -244,7 +244,7 @@ internal class LibraryViewModelTest {
     @Nested
     inner class OnNewFolder {
         @Test
-        fun `should create the folder in the next accent colour`() = runTest {
+        fun `should create the folder`() = runTest {
             // given
             val folders = FakeFolderRepository(
                 folders = listOf(
@@ -272,7 +272,7 @@ internal class LibraryViewModelTest {
             viewModel.onNewFolder("my-name-2")
 
             // then
-            folders.calls shouldContainExactly listOf("create my-name-2 TURQUOISE")
+            folders.calls shouldContainExactly listOf("create my-name-2")
         }
 
         @Test

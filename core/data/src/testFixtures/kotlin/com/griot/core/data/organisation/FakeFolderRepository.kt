@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * In-memory [FolderRepository] for tests: [folders] is what it lists; [calls] records every change asked, such as
- * `"create my-name MAGENTA"`, in order.
+ * `"create my-name"`, in order.
  */
 class FakeFolderRepository(folders: List<Folder> = emptyList()) : FolderRepository {
     val folders = MutableStateFlow(folders)
@@ -15,8 +15,8 @@ class FakeFolderRepository(folders: List<Folder> = emptyList()) : FolderReposito
 
     override fun observeFolders() = folders
 
-    override suspend fun createFolder(name: String, color: FolderColor): String {
-        calls += "create $name $color"
+    override suspend fun createFolder(name: String): String {
+        calls += "create $name"
         return "created-folder-id"
     }
 

@@ -49,6 +49,7 @@
     <string name="editor_language_automatic_name">Automatic</string>
     <string name="editor_language_title">Song language</string>
     <string name="editor_menu">More options</string>
+    <string name="editor_menu_file">Folder and genre</string>
     <string name="editor_menu_hide_rhymes">Hide the rhymes</string>
     <string name="editor_menu_language">Language · %1$s</string>
     <string name="editor_menu_rename_song">Rename the song</string>

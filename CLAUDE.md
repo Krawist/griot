@@ -331,6 +331,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   confirmation. « Sélectionner » circles the songs tapped and shows « Ranger (N) » (the sheet comes with GRI-58).
   `SongActions` (rename, duplicate, delete with undo) is shared by both library ViewModels, `SongActionsHost` by
   both screens. The old `LibraryFilter` chips are gone.
+- [x] **GRI-58** — `FilingSheet` (public in `:feature:library` `filing`, `FilingViewModel` assisted with the song ids):
+  « Aucun dossier », the folders checked (several at once; `FolderCheck.MIXED` for folders holding some of the songs
+  selected, unchanged unless tapped), « Nouveau dossier » (created and checked), the genres as chips (one at most, a
+  tap on the chosen one clears it) and « + » for a genre of the author; nothing changes before « Valider »
+  (`FolderRepository.fileSongs`, `SongRepository.setGenre`). It opens from a long press (« Dossier et genre », first
+  action of `SongActionsSheet`), « Ranger » in the selection, and the editor's « ⋯ » (`editorGraph(onFile)`, shown by
+  `:app`). New folders take the accents in turn in `FolderRepository.createFolder`.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 

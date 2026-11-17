@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="filing_checked">Dans ce dossier</string>
+    <string name="filing_folder">Dossier</string>
+    <string name="filing_genre">Genre</string>
+    <string name="filing_mixed">Une partie des textes est dans ce dossier</string>
+    <string name="filing_new_genre">Ajouter un genre</string>
+    <string name="filing_new_genre_label">Nom du genre</string>
+    <string name="filing_no_folder">Aucun dossier</string>
+    <string name="filing_title">Dossier et genre</string>
+    <string name="filing_unchecked">Pas dans ce dossier</string>
+    <string name="filing_validate">Valider</string>
     <string name="folder_all_genres">Tous</string>
     <string name="folder_all_languages">Toutes</string>
     <string name="folder_all_texts">Tous les textes</string>
@@ -36,6 +46,7 @@
     <string name="library_duplicate">Dupliquer</string>
     <string name="library_empty_body">Touche « + » pour écrire ta première chanson.</string>
     <string name="library_empty_title">Pas encore de chanson</string>
+    <string name="library_file">Dossier et genre</string>
     <string name="library_filter_all">Toutes</string>
     <string name="library_filter_english">English</string>
     <string name="library_filter_french">Français</string>

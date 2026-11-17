@@ -7,8 +7,8 @@ import com.griot.core.design.component.GriotMenuItem
 import com.griot.core.design.component.GriotMenuLabel
 
 /**
- * The items of the song's « ⋯ » menu: the history, the language, the size of the text, the rhymes shown or not, the
- * export, the title, then the ideas linked to the song, which a tap adds as a verse.
+ * The items of the song's « ⋯ » menu: the history, its folders and genre, the language, the size of the text, the
+ * rhymes shown or not, the export, the title, then the ideas linked to the song, which a tap adds as a verse.
  *
  * @param language The language as the sheet would show it chosen: « Français », « English » or « Automatique ».
  */
@@ -24,9 +24,11 @@ internal fun SongMenuItems(
     onShowRhymesChange: (Boolean) -> Unit,
     onExport: () -> Unit,
     onRename: () -> Unit,
+    onFile: () -> Unit,
     onAddIdea: (String) -> Unit,
 ) {
     GriotMenuItem(label = stringResource(R.string.editor_menu_versions), onClick = onVersions)
+    GriotMenuItem(label = stringResource(R.string.editor_menu_file), onClick = onFile)
     GriotMenuItem(label = stringResource(R.string.editor_menu_language, language), onClick = onLanguage)
     GriotMenuItem(label = stringResource(R.string.editor_font_size), onClick = onFontSize)
     GriotMenuItem(
