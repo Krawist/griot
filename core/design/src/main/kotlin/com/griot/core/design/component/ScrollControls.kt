@@ -19,8 +19,12 @@ private val ToggleDistance = 24.dp
 
 /**
  * Whether a screen's controls (bars, header, floating buttons) show, from how the user scrolls its [list]: down hides
- * them, up brings them back, and they always show at the top. Scrolls the app makes itself (to a focused field, to the
- * top) change nothing. Shared by the song list and the editor.
+ * them, up brings them back, and they show at the top. Scrolls the app makes itself (to a focused field, to the top)
+ * change nothing. Shared by the song list and the editor.
+ *
+ * Hiding a header gives its room to the list: a list only a little longer than the screen may then fit, and fall back
+ * to its top. So the controls hide only while the list has more to show, and the top brings them back only while the
+ * list could still scroll; otherwise the screen would jump between both states. A pull down brings them back.
  *
  * @param list The state of the scrolled list; the list's modifier takes [connection] with `nestedScroll`.
  * @param toggleDistance How many pixels a finger scrolls one way before the controls change.
@@ -36,7 +40,7 @@ class ScrollControls internal constructor(private val list: LazyListState, priva
     val atTop by derivedStateOf { list.firstVisibleItemIndex == 0 && list.firstVisibleItemScrollOffset == 0 }
 
     /** Whether the controls show. */
-    val shown by derivedStateOf { !hidden || atTop }
+    val shown by derivedStateOf { !hidden || (atTop && list.canScrollForward) }
 
     /** Follows the user's scrolls, without consuming any. */
     val connection = object : NestedScrollConnection {
@@ -55,7 +59,7 @@ class ScrollControls internal constructor(private val list: LazyListState, priva
     private fun onScroll(delta: Float) {
         travel = if (travel * delta < 0) delta else travel + delta
         when {
-            travel <= -toggleDistance -> hidden = true
+            travel <= -toggleDistance && list.canScrollForward -> hidden = true
             travel >= toggleDistance -> hidden = false
         }
     }
