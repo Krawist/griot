@@ -5,6 +5,7 @@ import com.griot.core.data.audio.CoverArt
 /**
  * The beat of the song, as the player under the lyrics shows it.
  *
+ * @property id The id of the beat's attachment.
  * @property title The beat's name.
  * @property uri The address of its file.
  * @property cover Its cover and the player's colours; `null` while they are read.
@@ -13,6 +14,7 @@ import com.griot.core.data.audio.CoverArt
  * @property durationMillis Its length in milliseconds.
  */
 internal data class BeatUiState(
+    val id: String,
     val title: String,
     val uri: String,
     val cover: CoverArt? = null,

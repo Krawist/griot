@@ -30,6 +30,7 @@ import com.griot.core.design.component.TextInputForm
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.ai.AiPanelSheet
 import com.griot.feature.editor.ai.AiTab
+import com.griot.feature.editor.audio.BeatChoiceSheet
 import com.griot.feature.editor.audio.BeatViewModel
 import com.griot.feature.editor.audio.ExternalMusicSheet
 import com.griot.feature.editor.audio.ExternalMusicViewModel
@@ -57,6 +58,8 @@ internal fun EditorScreen(
         creationCallback = { factory -> factory.create(songId) },
     )
     val beat by beatViewModel.uiState.collectAsStateWithLifecycle()
+    val beatChoices by beatViewModel.choices.collectAsStateWithLifecycle()
+    var choosingBeat by rememberSaveable { mutableStateOf(false) }
     val externalViewModel = hiltViewModel<ExternalMusicViewModel>()
     val external by externalViewModel.uiState.collectAsStateWithLifecycle()
     // A song deleted meanwhile, on this phone or another one, closes the editor.
@@ -119,6 +122,8 @@ internal fun EditorScreen(
         },
         player = editorPlayer(
             beat = beat,
+            choices = beatChoices.size,
+            onChoose = { choosingBeat = true },
             beatViewModel = beatViewModel,
             external = external,
             externalViewModel = externalViewModel,
@@ -168,6 +173,18 @@ internal fun EditorScreen(
         },
     )
     MemoRecorder(songId = songId, request = memo, onClosed = { memo = null })
+    if (choosingBeat && beatChoices.size > 1) {
+        BeatChoiceSheet(
+            files = beatChoices,
+            current = beat?.id,
+            onChoose = { id ->
+                beatViewModel.onChoose(id)
+                choosingBeat = false
+            },
+            onDetach = beatViewModel::onDetach,
+            onDismiss = { choosingBeat = false },
+        )
+    }
     // The first time the player meets another app's music, without the access.
     if (beat == null && external.explain) ExternalMusicSheet(onDone = externalViewModel::onExplained)
     AiPanel(

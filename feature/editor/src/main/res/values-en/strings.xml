@@ -31,6 +31,7 @@
     <string name="audios_add_link_title">Add a link</string>
     <string name="audios_add_record">Record</string>
     <string name="audios_back">Back to the song</string>
+    <string name="audios_beat_badge">Beat</string>
     <string name="audios_beats">Beats and music</string>
     <string name="audios_count">Audios of the song, %1$d</string>
     <string name="audios_delete">Remove from the song</string>
@@ -51,7 +52,9 @@
     <string name="audios_play">Listen</string>
     <string name="audios_relink">Pick the file again</string>
     <string name="audios_rename">Rename</string>
+    <string name="audios_set_beat">Play under the lyrics</string>
     <string name="audios_title">Audios</string>
+    <string name="beat_choice_title">Beat under the lyrics</string>
     <string name="editor_add_section">Add a section</string>
     <string name="editor_add_section_below">Add a section below</string>
     <string name="editor_back">Back to the songs</string>
@@ -133,6 +136,7 @@
     <string name="microphone_settings">Open the settings</string>
     <string name="microphone_title">Record your voice</string>
     <string name="player_position">%1$s / %2$s · file on the phone</string>
+    <string name="player_position_choose">%1$s / %2$s · tap to change the beat</string>
     <string name="player_rewind">Back 15 seconds</string>
     <string name="recording_attach">Attach to</string>
     <string name="recording_beat">Play the beat while recording</string>

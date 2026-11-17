@@ -40,6 +40,7 @@ private val IconRadius = 12.dp
  * One audio: its icon, its name, and what it is (« Fichier du téléphone · 3:20 », « Lien Spotify · s'ouvre dans
  * Spotify », « Fichier introuvable », « Sur un autre téléphone »).
  */
+@Suppress("LongMethod") // One row, its badges and its actions.
 @Composable
 internal fun AudioRow(item: AudioItem, playing: Boolean, onClick: () -> Unit, onLongClick: () -> Unit) {
     val palette = GriotTheme.palette
@@ -68,13 +69,26 @@ internal fun AudioRow(item: AudioItem, playing: Boolean, onClick: () -> Unit, on
             Icon(painter = painterResource(attachment.kind.iconRes()), contentDescription = null, tint = content)
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                text = attachment.title,
-                style = GriotTheme.type.bodyStrong,
-                color = palette.ink,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    text = attachment.title,
+                    style = GriotTheme.type.bodyStrong,
+                    color = palette.ink,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+                if (attachment.beat) {
+                    Text(
+                        text = stringResource(R.string.audios_beat_badge),
+                        style = GriotTheme.type.tag,
+                        color = palette.accentText,
+                        modifier = Modifier
+                            .background(palette.accentSoft, RoundedCornerShape(GriotRadius.badge))
+                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                    )
+                }
+            }
             Text(
                 text = item.detail(),
                 style = GriotTheme.type.caption,

@@ -69,6 +69,11 @@ internal class AudiosViewModel @AssistedInject constructor(
         viewModelScope.launch { if (!attachments.relink(id = id, uri = uri)) failed.value = true }
     }
 
+    /** Makes the file [id] the beat played under the lyrics. */
+    fun onSetBeat(id: String) {
+        viewModelScope.launch { attachments.setBeat(songId = songId, id = id) }
+    }
+
     fun onRename(id: String, title: String) {
         viewModelScope.launch { attachments.rename(id = id, title = title) }
     }

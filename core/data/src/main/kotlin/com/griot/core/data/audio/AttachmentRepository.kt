@@ -23,6 +23,9 @@ interface AttachmentRepository {
     /** Points the file [id], moved or on another phone, to the file [uri] picked again; `false` when unreadable. */
     suspend fun relink(id: String, uri: String): Boolean
 
+    /** Makes the file [id] the beat of the song [songId], played under the lyrics. */
+    suspend fun setBeat(songId: String, id: String)
+
     /** Renames the audio [id]. */
     suspend fun rename(id: String, title: String)
 

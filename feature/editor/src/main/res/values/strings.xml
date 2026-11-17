@@ -31,6 +31,7 @@
     <string name="audios_add_link_title">Ajouter un lien</string>
     <string name="audios_add_record">Enregistrer</string>
     <string name="audios_back">Retour à la chanson</string>
+    <string name="audios_beat_badge">Beat</string>
     <string name="audios_beats">Beats et musique</string>
     <string name="audios_count">Audios de la chanson, %1$d</string>
     <string name="audios_delete">Retirer de la chanson</string>
@@ -51,7 +52,9 @@
     <string name="audios_play">Écouter</string>
     <string name="audios_relink">Choisir le fichier à nouveau</string>
     <string name="audios_rename">Renommer</string>
+    <string name="audios_set_beat">Jouer sous les paroles</string>
     <string name="audios_title">Audios</string>
+    <string name="beat_choice_title">Beat sous les paroles</string>
     <string name="editor_add_section">Ajouter une section</string>
     <string name="editor_add_section_below">Ajouter une section en dessous</string>
     <string name="editor_back">Retour aux chansons</string>
@@ -138,6 +141,7 @@
     <string name="microphone_settings">Ouvrir les réglages</string>
     <string name="microphone_title">Enregistrer ta voix</string>
     <string name="player_position">%1$s / %2$s · fichier du téléphone</string>
+    <string name="player_position_choose">%1$s / %2$s · touche pour changer de beat</string>
     <string name="player_rewind">Reculer de 15 secondes</string>
     <string name="player_rewind_seconds" translatable="false">15</string>
     <string name="recording_attach">Rattacher à</string>

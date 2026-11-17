@@ -2,6 +2,7 @@
 
 package com.griot.core.data.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -24,6 +25,7 @@ import kotlinx.serialization.UseSerializers
  * @property title What it is called.
  * @property durationMillis Its length in milliseconds; `null` when unknown.
  * @property deviceId The phone that holds a file or a memo (`UserPreferencesRepository.deviceId`); `null` for a link.
+ * @property beat Whether it is the song's beat, played under the lyrics: one file per song at most.
  * @property createdAt When it was added.
  * @property updatedAt Last change of this row, on any device; sync keeps the most recent.
  * @property deleted Whether it was removed; the row stays so that the delete travels to other devices.
@@ -40,6 +42,7 @@ internal data class AttachmentEntity(
     val title: String,
     val durationMillis: Long? = null,
     val deviceId: String? = null,
+    @ColumnInfo(defaultValue = "0") val beat: Boolean = false,
     val createdAt: Instant,
     val updatedAt: Instant,
     val deleted: Boolean = false,

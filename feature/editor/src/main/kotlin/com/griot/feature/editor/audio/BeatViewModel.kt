@@ -6,6 +6,7 @@ import com.griot.core.data.audio.AttachmentRepository
 import com.griot.core.data.audio.AudioFiles
 import com.griot.core.data.audio.AudioPlayer
 import com.griot.core.data.audio.CoverReader
+import com.griot.core.data.model.Attachment
 import com.griot.core.data.model.AttachmentKind
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 /**
  * The beat of the song [songId]: its newest file on this phone that can be read. The player under the lyrics plays it,
@@ -28,17 +30,25 @@ import kotlinx.coroutines.flow.stateIn
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = BeatViewModel.Factory::class)
 internal class BeatViewModel @AssistedInject constructor(
-    @Assisted songId: String,
-    attachments: AttachmentRepository,
+    @Assisted private val songId: String,
+    private val attachments: AttachmentRepository,
     private val files: AudioFiles,
     private val covers: CoverReader,
     private val player: AudioPlayer,
 ) : ViewModel() {
-    private val beat = attachments.observeAttachments(songId)
-        .map { list ->
-            list.firstOrNull { it.kind == AttachmentKind.FILE && it.onThisPhone && files.isAvailable(it.uri) }
-        }
+    // The song's files that can be played here, the newest first.
+    private val playable = attachments.observeAttachments(songId)
+        .map { list -> list.filter { it.kind == AttachmentKind.FILE && it.onThisPhone && files.isAvailable(it.uri) } }
         .distinctUntilChanged()
+
+    // The beat chosen by the author, else the newest file.
+    private val beat = playable.map { files ->
+        files.firstOrNull { it.beat } ?: files.firstOrNull()
+    }.distinctUntilChanged()
+
+    /** The files the author can choose as the beat; the player offers the choice when there are several. */
+    val choices: StateFlow<List<Attachment>> =
+        playable.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), emptyList())
 
     private val cover = beat.mapLatest { attachment -> attachment?.let { covers.read(it.uri) } }.onStart { emit(null) }
 
@@ -47,6 +57,7 @@ internal class BeatViewModel @AssistedInject constructor(
         attachment?.let {
             val loaded = playback.uri == it.uri
             BeatUiState(
+                id = it.id,
                 title = it.title,
                 uri = it.uri,
                 cover = art,
@@ -77,6 +88,19 @@ internal class BeatViewModel @AssistedInject constructor(
 
     fun onPause() {
         player.pause()
+    }
+
+    /** Makes the file [id] the beat; the one playing stops, as another is now under the lyrics. */
+    fun onChoose(id: String) {
+        if (uiState.value?.id == id) return
+        if (uiState.value?.playing == true) player.pause()
+        viewModelScope.launch { attachments.setBeat(songId = songId, id = id) }
+    }
+
+    /** Removes the file [id] from the song; the file itself stays on the phone. */
+    fun onDetach(id: String) {
+        if (uiState.value?.id == id) player.stop()
+        viewModelScope.launch { attachments.delete(id) }
     }
 
     /** « Reculer de 15 secondes », never before the start. */

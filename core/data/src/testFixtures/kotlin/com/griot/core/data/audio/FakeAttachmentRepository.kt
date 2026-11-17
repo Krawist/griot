@@ -42,6 +42,10 @@ class FakeAttachmentRepository(attachments: List<Attachment> = emptyList()) : At
         return !uri.startsWith("bad")
     }
 
+    override suspend fun setBeat(songId: String, id: String) {
+        calls += "beat $songId $id"
+    }
+
     override suspend fun rename(id: String, title: String) {
         calls += "rename $id $title"
     }

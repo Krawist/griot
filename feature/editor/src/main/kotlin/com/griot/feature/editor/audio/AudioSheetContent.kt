@@ -20,7 +20,7 @@ import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.R
 
 /** The [sheet] of the audios screen: a new link, or the actions and the new name of the audio [item]. */
-@Suppress("LongParameterList") // The sheet, the audio, and how each action goes on.
+@Suppress("LongParameterList", "LongMethod") // The sheets, the audio, and how each action goes on.
 @Composable
 internal fun AudioSheetContent(
     sheet: AudioSheet?,
@@ -47,6 +47,16 @@ internal fun AudioSheetContent(
                     label = stringResource(R.string.audios_rename),
                     onClick = onRename,
                 )
+                if (audio.attachment.kind == AttachmentKind.FILE && !audio.attachment.beat) {
+                    SheetAction(
+                        icon = DesignR.drawable.ic_play,
+                        label = stringResource(R.string.audios_set_beat),
+                        onClick = {
+                            viewModel.onSetBeat(audio.attachment.id)
+                            onClosed()
+                        },
+                    )
+                }
                 if (audio.attachment.kind == AttachmentKind.FILE) {
                     SheetAction(
                         icon = DesignR.drawable.ic_folder,

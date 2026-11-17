@@ -375,7 +375,9 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `BeatPlayer` (`BeatViewModel`: the song's newest readable file) sits alone at the bottom of the editor, the verse
   sheet reaching behind it; cover and play button follow the player's radius minus its padding; « Reculer de 15
   secondes » never goes before the start. The recording sheet's « Jouer le beat pendant l'enregistrement »
-  (`GriotSwitch`, now shared by the settings) plays it and stops it with the memo. Checked on the S23.
+  (`GriotSwitch`, now shared by the settings) plays it and stops it with the memo. Checked on the S23. The beat is
+  chosen (`attachments.beat`, database version 9; `AttachmentRepository.setBeat`): « Jouer sous les paroles » and a
+  « Beat » badge in the audios, or a tap on the player's title (`BeatChoiceSheet`, which also detaches a file).
 - [x] **GRI-53** — `ExternalMusic` (`:core:data` `audio`): without the access, `AudioManager.isMusicActive` and the
   system's play/pause key (the player stays after a pause by Griot); with the notification access (`MusicListener`, a
   `NotificationListenerService` that reads nothing; Play Store declaration noted in its KDoc and the manifest), the

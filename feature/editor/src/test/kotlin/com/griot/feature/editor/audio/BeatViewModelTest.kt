@@ -135,4 +135,71 @@ internal class BeatViewModelTest {
             player.calls shouldContainExactly listOf("play my-uri my-title", "pause", "rewind 15000")
         }
     }
+
+    @Nested
+    inner class Choose {
+        @Test
+        fun `should play the file chosen as the beat rather than the newest`() = runTest {
+            // given
+            val attachments = FakeAttachmentRepository(
+                attachments = listOf(
+                    Attachment(
+                        id = "my-attachment-id-1",
+                        songId = "my-song-id",
+                        kind = AttachmentKind.FILE,
+                        uri = "my-uri-1",
+                        title = "my-title-1",
+                        createdAt = Instant.parse("2026-11-17T10:00:00Z"),
+                    ),
+                    Attachment(
+                        id = "my-attachment-id-2",
+                        songId = "my-song-id",
+                        kind = AttachmentKind.FILE,
+                        uri = "my-uri-2",
+                        title = "my-title-2",
+                        beat = true,
+                        createdAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                ),
+            )
+            val viewModel = BeatViewModel(
+                songId = "my-song-id",
+                attachments = attachments,
+                files = FakeAudioFiles(),
+                covers = FakeCoverReader(),
+                player = FakeAudioPlayer(),
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.choices.launchIn(backgroundScope)
+
+            // when
+            val beat = viewModel.uiState.first { it != null }
+
+            // then
+            beat?.id shouldBe "my-attachment-id-2"
+            viewModel.choices.first { it.isNotEmpty() }.map { it.id } shouldContainExactly
+                listOf("my-attachment-id-1", "my-attachment-id-2")
+        }
+
+        @Test
+        fun `should keep the choice and detach a file`() = runTest {
+            // given
+            val attachments = FakeAttachmentRepository()
+            val viewModel = BeatViewModel(
+                songId = "my-song-id",
+                attachments = attachments,
+                files = FakeAudioFiles(),
+                covers = FakeCoverReader(),
+                player = FakeAudioPlayer(),
+            )
+
+            // when
+            viewModel.onChoose("my-attachment-id-1")
+            viewModel.onDetach("my-attachment-id-2")
+
+            // then
+            attachments.calls shouldContainExactly
+                listOf("beat my-song-id my-attachment-id-1", "delete my-attachment-id-2")
+        }
+    }
 }

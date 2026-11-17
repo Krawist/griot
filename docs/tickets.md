@@ -512,6 +512,7 @@ The beat attached to a song plays inside the app, so the author writes over it w
 - The player's background and accents come from the cover (AndroidX Palette): a dark swatch of the cover as background, its lighter colours as soft glows. White text and controls keep a contrast of at least 4.5:1 whatever the cover; the player looks the same in light and dark modes.
 - The play/pause button is a square whose corner radius follows the player's (player radius minus its padding); the cover uses the same radius.
 - « Reculer de 15 secondes » never goes before the start.
+- With several files, the author chooses the beat: « Jouer sous les paroles » in the audios (a « Beat » badge), or a tap on the player's title, which lists the files to choose one or detach it from the song. Without a choice, the newest file plays.
 
 Size: M. Dependencies: GRI-48, GRI-51. Mockups: « Éditeur » (the player), « Audios de la chanson ».
 

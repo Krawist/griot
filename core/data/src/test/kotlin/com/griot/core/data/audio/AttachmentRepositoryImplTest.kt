@@ -180,6 +180,36 @@ internal class AttachmentRepositoryImplTest {
     }
 
     @Nested
+    inner class SetBeat {
+        @Test
+        fun `should make the file the song's only beat`() = runTest {
+            // given
+            listOf("my-attachment-id-1" to true, "my-attachment-id-2" to false).forEach { (id, beat) ->
+                database.attachmentDao().insert(
+                    AttachmentEntity(
+                        id = id,
+                        songId = "my-song-id",
+                        kind = AttachmentKind.FILE,
+                        uri = id,
+                        title = "my-title",
+                        beat = beat,
+                        createdAt = Instant.parse("2026-11-16T10:00:00Z"),
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                )
+            }
+
+            // when
+            repository.setBeat(songId = "my-song-id", id = "my-attachment-id-2")
+
+            // then
+            database.attachmentDao().getById("my-attachment-id-1")?.beat shouldBe false
+            database.attachmentDao().getById("my-attachment-id-2")?.let { it.beat to it.updatedAt } shouldBe
+                (true to Instant.parse("2026-11-17T10:00:00Z"))
+        }
+    }
+
+    @Nested
     inner class Delete {
         @Test
         fun `should remove the audio from its song`() = runTest {

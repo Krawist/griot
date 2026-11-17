@@ -13,6 +13,7 @@ import java.time.Instant
  * @property uri The file's content address, or the link.
  * @property title What it is called.
  * @property durationMillis Its length in milliseconds; `null` when unknown (a link).
+ * @property beat Whether it is the song's beat, chosen by the author; without one, the newest file plays.
  * @property createdAt When it was added.
  * @property onThisPhone Whether its file or memo is on this phone; `false` for one added on another phone (a file only
  * syncs as a reference; a memo's sound travels with Google Drive, GRI-27). Always `true` for a link.
@@ -26,6 +27,7 @@ data class Attachment(
     val uri: String,
     val title: String,
     val durationMillis: Long? = null,
+    val beat: Boolean = false,
     val createdAt: Instant,
     val onThisPhone: Boolean = true,
 )

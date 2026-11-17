@@ -69,9 +69,10 @@ private const val LABEL = 0.17f
 /**
  * The player alone at the bottom of the editor, for the song's beat or another app's music: its cover, [title] and
  * [subtitle], « Reculer de 15 secondes » when [onRewind] is given, play/pause, and the progress when [progress] is
- * known. Its colours come from the [cover]; white stays readable on them, in light and dark modes alike.
+ * known; [onTitleClick], when given, opens a choice from the title. Its colours come from the [cover]; white stays
+ * readable on them, in light and dark modes alike.
  */
-@Suppress("LongParameterList") // What the player shows, and its controls.
+@Suppress("LongParameterList", "LongMethod") // What the player shows, and its controls.
 @Composable
 internal fun PlayerCard(
     title: String,
@@ -82,6 +83,7 @@ internal fun PlayerCard(
     onPlayToggle: () -> Unit,
     onRewind: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    onTitleClick: (() -> Unit)? = null,
 ) {
     val colors = cover?.colors ?: PlayerColors.Griot
     val background = Color(colors.background)
@@ -117,7 +119,19 @@ internal fun PlayerCard(
             horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m),
         ) {
             Cover(cover = cover)
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .then(
+                        if (onTitleClick !=
+                            null
+                        ) {
+                            Modifier.clickable(role = Role.Button, onClick = onTitleClick)
+                        } else {
+                            Modifier
+                        },
+                    ),
+            ) {
                 Text(
                     text = title,
                     style = GriotTheme.type.bodyStrong,
@@ -147,11 +161,12 @@ internal fun BeatPlayer(
     onPlayToggle: () -> Unit,
     onRewind: () -> Unit,
     modifier: Modifier = Modifier,
+    onChoose: (() -> Unit)? = null,
 ) {
     PlayerCard(
         title = beat.title,
         subtitle = stringResource(
-            R.string.player_position,
+            if (onChoose != null) R.string.player_position_choose else R.string.player_position,
             formatDuration(beat.positionMillis),
             formatDuration(beat.durationMillis),
         ),
@@ -161,6 +176,7 @@ internal fun BeatPlayer(
         onPlayToggle = onPlayToggle,
         onRewind = onRewind,
         modifier = modifier,
+        onTitleClick = onChoose,
     )
 }
 

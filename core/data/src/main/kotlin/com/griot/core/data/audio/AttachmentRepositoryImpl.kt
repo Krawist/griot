@@ -89,6 +89,10 @@ internal class AttachmentRepositoryImpl @Inject constructor(
         return true
     }
 
+    override suspend fun setBeat(songId: String, id: String) {
+        attachmentDao.setBeat(songId = songId, id = id, at = Instant.now(clock))
+    }
+
     override suspend fun rename(id: String, title: String) {
         if (title.isNotBlank()) attachmentDao.rename(id = id, title = title.trim(), at = Instant.now(clock))
     }
@@ -109,6 +113,7 @@ internal class AttachmentRepositoryImpl @Inject constructor(
         uri = uri,
         title = title,
         durationMillis = durationMillis,
+        beat = beat,
         createdAt = createdAt,
         onThisPhone = kind == AttachmentKind.LINK || deviceId == device,
     )
