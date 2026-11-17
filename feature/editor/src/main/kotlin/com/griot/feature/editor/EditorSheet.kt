@@ -5,5 +5,5 @@ internal enum class EditorSheet {
     FONT_SIZE,
     ADD_SECTION,
     LANGUAGE,
-    MENU,
+    RENAME_SONG,
 }

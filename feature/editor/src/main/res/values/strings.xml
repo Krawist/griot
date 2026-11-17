@@ -26,6 +26,7 @@
     <string name="ai_unavailable">L\'aide IA arrive bientôt : un modèle sur ton téléphone, ou en ligne si tu le permets dans les réglages. Les rimes, elles, marchent déjà.</string>
     <string name="ai_use">Utiliser</string>
     <string name="editor_add_section">Ajouter une section</string>
+    <string name="editor_add_section_below">Ajouter une section en dessous</string>
     <string name="editor_back">Retour aux chansons</string>
     <string name="editor_conflicts_dismiss">Ignorer</string>
     <string name="editor_conflicts_show">Voir</string>
@@ -39,11 +40,10 @@
     <string name="editor_delete_title">Supprimer « %1$s » ?</string>
     <string name="editor_export">Exporter en Markdown</string>
     <string name="editor_font_size">Taille du texte</string>
-    <string name="editor_font_size_button" translatable="false">Aa</string>
     <string name="editor_font_size_letter" translatable="false">A</string>
     <string name="editor_font_size_sample">Je marche seul dans la ville</string>
     <string name="editor_font_size_value">%1$d sp</string>
-    <string name="editor_ideas">IDÉES DE CETTE CHANSON · TOUCHE POUR AJOUTER</string>
+    <string name="editor_ideas">Idées de cette chanson</string>
     <string name="editor_jump_to_top">Haut de la chanson</string>
     <string name="editor_language_auto_detected">Auto · %1$s</string>
     <string name="editor_language_automatic_hint">En automatique, Griot repère la langue dominante de toute la chanson pour compter les syllabes et trouver les rimes.</string>
@@ -52,22 +52,23 @@
     <string name="editor_language_english_name" translatable="false">English</string>
     <string name="editor_language_french" translatable="false">FR</string>
     <string name="editor_language_french_name" translatable="false">Français</string>
-    <string name="editor_language_label">Langue de la chanson : %1$s</string>
     <string name="editor_language_title">Langue de la chanson</string>
     <string name="editor_menu">Plus d\'options</string>
+    <string name="editor_menu_hide_rhymes">Masquer les rimes</string>
+    <string name="editor_menu_language">Langue · %1$s</string>
+    <string name="editor_menu_rename_song">Renommer la chanson</string>
+    <string name="editor_menu_show_rhymes">Afficher les rimes</string>
+    <string name="editor_menu_versions">Versions</string>
     <string name="editor_merge">Fusionner avec la section du dessus</string>
     <string name="editor_move_down">Descendre</string>
     <string name="editor_move_up">Monter</string>
     <string name="editor_rename">Renommer</string>
     <string name="editor_rename_label">Nom de la section</string>
-    <string name="editor_repeat">Répéter plus loin</string>
+    <string name="editor_rename_song_label">Titre de la chanson</string>
+    <string name="editor_repeat">Répéter cette section</string>
     <string name="editor_repeat_tag">Reprise</string>
     <string name="editor_section_actions">Options de %1$s</string>
     <string name="editor_title_placeholder">Sans titre</string>
-    <string name="editor_tool_ai">Aide IA</string>
-    <string name="editor_tool_rhymes">Rimes</string>
-    <string name="editor_tool_section">Section</string>
-    <string name="editor_tool_versions">Versions</string>
     <string name="editor_verse_placeholder">Écris un vers…</string>
     <string name="history_back">Retour à la chanson</string>
     <string name="history_badge_ai">Suggestion IA</string>

@@ -64,12 +64,14 @@ internal class SongEditorRepositoryImpl @Inject constructor(
         songDao.setLanguage(id = songId, language = language, detected = detected, at = now)
     }
 
-    override suspend fun addSection(songId: String, kind: SectionKind): String = write { now ->
+    override suspend fun addSection(songId: String, kind: SectionKind, after: String?): String = write { now ->
+        val above = after?.let { requireSection(it) }
+        if (above != null) sectionDao.shiftAfter(songId = songId, position = above.position, at = now)
         val section = SectionEntity(
             id = newId(),
             songId = songId,
             kind = kind,
-            position = sectionDao.getBySong(songId).size,
+            position = above?.position?.plus(1) ?: sectionDao.getBySong(songId).size,
             updatedAt = now,
         )
         sectionDao.insert(section)

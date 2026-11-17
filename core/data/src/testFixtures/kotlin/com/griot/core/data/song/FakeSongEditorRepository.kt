@@ -22,8 +22,8 @@ class FakeSongEditorRepository(document: SongDocument? = null) : SongEditorRepos
         calls += if (detected) "detected language $songId $language" else "language $songId $language"
     }
 
-    override suspend fun addSection(songId: String, kind: SectionKind): String {
-        calls += "add $songId $kind"
+    override suspend fun addSection(songId: String, kind: SectionKind, after: String?): String {
+        calls += if (after == null) "add $songId $kind" else "add $songId $kind after $after"
         return "added-section-id"
     }
 

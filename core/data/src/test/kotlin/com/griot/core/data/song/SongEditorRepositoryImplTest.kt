@@ -190,6 +190,48 @@ internal class SongEditorRepositoryImplTest {
             sections[1].verses.map { it.text } shouldContainExactly listOf("")
             database.songDao().getById("my-song-id")?.updatedAt shouldBe Instant.parse("2026-11-16T10:00:00Z")
         }
+
+        @Test
+        fun `should add the section right below the one given`() = runTest {
+            // given
+            database.songDao().insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                ),
+                verses = emptyList(),
+            )
+
+            // when
+            val id = repository.addSection(songId = "my-song-id", kind = SectionKind.BRIDGE, after = "my-section-id-1")
+
+            // then
+            database.sectionDao().getBySong("my-song-id").map { it.id to it.position } shouldContainExactly listOf(
+                "my-section-id-1" to 0,
+                id to 1,
+                "my-section-id-2" to 2,
+            )
+        }
     }
 
     @Nested

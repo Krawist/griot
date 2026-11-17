@@ -187,8 +187,9 @@ internal class EditorViewModel @AssistedInject constructor(
         viewModelScope.launch { songs.renameSong(id = songId, title = title.singleLine()) }
     }
 
-    fun onAddSection(kind: SectionKind) {
-        viewModelScope.launch { editor.addSection(songId = songId, kind = kind) }
+    /** Adds a section of [kind] right below the section [after], or at the end of the song when it is `null`. */
+    fun onAddSection(kind: SectionKind, after: String? = null) {
+        viewModelScope.launch { editor.addSection(songId = songId, kind = kind, after = after) }
     }
 
     fun onRepeatSection(sectionId: String) {

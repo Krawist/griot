@@ -296,6 +296,13 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   each text's language (the language of new songs when too short to tell); the editor detects again 2 s after the
   last change, and at once when « Automatique » is chosen (`LanguageChoice`). New songs default to the phone's
   language until the onboarding saves one. « Auto » is no longer a badge or a filter value.
+- [x] **GRI-48** — the editor's toolbar is gone. Top bar: back, the title (renamed from the menu) with « FR » or
+  « Auto · FR » under it, and « ⋯ ». Menus are anchored dropdowns (`GriotMenu`, `GriotMenuItem`, `GriotMenuLabel` in
+  `:core:design`), one open at a time (`EditorMenu`). Song menu: Versions, Langue, Taille du texte, Afficher/Masquer
+  les rimes (the toggle had no other place), Exporter, Renommer la chanson, then the linked ideas. Section menu:
+  Ajouter une section en dessous (`addSection(after)`), Renommer, Répéter, Monter, Descendre (kept, not in the
+  ticket), Fusionner, Supprimer (confirmation sheet). Microphone and audios in the top bar come with GRI-50/51, the
+  sync state under the title with GRI-27; « Aide IA » comes back in the verse sheet (GRI-49).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 

@@ -19,8 +19,11 @@ interface SongEditorRepository {
      */
     suspend fun setLanguage(songId: String, language: SongLanguage, detected: Boolean)
 
-    /** Adds a section of [kind] at the end of the song [songId], holding one empty verse, and returns its id. */
-    suspend fun addSection(songId: String, kind: SectionKind): String
+    /**
+     * Adds a section of [kind] to the song [songId], holding one empty verse, and returns its id: right below the
+     * section [after], or at the end of the song when it is `null`.
+     */
+    suspend fun addSection(songId: String, kind: SectionKind, after: String? = null): String
 
     /**
      * Adds at the end of the song a repeat of the section [sectionId] (of its source, for a repeat), which shows

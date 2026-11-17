@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,6 +43,8 @@ import com.griot.core.data.model.SongVerse
 import com.griot.core.data.song.SectionLabel
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.FileShareSheet
+import com.griot.core.design.component.GriotSheet
+import com.griot.core.design.component.TextInputForm
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
@@ -51,6 +54,7 @@ private val AddSectionHeight = 48.dp
 private val DashWidth = 1.5.dp
 
 /** The structured editor of the song [songId]: its title, its sections and their verses, all saved as typed. */
+@Suppress("LongMethod") // The screen's menus and sheets, and how each one opens and closes.
 @Composable
 internal fun EditorScreen(
     songId: String,
@@ -64,38 +68,48 @@ internal fun EditorScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     // A song deleted meanwhile, on this phone or another one, closes the editor.
     LaunchedEffect(uiState.missing) { if (uiState.missing) onBack() }
+    var menu by remember { mutableStateOf<EditorMenu?>(null) }
     var sheet by rememberSaveable { mutableStateOf<EditorSheet?>(null) }
-    var actionsFor by rememberSaveable { mutableStateOf<String?>(null) }
+    var sectionSheet by rememberSaveable { mutableStateOf<SectionSheet?>(null) }
+    var sheetSection by rememberSaveable { mutableStateOf<String?>(null) }
     var countFor by rememberSaveable { mutableStateOf<String?>(null) }
     var aiFor by rememberSaveable { mutableStateOf<String?>(null) }
+    // An item of a menu closes it, and opens its sheet when it has one.
+    val openSheet = { next: EditorSheet ->
+        menu = null
+        sheet = next
+    }
+    val openSectionSheet = { sectionId: String, next: SectionSheet ->
+        menu = null
+        sheetSection = sectionId
+        sectionSheet = next
+    }
     EditorContent(
         uiState = uiState,
         onBack = onBack,
-        onTitleChange = viewModel::onTitleChange,
-        verseInput = VerseInput(
-            onChange = viewModel::onVerseChange,
-            onLines = viewModel::onVerseLines,
-            onBackspaceAtStart = viewModel::onVerseBackspaceAtStart,
-            onFocusHandled = viewModel::onFocusHandled,
-            onCountLongPress = { countFor = it },
-            onFocused = viewModel::onVerseFocused,
-            onCursor = viewModel::onVerseCursor,
-        ),
-        onSectionActions = { actionsFor = it },
-        onAddSection = { sheet = EditorSheet.ADD_SECTION },
-        onFontSize = { sheet = EditorSheet.FONT_SIZE },
-        onFontSizeChange = viewModel::onFontSizeChange,
-        onLanguage = { sheet = EditorSheet.LANGUAGE },
-        onMenu = { sheet = EditorSheet.MENU },
-        onShowRhymesChange = viewModel::onShowRhymesChange,
-        onOpenHistory = { onOpenHistory(uiState.editedVerse) },
-        onAiHelp = { aiFor = uiState.editedVerse ?: uiState.firstWrittenVerse() },
-        onShowConflict = {
-            uiState.conflicts.firstOrNull()?.let { verseId ->
-                viewModel.onConflictShown(verseId)
-                onOpenHistory(verseId)
-            }
+        verseInput = viewModel.verseInput(onCountLongPress = { countFor = it }),
+        menu = menu,
+        onMenu = { menu = it },
+        songMenu = {
+            SongMenu(
+                uiState = uiState,
+                viewModel = viewModel,
+                onClose = { menu = null },
+                onSheet = openSheet,
+                onOpenHistory = onOpenHistory,
+            )
         },
+        sectionMenu = { section ->
+            SectionMenu(
+                section = section,
+                viewModel = viewModel,
+                onClose = { menu = null },
+                onSheet = { next -> openSectionSheet(section.section.id, next) },
+            )
+        },
+        onAddSection = { sheet = EditorSheet.ADD_SECTION },
+        onFontSizeChange = viewModel::onFontSizeChange,
+        onShowConflict = { uiState.conflicts.firstOrNull()?.let { onConflict(viewModel, it, onOpenHistory) } },
         onDismissConflicts = viewModel::onConflictsDismissed,
     )
     EditorSheets(
@@ -103,12 +117,36 @@ internal fun EditorScreen(
         viewModel = viewModel,
         sheet = sheet,
         onSheetClosed = { sheet = null },
-        actionsFor = actionsFor,
-        onActionsClosed = { actionsFor = null },
         countFor = countFor,
         onCountClosed = { countFor = null },
     )
+    OpenSectionSheet(
+        section = uiState.sections.firstOrNull { it.section.id == sheetSection },
+        sheet = sectionSheet,
+        viewModel = viewModel,
+        onClosed = {
+            sectionSheet = null
+            sheetSection = null
+        },
+    )
     AiPanel(songId = songId, verseId = aiFor, uiState = uiState, viewModel = viewModel, onClosed = { aiFor = null })
+}
+
+// How the verses are typed, into [EditorViewModel]; a long press on a count asks to correct it.
+private fun EditorViewModel.verseInput(onCountLongPress: (String) -> Unit) = VerseInput(
+    onChange = ::onVerseChange,
+    onLines = ::onVerseLines,
+    onBackspaceAtStart = ::onVerseBackspaceAtStart,
+    onFocusHandled = ::onFocusHandled,
+    onCountLongPress = onCountLongPress,
+    onFocused = ::onVerseFocused,
+    onCursor = ::onVerseCursor,
+)
+
+// The notice of a conflict opens the history of its verse [verseId], and goes.
+private fun onConflict(viewModel: EditorViewModel, verseId: String, onOpenHistory: (String?) -> Unit) {
+    viewModel.onConflictShown(verseId)
+    onOpenHistory(verseId)
 }
 
 // The AI panel of the verse [verseId], while it is set; a rhyme or a suggestion chosen closes it.
@@ -137,11 +175,7 @@ private fun AiPanel(
     )
 }
 
-// The first verse with text, which the AI panel opens on when no verse was edited yet.
-private fun EditorUiState.firstWrittenVerse(): String? =
-    sections.firstNotNullOfOrNull { section -> section.section.verses.firstOrNull { it.text.isNotBlank() }?.id }
-
-// What the editor shows over its content: the undo bar of a paste, the [sheet] open, and the actions of a section.
+// What the editor shows over its content: the undo bar of a paste, the [sheet] open, and the count to correct.
 @Suppress("LongParameterList") // Which sheets are open, and how each one closes.
 @Composable
 private fun EditorSheets(
@@ -149,8 +183,6 @@ private fun EditorSheets(
     viewModel: EditorViewModel,
     sheet: EditorSheet?,
     onSheetClosed: () -> Unit,
-    actionsFor: String?,
-    onActionsClosed: () -> Unit,
     countFor: String?,
     onCountClosed: () -> Unit,
 ) {
@@ -161,34 +193,6 @@ private fun EditorSheets(
         onDismissed = viewModel::onPasteUndoDismissed,
     )
     OpenSheet(sheet = sheet, uiState = uiState, viewModel = viewModel, onClosed = onSheetClosed)
-    uiState.sections.firstOrNull { it.section.id == actionsFor }?.let { section ->
-        val close = onActionsClosed
-        SectionActionsSheet(
-            section = section,
-            label = section.label.text(),
-            onRename = { name ->
-                viewModel.onRenameSection(sectionId = section.section.id, name = name)
-                close()
-            },
-            onRepeat = {
-                viewModel.onRepeatSection(section.section.id)
-                close()
-            },
-            onMove = { offset ->
-                viewModel.onMoveSection(sectionId = section.section.id, offset = offset)
-                close()
-            },
-            onMerge = {
-                viewModel.onMergeSection(section.section.id)
-                close()
-            },
-            onDelete = {
-                viewModel.onDeleteSection(section.section.id)
-                close()
-            },
-            onDismiss = close,
-        )
-    }
 }
 
 // The sheet [sheet] of the editor, with its export's share sheet.
@@ -215,18 +219,18 @@ private fun OpenSheet(sheet: EditorSheet?, uiState: EditorUiState, viewModel: Ed
             },
             onDismiss = onClosed,
         )
-        EditorSheet.MENU -> EditorMenuSheet(
-            ideas = uiState.ideas,
-            onExport = {
-                viewModel.onExport()
-                onClosed()
-            },
-            onAddIdea = { text ->
-                viewModel.onAddIdea(text)
-                onClosed()
-            },
-            onDismiss = onClosed,
-        )
+        EditorSheet.RENAME_SONG -> GriotSheet(onDismiss = onClosed) {
+            TextInputForm(
+                value = uiState.title,
+                label = stringResource(R.string.editor_rename_song_label),
+                placeholder = stringResource(R.string.editor_title_placeholder),
+                confirmLabel = stringResource(R.string.editor_rename),
+                onConfirm = { title ->
+                    viewModel.onTitleChange(title)
+                    onClosed()
+                },
+            )
+        }
         null -> Unit
     }
     uiState.export?.let { file ->
@@ -355,17 +359,13 @@ private fun EditorScreenPreview() {
                     ),
                 ),
                 onBack = {},
-                onTitleChange = {},
                 verseInput = PreviewVerseInput,
-                onSectionActions = {},
-                onAddSection = {},
-                onFontSize = {},
-                onFontSizeChange = {},
-                onLanguage = {},
+                menu = null,
                 onMenu = {},
-                onShowRhymesChange = {},
-                onOpenHistory = {},
-                onAiHelp = {},
+                songMenu = {},
+                sectionMenu = {},
+                onAddSection = {},
+                onFontSizeChange = {},
                 onShowConflict = {},
                 onDismissConflicts = {},
             )

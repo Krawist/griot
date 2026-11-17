@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.griot.core.data.model.SongVerse
 import com.griot.core.design.R as DesignR
+import com.griot.core.design.component.GriotMenu
 import com.griot.core.design.component.RollingNumber
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
@@ -55,14 +57,20 @@ internal fun LazyListScope.sectionItems(
     showRhymes: Boolean,
     focus: VerseFocus?,
     verseInput: VerseInput,
+    menuOpen: Boolean,
     onActions: () -> Unit,
+    onMenuDismiss: () -> Unit,
+    menu: @Composable ColumnScope.() -> Unit,
 ) {
     val id = section.section.id
     item(key = "section/$id", contentType = "section") {
         SectionHeader(
             section = section,
             showRhymes = showRhymes,
+            menuOpen = menuOpen,
             onActions = onActions,
+            onMenuDismiss = onMenuDismiss,
+            menu = menu,
             modifier = Modifier.animateItem().padding(top = if (first) 0.dp else SectionGap),
         )
     }
@@ -81,11 +89,16 @@ internal fun LazyListScope.sectionItems(
     }
 }
 
+// The label, the scheme, and the « ⋯ » button with the section's menu anchored to it.
+@Suppress("LongParameterList") // The section, how it shows, and its menu.
 @Composable
 private fun SectionHeader(
     section: EditorSection,
     showRhymes: Boolean,
+    menuOpen: Boolean,
     onActions: () -> Unit,
+    onMenuDismiss: () -> Unit,
+    menu: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = GriotTheme.palette
@@ -106,12 +119,15 @@ private fun SectionHeader(
             Text(text = it, style = GriotTheme.type.caption, color = palette.muted)
         }
         Box(Modifier.weight(1f).height(1.dp).background(palette.line))
-        IconButton(onClick = onActions, modifier = Modifier.size(GriotSpacing.touchTarget)) {
-            Icon(
-                painter = painterResource(DesignR.drawable.ic_more),
-                contentDescription = stringResource(R.string.editor_section_actions, label),
-                tint = palette.muted,
-            )
+        Box {
+            IconButton(onClick = onActions, modifier = Modifier.size(GriotSpacing.touchTarget)) {
+                Icon(
+                    painter = painterResource(DesignR.drawable.ic_more),
+                    contentDescription = stringResource(R.string.editor_section_actions, label),
+                    tint = palette.muted,
+                )
+            }
+            GriotMenu(expanded = menuOpen, onDismiss = onMenuDismiss, content = menu)
         }
     }
 }
