@@ -1,5 +1,7 @@
 package com.griot.feature.settings
 
+import com.griot.core.ai.AiStatus
+import com.griot.core.ai.FakeAiAssistant
 import com.griot.core.data.export.FakeMarkdownExporter
 import com.griot.core.data.language.FakeAppLanguageRepository
 import com.griot.core.data.model.AppLanguage
@@ -11,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -44,6 +47,7 @@ internal class SettingsViewModelTest {
                 appLanguage = appLanguage,
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
             )
 
             // then
@@ -64,6 +68,7 @@ internal class SettingsViewModelTest {
                 appLanguage = FakeAppLanguageRepository(),
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
             )
 
             // then
@@ -81,6 +86,7 @@ internal class SettingsViewModelTest {
                 appLanguage = FakeAppLanguageRepository(),
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
             )
 
             // when
@@ -99,6 +105,7 @@ internal class SettingsViewModelTest {
                 appLanguage = FakeAppLanguageRepository(),
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
             )
 
             // when
@@ -119,6 +126,7 @@ internal class SettingsViewModelTest {
                 appLanguage = appLanguage,
                 preferences = FakeUserPreferencesRepository(),
                 exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
             )
 
             // when
@@ -138,6 +146,7 @@ internal class SettingsViewModelTest {
                 appLanguage = FakeAppLanguageRepository(),
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
             )
 
             // when
@@ -155,6 +164,7 @@ internal class SettingsViewModelTest {
                 appLanguage = FakeAppLanguageRepository(language = AppLanguage.ENGLISH),
                 preferences = preferences,
                 exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(),
             )
 
             // when
@@ -175,6 +185,7 @@ internal class SettingsViewModelTest {
                 appLanguage = FakeAppLanguageRepository(),
                 preferences = FakeUserPreferencesRepository(),
                 exporter = exporter,
+                assistant = FakeAiAssistant(),
             )
 
             // when
@@ -183,6 +194,42 @@ internal class SettingsViewModelTest {
             // then
             viewModel.uiState.value.export shouldBe exporter.file
             exporter.calls shouldContainExactly listOf("all")
+        }
+    }
+
+    @Nested
+    inner class OnDeviceAi {
+        @Test
+        fun `should show whether the model of the phone can answer`() = runTest {
+            // when
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = FakeUserPreferencesRepository(onDeviceAi = false),
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(deviceStatus = AiStatus.PREPARING),
+            )
+
+            // then
+            viewModel.uiState.value.onDeviceStatus shouldBe AiStatus.PREPARING
+            viewModel.uiState.value.onDeviceAi shouldBe false
+        }
+
+        @Test
+        fun `should save whether the AI help may use the model of the phone`() = runTest {
+            // given
+            val preferences = FakeUserPreferencesRepository(onDeviceAi = true)
+            val viewModel = SettingsViewModel(
+                appLanguage = FakeAppLanguageRepository(),
+                preferences = preferences,
+                exporter = FakeMarkdownExporter(),
+                assistant = FakeAiAssistant(deviceStatus = AiStatus.READY),
+            )
+
+            // when
+            viewModel.onOnDeviceAiChange(false)
+
+            // then
+            preferences.onDeviceAi.value shouldBe false
         }
     }
 }

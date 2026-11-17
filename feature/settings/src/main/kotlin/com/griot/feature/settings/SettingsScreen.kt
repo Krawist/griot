@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.griot.core.ai.AiStatus
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.FileShareSheet
 import com.griot.core.design.theme.GriotSpacing
@@ -54,7 +55,11 @@ internal fun SettingsScreen(
         )
         ProfileGroup(uiState = uiState, onSheet = { sheet = it })
         SyncGroup()
-        AiGroup()
+        AiGroup(
+            onDeviceAi = uiState.onDeviceAi,
+            onDeviceStatus = uiState.onDeviceStatus,
+            onOnDeviceAiChange = viewModel::onOnDeviceAiChange,
+        )
         TextsGroup(onImport = onOpenImport, onExport = viewModel::onExportAll, onTrash = onOpenTrash)
         AppearanceGroup(fontSize = uiState.fontSize, onLicences = { sheet = SettingsSheet.LICENCES })
     }
@@ -114,19 +119,29 @@ private fun SyncGroup() {
     }
 }
 
-// The AI providers come with GRI-32 and GRI-33: shown, not available yet.
+// Gemini Nano on the phone, when the phone can have it; the online AI comes with GRI-33.
 @Composable
-private fun AiGroup() {
+private fun AiGroup(onDeviceAi: Boolean, onDeviceStatus: AiStatus, onOnDeviceAiChange: (Boolean) -> Unit) {
     val unavailable = stringResource(R.string.settings_unavailable)
+    val supported = onDeviceStatus != AiStatus.UNAVAILABLE
     SettingsGroup(title = stringResource(R.string.settings_ai)) {
         SettingsRow(
             letter = stringResource(R.string.settings_ai_device_letter),
             tone = SettingsTone.AI,
             label = stringResource(R.string.settings_ai_device),
-            sub = unavailable,
+            sub = stringResource(
+                when (onDeviceStatus) {
+                    AiStatus.READY -> R.string.settings_ai_device_ready
+                    AiStatus.PREPARING -> R.string.settings_ai_device_preparing
+                    AiStatus.UNAVAILABLE -> R.string.settings_ai_device_unsupported
+                },
+            ),
             first = true,
-            enabled = false,
-        ) { SettingsSwitch(checked = false, enabled = false, onCheckedChange = {}) }
+            enabled = supported,
+            onClick = { onOnDeviceAiChange(!onDeviceAi) },
+        ) {
+            SettingsSwitch(checked = supported && onDeviceAi, enabled = supported, onCheckedChange = onOnDeviceAiChange)
+        }
         SettingsRow(
             letter = stringResource(R.string.settings_ai_online_letter),
             tone = SettingsTone.AI,

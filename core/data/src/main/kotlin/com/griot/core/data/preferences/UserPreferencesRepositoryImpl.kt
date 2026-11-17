@@ -32,6 +32,8 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
 
     override val showRhymes: Flow<Boolean> = dataStore.data.map { it[ShowRhymes] ?: true }
 
+    override val onDeviceAi: Flow<Boolean> = dataStore.data.map { it[OnDeviceAi] ?: true }
+
     override val lastSyncedAt: Flow<Instant?> = dataStore.data.map { preferences ->
         preferences[LastSyncedAt]?.let(Instant::ofEpochMilli)
     }
@@ -58,6 +60,10 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         dataStore.edit { it[ShowRhymes] = show }
     }
 
+    override suspend fun setOnDeviceAi(allowed: Boolean) {
+        dataStore.edit { it[OnDeviceAi] = allowed }
+    }
+
     override suspend fun setSynced(at: Instant, cursor: String?) {
         dataStore.edit { preferences ->
             preferences[LastSyncedAt] = at.toEpochMilli()
@@ -71,6 +77,7 @@ internal class UserPreferencesRepositoryImpl @Inject constructor(private val dat
         val DefaultSongLanguage = stringPreferencesKey("default_song_language")
         val EditorFontSize = intPreferencesKey("editor_font_size")
         val ShowRhymes = booleanPreferencesKey("show_rhymes")
+        val OnDeviceAi = booleanPreferencesKey("on_device_ai")
         val LastSyncedAt = longPreferencesKey("last_synced_at")
         val SyncCursor = stringPreferencesKey("sync_cursor")
     }

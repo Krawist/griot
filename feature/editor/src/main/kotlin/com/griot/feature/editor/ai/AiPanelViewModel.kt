@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.griot.core.ai.AiAnswer
 import com.griot.core.ai.AiAssistant
-import com.griot.core.ai.AiLocation
+import com.griot.core.ai.AiAvailability
 import com.griot.core.ai.CheckedSuggestion
 import com.griot.core.ai.VerseRequest
 import com.griot.core.data.model.SongDocument
@@ -52,7 +52,7 @@ internal class AiPanelViewModel @AssistedInject constructor(
     private val tab = MutableStateFlow(AiTab.RHYMES)
     private val rephrase = MutableStateFlow(AiContent<CheckedSuggestion>())
     private val critique = MutableStateFlow(AiContent<String>())
-    private val location = MutableStateFlow<AiLocation?>(null)
+    private val availability = MutableStateFlow(AiAvailability(location = null, preparing = false))
 
     // The rhymes read the dictionary: off the main thread, and only when the verse's text or the song's words change.
     private val context: StateFlow<VerseContext?> = editor.observeDocument(songId)
@@ -66,8 +66,8 @@ internal class AiPanelViewModel @AssistedInject constructor(
         tab,
         rephrase,
         critique,
-        location,
-    ) { context, tab, rephrase, critique, location ->
+        availability,
+    ) { context, tab, rephrase, critique, availability ->
         AiPanelUiState(
             loading = context == null,
             verse = context?.request?.verse.orEmpty(),
@@ -79,12 +79,13 @@ internal class AiPanelViewModel @AssistedInject constructor(
             rhymes = context?.rhymes.orEmpty(),
             rephrase = rephrase,
             critique = critique,
-            location = location,
+            location = availability.location,
+            preparing = availability.preparing,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), AiPanelUiState())
 
     init {
-        viewModelScope.launch { location.value = assistant.location() }
+        viewModelScope.launch { availability.value = assistant.availability() }
     }
 
     /** Shows [selected]; a model tab asks the model the first time it opens. */
@@ -112,7 +113,8 @@ internal class AiPanelViewModel @AssistedInject constructor(
         content.update { it.copy(loading = true, failed = false) }
         try {
             val answer = call()
-            location.value = answer?.location
+            availability.value = answer?.let { AiAvailability(location = it.location, preparing = false) }
+                ?: assistant.availability()
             content.value = AiContent(items = answer?.items.orEmpty(), answered = true, unavailable = answer == null)
         } catch (e: CancellationException) {
             throw e

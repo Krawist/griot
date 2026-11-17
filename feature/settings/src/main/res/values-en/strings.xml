@@ -2,6 +2,9 @@
 <resources>
     <string name="settings_ai">AI help</string>
     <string name="settings_ai_device">On-device AI</string>
+    <string name="settings_ai_device_preparing">The model is downloading, once</string>
+    <string name="settings_ai_device_ready">Available · your text stays on the phone</string>
+    <string name="settings_ai_device_unsupported">Not available on this phone</string>
     <string name="settings_ai_online">Online AI</string>
     <string name="settings_appearance">Appearance</string>
     <string name="settings_auto_sync">Automatic sync</string>

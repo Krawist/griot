@@ -216,6 +216,40 @@ internal class AiPanelViewModelTest {
             viewModel.uiState.first { it.critique.answered }.critique shouldBe
                 AiContent(answered = true, unavailable = true)
         }
+
+        @Test
+        fun `should say when the model of the phone is downloading`() = runTest {
+            // given
+            val viewModel = AiPanelViewModel(
+                songId = "my-song-id",
+                verseId = "my-verse-id",
+                language = SongLanguage.FRENCH,
+                editor = FakeSongEditorRepository(
+                    document = SongDocument(
+                        id = "my-song-id",
+                        title = "my-title",
+                        language = SongLanguage.FRENCH,
+                        sections = listOf(
+                            SongSection(
+                                id = "my-section-id",
+                                kind = SectionKind.VERSE,
+                                name = null,
+                                repeatOf = null,
+                                verses = listOf(SongVerse(id = "my-verse-id", text = "Le soleil cogne sur la tôle")),
+                            ),
+                        ),
+                    ),
+                ),
+                engines = engines,
+                assistant = FakeAiAssistant(location = null, preparing = true),
+            )
+
+            // when
+            val uiState = viewModel.uiState.first { !it.loading }
+
+            // then
+            uiState.preparing shouldBe true
+        }
     }
 
     @Nested

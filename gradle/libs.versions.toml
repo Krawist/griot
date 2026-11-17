@@ -23,10 +23,10 @@ room = "2.8.1"
 sqlite = "2.6.1"
 datastore = "1.1.7"
 work = "2.10.3"
-kotlinxCoroutines = "1.10.2"
+kotlinxCoroutines = "1.11.0"
 mockk = "1.14.5"
 # Gemini Nano on the phones that have it, through AICore (GRI-32).
-mlkitGenaiPrompt = "1.0.0-beta4"
+mlkitGenaiPrompt = "1.0.0-beta5"
 # Language of a song, identified on the phone (GRI-18).
 mlkitLanguageId = "17.0.6"
 # Haze 2.1 needs Compose 1.12 and Kotlin 2.4.21.

@@ -1,17 +1,22 @@
 package com.griot.core.ai
 
 /**
- * [AiAssistant] for tests: answers with [location], [suggestions] and [remarks], or `null` without a [location];
- * [requests] records what was asked, in order.
+ * [AiAssistant] for tests: answers with [location], [suggestions] and [remarks], or `null` without a [location]; the
+ * model of the phone is [deviceStatus], downloading when [preparing]; [requests] records what was asked, in order.
  */
 class FakeAiAssistant(
     private val location: AiLocation? = null,
+    private val preparing: Boolean = false,
+    private val deviceStatus: AiStatus = AiStatus.UNAVAILABLE,
     private val suggestions: List<CheckedSuggestion> = emptyList(),
     private val remarks: List<String> = emptyList(),
 ) : AiAssistant {
     val requests = mutableListOf<Pair<String, VerseRequest>>()
 
-    override suspend fun location() = location
+    override suspend fun availability() = AiAvailability(location = location, preparing = preparing)
+
+    override suspend fun status(location: AiLocation) =
+        if (location == AiLocation.DEVICE) deviceStatus else AiStatus.UNAVAILABLE
 
     override suspend fun rephrase(request: VerseRequest): AiAnswer<CheckedSuggestion>? {
         requests += "rephrase" to request

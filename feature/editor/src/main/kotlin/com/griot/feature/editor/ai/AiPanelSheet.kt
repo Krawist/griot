@@ -79,17 +79,27 @@ internal fun AiPanelSheet(
         ) {
             when (uiState.tab) {
                 AiTab.RHYMES -> RhymesTab(uiState = uiState, onWord = onInsertWord)
-                AiTab.REPHRASE -> ModelTab(content = uiState.rephrase, onRetry = viewModel::onMoreIdeas) { suggestion ->
+                AiTab.REPHRASE -> ModelTab(
+                    content = uiState.rephrase,
+                    preparing = uiState.preparing,
+                    onRetry = viewModel::onMoreIdeas,
+                ) { suggestion ->
                     SuggestionCard(suggestion = suggestion, onUse = { onUseSuggestion(suggestion.text) })
                 }
                 AiTab.CRITIQUE -> ModelTab(
                     content = uiState.critique,
+                    preparing = uiState.preparing,
                     onRetry = viewModel::onMoreIdeas,
                     empty = R.string.ai_critique_empty,
                 ) { remark -> RemarkCard(remark = remark) }
             }
         }
-        PanelFooter(tab = uiState.tab, location = uiState.location, onMore = viewModel::onMoreIdeas)
+        PanelFooter(
+            tab = uiState.tab,
+            location = uiState.location,
+            preparing = uiState.preparing,
+            onMore = viewModel::onMoreIdeas,
+        )
     }
 }
 
@@ -165,12 +175,13 @@ private fun PanelTabs(selected: AiTab, onSelect: (AiTab) -> Unit) {
 
 // Where the answers come from, and « Autres idées » on the model tabs.
 @Composable
-private fun PanelFooter(tab: AiTab, location: AiLocation?, onMore: () -> Unit) {
+private fun PanelFooter(tab: AiTab, location: AiLocation?, preparing: Boolean, onMore: () -> Unit) {
     val palette = GriotTheme.palette
     val source = when {
         tab == AiTab.RHYMES -> R.string.ai_source_dictionary
         location == AiLocation.DEVICE -> R.string.ai_source_device
         location == AiLocation.ONLINE -> R.string.ai_source_online
+        preparing -> R.string.ai_source_preparing
         else -> R.string.ai_source_none
     }
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(GriotSpacing.s)) {

@@ -6,6 +6,7 @@
     <string name="ai_more">More ideas</string>
     <string name="ai_nothing_kept">No suggestion keeps the rhyme and the rhythm of the verse. Ask for more ideas.</string>
     <string name="ai_place">%1$s · verse %2$d</string>
+    <string name="ai_preparing">Your phone\'s AI model is downloading, once. It will work in a few minutes, without ever sending your text anywhere.</string>
     <string name="ai_quoted">“%1$s”</string>
     <string name="ai_retry">Retry</string>
     <string name="ai_rhymes_empty">No rhyme found in the dictionary for this verse.</string>
@@ -15,6 +16,7 @@
     <string name="ai_source_dictionary">Rhyme dictionary · on your phone</string>
     <string name="ai_source_none">No AI available yet</string>
     <string name="ai_source_online">AI · online</string>
+    <string name="ai_source_preparing">AI · the model is downloading on your phone</string>
     <string name="ai_tab_critique">Critique</string>
     <string name="ai_tab_rephrase">Rephrase</string>
     <string name="ai_tab_rhymes">Rhymes</string>

@@ -31,13 +31,13 @@ internal class AiPromptsTest {
             // then
             prompt.request shouldBe """
                 Section: my-section
-                Verses before:
+                Context, verses before it (do not rewrite):
                 my-verse-before-1
                 my-verse-before-2
-                Verse to rephrase: my-verse
-                Verses after:
+                Context, verses after it (do not rewrite):
                 my-verse-after
                 Syllables of the verse: 8
+                Verse to rephrase: my-verse
             """.trimIndent()
         }
 
@@ -77,7 +77,26 @@ internal class AiPromptsTest {
             val prompt = rephrasePrompt(request)
 
             // then
-            prompt.request shouldNotContain "Verses"
+            prompt.request shouldNotContain "Context"
+        }
+
+        @Test
+        fun `should name the word the rhyme ends on`() {
+            // given
+            val request = VerseRequest(
+                language = PhoneticLanguage.FRENCH,
+                section = "my-section",
+                verse = "J'ai une go mais j'en veux encore.",
+                before = emptyList(),
+                after = emptyList(),
+                targetSyllables = 9,
+            )
+
+            // when
+            val prompt = rephrasePrompt(request)
+
+            // then
+            prompt.instructions shouldContain "ends with a word that rhymes with \"encore\""
         }
     }
 

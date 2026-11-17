@@ -18,6 +18,7 @@ import com.griot.core.data.song.SectionLabel
  * @property rephrase The versions proposed by a model.
  * @property critique The remarks of a model.
  * @property location Where the model answering runs; `null` when no model is available.
+ * @property preparing Whether the model of the phone is downloading: the help comes once it is done.
  */
 internal data class AiPanelUiState(
     val loading: Boolean = true,
@@ -31,4 +32,5 @@ internal data class AiPanelUiState(
     val rephrase: AiContent<CheckedSuggestion> = AiContent(),
     val critique: AiContent<String> = AiContent(),
     val location: AiLocation? = null,
+    val preparing: Boolean = false,
 )

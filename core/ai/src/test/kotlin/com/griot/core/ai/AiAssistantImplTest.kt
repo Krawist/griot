@@ -1,5 +1,6 @@
 package com.griot.core.ai
 
+import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.phonetics.PhoneticEngines
 import com.griot.core.phonetics.PhoneticLanguage
 import io.kotest.matchers.collections.shouldContainExactly
@@ -14,50 +15,107 @@ internal class AiAssistantImplTest {
     private val engines = PhoneticEngines()
 
     @Nested
-    inner class Location {
+    inner class Availability {
         @Test
         fun `should prefer the model of the phone`() = runTest {
             // given
             val assistant = AiAssistantImpl(
                 providers = setOf(FakeAiProvider(AiLocation.ONLINE), FakeAiProvider(AiLocation.DEVICE)),
                 engines = engines,
+                preferences = FakeUserPreferencesRepository(),
             )
 
             // when
-            val location = assistant.location()
+            val availability = assistant.availability()
 
             // then
-            location shouldBe AiLocation.DEVICE
+            availability shouldBe AiAvailability(location = AiLocation.DEVICE, preparing = false)
         }
 
         @Test
-        fun `should go online when the model of the phone is not available`() = runTest {
+        fun `should go online while the model of the phone downloads`() = runTest {
             // given
             val assistant = AiAssistantImpl(
                 providers = setOf(
-                    FakeAiProvider(location = AiLocation.DEVICE, available = false),
+                    FakeAiProvider(location = AiLocation.DEVICE, status = AiStatus.PREPARING),
                     FakeAiProvider(location = AiLocation.ONLINE),
                 ),
                 engines = engines,
+                preferences = FakeUserPreferencesRepository(),
             )
 
             // when
-            val location = assistant.location()
+            val availability = assistant.availability()
 
             // then
-            location shouldBe AiLocation.ONLINE
+            availability shouldBe AiAvailability(location = AiLocation.ONLINE, preparing = true)
+        }
+
+        @Test
+        fun `should leave out the model of the phone when the settings forbid it`() = runTest {
+            // given
+            val assistant = AiAssistantImpl(
+                providers = setOf(FakeAiProvider(AiLocation.DEVICE)),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(onDeviceAi = false),
+            )
+
+            // when
+            val availability = assistant.availability()
+
+            // then
+            availability shouldBe AiAvailability(location = null, preparing = false)
         }
 
         @Test
         fun `should have none without a model`() = runTest {
             // given
-            val assistant = AiAssistantImpl(providers = emptySet(), engines = engines)
+            val assistant = AiAssistantImpl(
+                providers = emptySet(),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(),
+            )
 
             // when
-            val location = assistant.location()
+            val availability = assistant.availability()
 
             // then
-            location.shouldBeNull()
+            availability shouldBe AiAvailability(location = null, preparing = false)
+        }
+    }
+
+    @Nested
+    inner class Status {
+        @Test
+        fun `should give the status of the model of the phone, whatever the settings`() = runTest {
+            // given
+            val assistant = AiAssistantImpl(
+                providers = setOf(FakeAiProvider(location = AiLocation.DEVICE, status = AiStatus.PREPARING)),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(onDeviceAi = false),
+            )
+
+            // when
+            val status = assistant.status(AiLocation.DEVICE)
+
+            // then
+            status shouldBe AiStatus.PREPARING
+        }
+
+        @Test
+        fun `should be unavailable without a model there`() = runTest {
+            // given
+            val assistant = AiAssistantImpl(
+                providers = setOf(FakeAiProvider(AiLocation.DEVICE)),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(),
+            )
+
+            // when
+            val status = assistant.status(AiLocation.ONLINE)
+
+            // then
+            status shouldBe AiStatus.UNAVAILABLE
         }
     }
 
@@ -70,7 +128,11 @@ internal class AiAssistantImplTest {
                 location = AiLocation.DEVICE,
                 answer = "1. Le soleil frappe sur la tôle\n2. Le soleil frappe sur les toits",
             )
-            val assistant = AiAssistantImpl(providers = setOf(provider), engines = engines)
+            val assistant = AiAssistantImpl(
+                providers = setOf(provider),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(),
+            )
             val request = VerseRequest(
                 language = PhoneticLanguage.FRENCH,
                 section = "Couplet 1",
@@ -96,7 +158,11 @@ internal class AiAssistantImplTest {
         @Test
         fun `should give nothing without a model`() = runTest {
             // given
-            val assistant = AiAssistantImpl(providers = emptySet(), engines = engines)
+            val assistant = AiAssistantImpl(
+                providers = emptySet(),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(),
+            )
             val request = VerseRequest(
                 language = PhoneticLanguage.FRENCH,
                 section = "Couplet 1",
@@ -120,7 +186,11 @@ internal class AiAssistantImplTest {
         fun `should give the counts of the section to the model`() = runTest {
             // given
             val provider = FakeAiProvider(location = AiLocation.ONLINE, answer = "my-remark")
-            val assistant = AiAssistantImpl(providers = setOf(provider), engines = engines)
+            val assistant = AiAssistantImpl(
+                providers = setOf(provider),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(),
+            )
             val request = VerseRequest(
                 language = PhoneticLanguage.FRENCH,
                 section = "Couplet 1",
@@ -141,7 +211,11 @@ internal class AiAssistantImplTest {
         @Test
         fun `should give nothing without a model`() = runTest {
             // given
-            val assistant = AiAssistantImpl(providers = emptySet(), engines = engines)
+            val assistant = AiAssistantImpl(
+                providers = emptySet(),
+                engines = engines,
+                preferences = FakeUserPreferencesRepository(),
+            )
             val request = VerseRequest(
                 language = PhoneticLanguage.FRENCH,
                 section = "Couplet 1",

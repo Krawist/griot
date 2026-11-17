@@ -10,9 +10,11 @@ internal fun rephrasePrompt(request: VerseRequest): AiPrompt = AiPrompt(
     instructions = """
         $ROLE
         Answer in ${request.language.englishName()}.
-        Give exactly three new versions of the verse, one per line, without numbering, quotes or comments.
-        Each version keeps the meaning of the verse, ends with the same rhyme sound, and has about
-        ${request.targetSyllables} syllables.
+        Write exactly 3 new versions of the verse to rephrase, and nothing else: one version per line, without
+        numbering, quotes or comments.
+        Each version keeps the meaning of the verse, ends with a word that rhymes with "${request.lastWord()}", and
+        has about ${request.targetSyllables} syllables.
+        Never rewrite the other verses: they are only context.
     """.trimIndent(),
     request = request.context(task = "Verse to rephrase"),
 )
@@ -27,10 +29,11 @@ internal fun critiquePrompt(request: VerseRequest, counts: List<Int>): AiPrompt 
         Answer in ${request.language.englishName()}.
         Give at most three short remarks on the verse, one per line, without numbering: cliches, weak images, breaks
         of tone, rhythm compared with the other verses of the section.
-        Never write a new version of the verse, nor any part of one.
+        Never write a new version of the verse, nor any part of one, and never rewrite the other verses: they are
+        only context.
     """.trimIndent(),
-    request = request.context(task = "Verse to critique") +
-        "\nSyllables of the verses of the section, in order: ${counts.joinToString()}",
+    request = "Syllables of the verses of the section, in order: ${counts.joinToString()}\n" +
+        request.context(task = "Verse to critique"),
 )
 
 /** The lines of a model's answer, without bullets, numbers nor quotes: at most [max], each once. */
@@ -46,13 +49,18 @@ internal const val MAX_ITEMS = 3
 // « - », « • », « * », « 1. », « 2) » at the start of a line.
 private val Bullet = Regex("""^([-•*]|\d+[.)])\s*""")
 
+// The section and the neighbouring verses as context, then the verse itself, last, where a small model looks most.
 private fun VerseRequest.context(task: String): String = buildString {
     appendLine("Section: $section")
-    if (before.isNotEmpty()) appendLine("Verses before:\n${before.joinToString("\n")}")
-    appendLine("$task: $verse")
-    if (after.isNotEmpty()) appendLine("Verses after:\n${after.joinToString("\n")}")
-    append("Syllables of the verse: $targetSyllables")
+    if (before.isNotEmpty()) appendLine("Context, verses before it (do not rewrite):\n${before.joinToString("\n")}")
+    if (after.isNotEmpty()) appendLine("Context, verses after it (do not rewrite):\n${after.joinToString("\n")}")
+    appendLine("Syllables of the verse: $targetSyllables")
+    append("$task: $verse")
 }
+
+// The last word of the verse, which the rhyme ends on.
+private fun VerseRequest.lastWord(): String =
+    verse.trim().split(Regex("""[^\p{L}'’-]+""")).lastOrNull { it.isNotBlank() }.orEmpty()
 
 private fun PhoneticLanguage.englishName(): String = when (this) {
     PhoneticLanguage.FRENCH -> "French"

@@ -8,8 +8,11 @@ interface AiProvider {
     /** Where the model runs. */
     val location: AiLocation
 
-    /** Whether the model can answer now: supported by the phone and downloaded, or a key is set. */
-    suspend fun isAvailable(): Boolean
+    /**
+     * Whether the model can answer now: supported by the phone and downloaded, or a key is set. Checking it starts the
+     * download of a model the phone can have.
+     */
+    suspend fun status(): AiStatus
 
     /** The model's answer to [prompt], as text. */
     suspend fun generate(prompt: AiPrompt): String

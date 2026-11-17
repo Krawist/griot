@@ -11,8 +11,11 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.data)
     implementation(projects.core.phonetics)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.mlkit.genai.prompt)
 
+    testImplementation(testFixtures(projects.core.data))
     testImplementation(libs.kotlinx.coroutines.test)
 }

@@ -21,6 +21,9 @@ interface UserPreferencesRepository {
     /** Whether the editor colours the rhymes; `true` until the user hides them. */
     val showRhymes: Flow<Boolean>
 
+    /** Whether the AI help may use the model on the phone; `true` until the user turns it off. */
+    val onDeviceAi: Flow<Boolean>
+
     /** When the last sync with the remote store succeeded; `null` until the first one. */
     val lastSyncedAt: Flow<Instant?>
 
@@ -41,6 +44,9 @@ interface UserPreferencesRepository {
 
     /** Shows or hides the colours of the rhymes in the editor. */
     suspend fun setShowRhymes(show: Boolean)
+
+    /** Allows or forbids the AI help to use the model on the phone. */
+    suspend fun setOnDeviceAi(allowed: Boolean)
 
     /** Records a successful sync at [at], and the [cursor] of the remote changes read so far. */
     suspend fun setSynced(at: Instant, cursor: String?)

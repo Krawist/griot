@@ -2,6 +2,8 @@ package com.griot.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.griot.core.ai.AiAssistant
+import com.griot.core.ai.AiLocation
 import com.griot.core.data.export.MarkdownExporter
 import com.griot.core.data.language.AppLanguageRepository
 import com.griot.core.data.model.AppLanguage
@@ -22,14 +24,19 @@ internal class SettingsViewModel @Inject constructor(
     private val appLanguage: AppLanguageRepository,
     private val preferences: UserPreferencesRepository,
     private val exporter: MarkdownExporter,
+    private val assistant: AiAssistant,
 ) : ViewModel() {
     private val state = MutableStateFlow(SettingsUiState(language = appLanguage.current()))
     val uiState: StateFlow<SettingsUiState> = state.asStateFlow()
 
     init {
-        combine(preferences.authorName, preferences.editorFontSize) { name, size ->
-            state.update { it.copy(authorName = name.orEmpty(), fontSize = size) }
+        combine(preferences.authorName, preferences.editorFontSize, preferences.onDeviceAi) { name, size, onDevice ->
+            state.update { it.copy(authorName = name.orEmpty(), fontSize = size, onDeviceAi = onDevice) }
         }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            val status = assistant.status(AiLocation.DEVICE)
+            state.update { it.copy(onDeviceStatus = status) }
+        }
     }
 
     /** Saves [name] without the spaces around it; an empty name keeps the one before. */
@@ -53,6 +60,11 @@ internal class SettingsViewModel @Inject constructor(
             state.update { it.copy(language = language) }
             appLanguage.set(language)
         }
+    }
+
+    /** Allows or forbids the AI help to use the model on the phone. */
+    fun onOnDeviceAiChange(allowed: Boolean) {
+        viewModelScope.launch { preferences.setOnDeviceAi(allowed) }
     }
 
     /** Exports every song as Markdown in a zip, then shows what to do with the file. */

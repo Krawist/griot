@@ -3,6 +3,9 @@
     <string name="settings_ai">Aide IA</string>
     <string name="settings_ai_device">IA sur le téléphone</string>
     <string name="settings_ai_device_letter" translatable="false">IA</string>
+    <string name="settings_ai_device_preparing">Le modèle se télécharge, une seule fois</string>
+    <string name="settings_ai_device_ready">Disponible · ton texte reste sur le téléphone</string>
+    <string name="settings_ai_device_unsupported">Pas disponible sur ce téléphone</string>
     <string name="settings_ai_online">IA en ligne</string>
     <string name="settings_ai_online_letter" translatable="false">☁</string>
     <string name="settings_appearance">Apparence</string>

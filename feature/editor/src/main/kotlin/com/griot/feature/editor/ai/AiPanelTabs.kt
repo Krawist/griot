@@ -89,10 +89,14 @@ internal fun RhymesTab(uiState: AiPanelUiState, onWord: (String) -> Unit) {
     if (uiState.rhymes.any { it.used }) Note(text = stringResource(R.string.ai_rhymes_used), small = true)
 }
 
-/** A tab answered by a model: its items, or why there are none, with a retry after a failure. */
+/**
+ * A tab answered by a model: its items, or why there are none (no model, or the phone's model [preparing]), with a
+ * retry after a failure.
+ */
 @Composable
 internal fun <T> ModelTab(
     content: AiContent<T>,
+    preparing: Boolean,
     onRetry: () -> Unit,
     @StringRes empty: Int = R.string.ai_nothing_kept,
     item: @Composable (T) -> Unit,
@@ -106,7 +110,9 @@ internal fun <T> ModelTab(
                 trackColor = GriotTheme.palette.aiSoft,
             )
         }
-        content.unavailable -> Note(text = stringResource(R.string.ai_unavailable))
+        content.unavailable -> Note(
+            text = stringResource(if (preparing) R.string.ai_preparing else R.string.ai_unavailable),
+        )
         content.failed -> Row(verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(1f)) { Note(text = stringResource(R.string.ai_failed)) }
             TextAction(text = stringResource(R.string.ai_retry), onClick = onRetry)

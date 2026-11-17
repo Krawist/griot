@@ -275,7 +275,14 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   repeats now repeat that section, and it is deleted; not for the first section nor when one of the two is a repeat
   (`EditorSection.mergeable`). « Fusionner avec la section du dessus » in the section's « ⋯ » menu, and Backspace at
   the start of a section's first verse (the verse keeps its text and the focus); the song is recorded first.
-- [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-32/33 (models:
+- [x] **GRI-32** — `OnDeviceProvider` (`:core:ai`): Gemini Nano through ML Kit GenAI Prompt (`genai-prompt`
+  1.0.0-beta5) and the phone's AICore; `status()` is ready, preparing (a downloadable model starts downloading on the
+  first check) or unavailable. `AiAssistant.availability()` (checked at launch by `MainViewModel` and when the panel
+  opens) and `status(location)`; the settings' « IA sur le téléphone » shows the status and allows it or not
+  (`UserPreferencesRepository.onDeviceAi`, on by default); the panel says when the model downloads. Prompts put the
+  context first, marked « do not rewrite », the verse last, and name the rhyme word: Gemini Nano otherwise rewrote the
+  whole section. Checked on the Galaxy S25.
+- [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup), then GRI-36/37 to check with a real model.
 
 Update this section at the end of each ticket.

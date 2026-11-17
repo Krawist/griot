@@ -2,6 +2,7 @@ package com.griot
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.griot.core.ai.AiAssistant
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongRepository
 import com.griot.core.data.song.VersionRepository
@@ -18,6 +19,7 @@ internal class MainViewModel @Inject constructor(
     private val preferences: UserPreferencesRepository,
     songs: SongRepository,
     versions: VersionRepository,
+    assistant: AiAssistant,
 ) : ViewModel() {
     val uiState: StateFlow<MainUiState> = preferences.onboardingCompleted
         .map { MainUiState.Ready(onboardingCompleted = it) }
@@ -30,6 +32,8 @@ internal class MainViewModel @Inject constructor(
             songs.purgeTrash()
             versions.thin()
         }
+        // The AI models are checked at launch: a phone that can have Gemini Nano starts downloading it.
+        viewModelScope.launch { assistant.availability() }
     }
 
     fun onOnboardingCompleted() {
