@@ -25,14 +25,14 @@ internal class LibraryItemsImplTest {
     @Nested
     inner class ItemOf {
         @Test
-        fun `should give the card its folder, its genre and when it last changed`() {
+        fun `should give the card its folders, its genre and when it last changed`() {
             // given
             val song = LibrarySong(
                 id = "my-song-id",
                 title = "my-title",
                 language = SongLanguage.FRENCH,
                 status = SongStatus.DRAFT,
-                folderId = "my-folder-id-2",
+                folderIds = listOf("my-folder-id-2"),
                 genreId = "afro",
                 updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                 sectionCount = 1,
@@ -51,7 +51,7 @@ internal class LibraryItemsImplTest {
             item shouldBe LibraryItem(
                 song = song,
                 updated = RelativeTime.HoursAgo(2),
-                folder = folders[1],
+                folders = listOf(folders[1]),
                 genre = genre,
             )
         }

@@ -18,8 +18,11 @@ interface FolderRepository {
     /** Gives the folder [id] the [color]; « Archives » keeps its colour. */
     suspend fun setFolderColor(id: String, color: FolderColor)
 
-    /** Deletes the folder [id], never its songs: they go back to « Aucun dossier ». « Archives » stays. */
+    /** Deletes the folder [id], never its songs: they only leave it. « Archives » stays. */
     suspend fun deleteFolder(id: String)
+
+    /** Files the songs [songIds] in the folders [add], and takes them out of the folders [remove]; the others stay. */
+    suspend fun fileSongs(songIds: List<String>, add: Set<String>, remove: Set<String>)
 
     companion object {
         /** The id of « Archives », the same on every device. */

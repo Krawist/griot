@@ -51,6 +51,7 @@
     <string name="library_no_result_body">Essaie un autre mot ou un autre filtre.</string>
     <string name="library_no_result_title">Aucune chanson ne correspond</string>
     <string name="library_no_text">Pas encore de texte</string>
+    <string name="library_recent">Récents</string>
     <string name="library_rename">Renommer</string>
     <string name="library_rename_label">Titre</string>
     <string name="library_resume">Reprendre</string>

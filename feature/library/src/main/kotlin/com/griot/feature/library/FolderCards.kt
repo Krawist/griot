@@ -1,5 +1,6 @@
 package com.griot.feature.library
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.griot.core.data.model.Folder
+import com.griot.core.data.model.FolderColor
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
@@ -34,12 +36,20 @@ private val IconBox = 32.dp
 private val IconRadius = 9.dp
 private val CardHeight = 72.dp
 
-/** A folder of the home grid: its icon in its colour, its name and its count of songs. */
+/** A folder of the home grid: its icon in its colour, its [name] and its [count] of songs. */
+@Suppress("LongParameterList") // The folder as it shows, and its action.
 @Composable
-internal fun FolderCard(folder: Folder, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun FolderCard(
+    name: String,
+    count: Int,
+    color: FolderColor,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int = DesignR.drawable.ic_folder,
+) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(GriotRadius.card)
-    val (fill, content) = folder.color.tint()
+    val (fill, content) = color.tint()
     Column(
         modifier = modifier
             .heightIn(min = CardHeight)
@@ -55,7 +65,7 @@ internal fun FolderCard(folder: Folder, onClick: () -> Unit, modifier: Modifier 
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                painter = painterResource(DesignR.drawable.ic_folder),
+                painter = painterResource(icon),
                 contentDescription = null,
                 tint = content,
                 modifier = Modifier.size(16.dp),
@@ -63,14 +73,14 @@ internal fun FolderCard(folder: Folder, onClick: () -> Unit, modifier: Modifier 
         }
         Column {
             Text(
-                text = folder.displayName(),
+                text = name,
                 style = GriotTheme.type.bodyStrong,
                 color = palette.ink,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = pluralStringResource(R.plurals.library_texts, folder.songCount, folder.songCount),
+                text = pluralStringResource(R.plurals.library_texts, count, count),
                 style = GriotTheme.type.caption,
                 color = palette.muted,
             )
@@ -78,39 +88,10 @@ internal fun FolderCard(folder: Folder, onClick: () -> Unit, modifier: Modifier 
     }
 }
 
-/** « Nouveau dossier », at the end of the grid. */
+/** « Récents » (the songs of the last 24 hours, [recentCount]), then the folders, two by two. */
 @Composable
-internal fun NewFolderCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val palette = GriotTheme.palette
-    val shape = RoundedCornerShape(GriotRadius.card)
-    Row(
-        modifier = modifier
-            .heightIn(min = CardHeight)
-            .clip(shape)
-            .border(1.5.dp, palette.line, shape)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = GriotSpacing.m + 2.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(GriotSpacing.s + 2.dp),
-    ) {
-        Icon(
-            painter = painterResource(DesignR.drawable.ic_add),
-            contentDescription = null,
-            tint = palette.accentText,
-            modifier = Modifier.size(18.dp),
-        )
-        Text(
-            text = stringResource(R.string.library_new_folder),
-            style = GriotTheme.type.label,
-            color = palette.accentText,
-        )
-    }
-}
-
-/** The folders two by two, then « Nouveau dossier ». */
-@Composable
-internal fun FolderGrid(folders: List<Folder>, onOpenFolder: (String) -> Unit, onNewFolder: () -> Unit) {
-    val cells: List<Folder?> = folders + null
+internal fun FolderGrid(folders: List<Folder>, recentCount: Int, onOpenFolder: (String) -> Unit) {
+    val cells: List<Folder?> = listOf(null) + folders
     Column(verticalArrangement = Arrangement.spacedBy(GriotSpacing.m - 2.dp)) {
         cells.chunked(2).forEach { row ->
             Row(
@@ -120,9 +101,22 @@ internal fun FolderGrid(folders: List<Folder>, onOpenFolder: (String) -> Unit, o
                 row.forEach { folder ->
                     val cell = Modifier.weight(1f)
                     if (folder == null) {
-                        NewFolderCard(onClick = onNewFolder, modifier = cell)
+                        FolderCard(
+                            name = stringResource(R.string.library_recent),
+                            count = recentCount,
+                            color = FolderColor.TURQUOISE,
+                            icon = DesignR.drawable.ic_history,
+                            onClick = { onOpenFolder(RECENT_FOLDER_ID) },
+                            modifier = cell,
+                        )
                     } else {
-                        FolderCard(folder = folder, onClick = { onOpenFolder(folder.id) }, modifier = cell)
+                        FolderCard(
+                            name = folder.displayName(),
+                            count = folder.songCount,
+                            color = folder.color,
+                            onClick = { onOpenFolder(folder.id) },
+                            modifier = cell,
+                        )
                     }
                 }
                 if (row.size == 1) Box(Modifier.weight(1f))

@@ -31,4 +31,8 @@ class FakeFolderRepository(folders: List<Folder> = emptyList()) : FolderReposito
     override suspend fun deleteFolder(id: String) {
         calls += "delete $id"
     }
+
+    override suspend fun fileSongs(songIds: List<String>, add: Set<String>, remove: Set<String>) {
+        calls += "file ${songIds.joinToString()} +${add.sorted().joinToString()} -${remove.sorted().joinToString()}"
+    }
 }

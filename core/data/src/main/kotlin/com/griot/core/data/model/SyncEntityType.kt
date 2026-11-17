@@ -9,4 +9,5 @@ enum class SyncEntityType {
     IDEA,
     FOLDER,
     GENRE,
+    SONG_FOLDER,
 }

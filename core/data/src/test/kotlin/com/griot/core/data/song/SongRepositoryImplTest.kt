@@ -259,27 +259,6 @@ internal class SongRepositoryImplTest {
     }
 
     @Nested
-    inner class SetFolder {
-        @Test
-        fun `should file the songs in the folder`() = runTest {
-            // given
-            coJustRun { songDao.setFolder(any(), any(), any()) }
-
-            // when
-            repository.setFolder(ids = listOf("my-song-id-1", "my-song-id-2"), folderId = "my-folder-id")
-
-            // then
-            coVerifySequence {
-                songDao.setFolder(
-                    ids = listOf("my-song-id-1", "my-song-id-2"),
-                    folderId = "my-folder-id",
-                    at = Instant.parse("2026-11-16T10:00:00Z"),
-                )
-            }
-        }
-    }
-
-    @Nested
     inner class SetGenre {
         @Test
         fun `should tag the songs with the genre`() = runTest {

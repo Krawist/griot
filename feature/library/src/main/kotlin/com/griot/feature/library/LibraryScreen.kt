@@ -43,6 +43,7 @@ import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
 import com.griot.core.design.component.AnimatedPresence
+import com.griot.core.design.component.DashedAddButton
 import com.griot.core.design.component.GriotSheet
 import com.griot.core.design.component.JumpToTopButton
 import com.griot.core.design.component.ScrollControls
@@ -227,7 +228,12 @@ private fun HomeList(
                     verticalArrangement = Arrangement.spacedBy(GriotSpacing.s),
                 ) {
                     FoldersTitle(songCount = uiState.songCount, onAllTexts = { onOpenFolder(null) })
-                    FolderGrid(folders = uiState.folders, onOpenFolder = onOpenFolder, onNewFolder = onNewFolder)
+                    FolderGrid(
+                        folders = uiState.folders,
+                        recentCount = uiState.recentCount,
+                        onOpenFolder = onOpenFolder,
+                    )
+                    DashedAddButton(label = stringResource(R.string.library_new_folder), onClick = onNewFolder)
                 }
             }
         }
@@ -260,7 +266,7 @@ private fun LazyListScope.songs(
         val motion = GriotTheme.motion
         SongCard(
             item = item,
-            meta = item.meta(showFolder = true),
+            meta = item.meta(showFolders = true),
             onClick = { onOpenSong(item.song.id) },
             onLongClick = { onSongActions(item.song.id) },
             modifier = Modifier.animateItem(
@@ -330,7 +336,9 @@ private fun LibraryScreenPreview() {
                 controls = rememberScrollControls(list),
                 uiState = LibraryUiState(
                     authorName = "Krawist",
-                    today = listOf(LibraryItem(song = song, updated = RelativeTime.HoursAgo(2), folder = folder)),
+                    today = listOf(
+                        LibraryItem(song = song, updated = RelativeTime.HoursAgo(2), folders = listOf(folder)),
+                    ),
                     folders = listOf(
                         folder,
                         Folder(

@@ -22,7 +22,6 @@ import kotlinx.serialization.UseSerializers
  * @property languageDetected Whether [language] is detected from the lyrics (automatic mode) rather than chosen by
  * hand.
  * @property status Draft or in progress.
- * @property folderId The folder it is in; `null` for « Aucun dossier ».
  * @property genreId Its genre; `null` without one.
  * @property createdAt When the song was created.
  * @property updatedAt Last change of this row, on any device; sync keeps the most recent.
@@ -36,7 +35,6 @@ internal data class SongEntity(
     val language: SongLanguage,
     val languageDetected: Boolean = false,
     val status: SongStatus,
-    val folderId: String? = null,
     val genreId: String? = null,
     val createdAt: Instant,
     val updatedAt: Instant,

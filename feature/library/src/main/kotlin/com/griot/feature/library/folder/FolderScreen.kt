@@ -123,7 +123,7 @@ private fun SongList(uiState: FolderUiState, onOpenSong: (String) -> Unit, onSon
             val selected = item.song.id in uiState.selected
             SongCard(
                 item = item,
-                meta = item.meta(showFolder = uiState.folder == null),
+                meta = item.meta(showFolders = uiState.folder == null),
                 onClick = { onOpenSong(item.song.id) },
                 onLongClick = { onSongActions(item.song.id) },
                 modifier = Modifier

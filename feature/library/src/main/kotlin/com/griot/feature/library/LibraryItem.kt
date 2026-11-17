@@ -12,13 +12,13 @@ import com.griot.core.design.format.RelativeTime
  * @property updated When the song last changed, as the card reads it.
  * @property rhymes The rhyme ranks of the verses of its first section that have a rhyme, in order (0 for A): its
  * dots, coloured as in the editor.
- * @property folder The folder it is in; `null` for « Sans dossier ».
+ * @property folders The folders it is in; empty for « Sans dossier ».
  * @property genre Its genre; `null` without one.
  */
 internal data class LibraryItem(
     val song: LibrarySong,
     val updated: RelativeTime,
     val rhymes: List<Int> = emptyList(),
-    val folder: Folder? = null,
+    val folders: List<Folder> = emptyList(),
     val genre: Genre? = null,
 )

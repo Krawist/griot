@@ -531,22 +531,22 @@ Size: M. Dependencies: GRI-29, GRI-52. Mockups: « Musique des autres apps », �
 
 ### GRI-55 · Organise songs in folders and genres
 
-Songs can be organised in folders (a project, an EP, « Brouillons ») and tagged with a genre. A song is in one folder at most and has one genre at most.
+Songs can be organised in folders (a project, an EP, « Brouillons ») and tagged with a genre. A song can be in several folders at once, and has one genre at most.
 
 - Folders: a name, a colour among the theme's accents and an order. One level only, no sub-folders. « Archives » is a built-in folder that cannot be renamed or deleted.
 - Genres: a short default list (Afro, Rap, R&B, Gospel, Pop, Autre) that the author can extend; a custom genre can be renamed or deleted.
-- Deleting a folder never deletes its songs: they go back to « Aucun dossier ». Deleting a genre removes it from its songs.
+- Deleting a folder never deletes its songs: they only leave it. Deleting a genre removes it from its songs.
 - Folders, genres and the songs' choices sync like the songs (GRI-27).
 
 Size: M. Dependencies: GRI-05, GRI-27.
 
 ### GRI-56 · Rework the home screen around recent songs and folders
 
-The home screen no longer lists every song. It shows, from top to bottom: the search on all texts, the tidy-up card when there are proposals (GRI-59), the songs changed in the last 24 hours under « Aujourd'hui », then the folders.
+The home screen no longer lists every song. It shows, from top to bottom: the search on all texts, the tidy-up card when there are proposals (GRI-59), the last three songs changed in the last 24 hours under « Aujourd'hui », then the folders.
 
-- « Aujourd'hui » is a rolling window: a song changed 25 hours ago leaves it. Each song shows its title, first verse, rhyme dots, folder, genre, language and time of change.
+- « Aujourd'hui » is a rolling window: a song changed 25 hours ago leaves it. It shows three songs at most, so that the folders stay in view; « Récents » holds them all. Each song shows its title, first verse, rhyme dots, folders, genre, language and time of change.
 - With nothing changed in the last 24 hours, a « Reprendre » card shows the last song touched, its first two verses and « Continuer à écrire », so the screen is never empty.
-- « Dossiers » shows the folders as a grid with their song count, ends with a « Nouveau dossier » card, and links « Tous les textes · 43 ».
+- « Dossiers » shows the folders as a grid with their song count, starting with « Récents » (always there, never stored: the songs changed in the last 24 hours), and links « Tous les textes · 43 ». « Nouveau dossier » follows the grid, a dashed button like « Ajouter une section ».
 - The floating « Nouvelle chanson » button becomes a « + » button in the header, next to the sync state.
 - Scrolling keeps the behaviour of GRI-45.
 
@@ -565,10 +565,10 @@ Size: M. Dependencies: GRI-54, GRI-55. Mockup: « Dossier et tous les textes ».
 
 ### GRI-58 · File a song in a folder and a genre
 
-A sheet « Dossier et genre » files one song, or several selected songs, in one go: the list of folders (« Aucun dossier » first, one choice), then the genres as chips (one at most, a tap on the chosen one clears it), then « Valider ».
+A sheet « Dossier et genre » files one song, or several selected songs, in one go: the list of folders (several can be checked; « Aucun dossier » unchecks them all), then the genres as chips (one at most, a tap on the chosen one clears it), then « Valider ».
 
 - It opens from the editor's « ⋯ » menu (« Dossier et genre »), from a long press on a song and from « Ranger » in multiple selection.
-- « Nouveau dossier » at the end of the list opens a name field with « Créer »: the folder is created and chosen at once.
+- « Nouveau dossier » at the end of the list opens a name field with « Créer »: the folder is created and checked at once.
 - « + » after the genres adds a custom genre.
 - With several songs selected, folders and genres they do not share show no choice until the author picks one.
 

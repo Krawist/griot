@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
 /**
- * A folder of songs; songs point to it with [SongEntity.folderId].
+ * A folder of songs; a song can be in several, through [SongFolderEntity].
  *
  * @property id Stable UUID, the same on every device; « archives » for the built-in folder.
  * @property name The author's name for it; empty for « Archives ».

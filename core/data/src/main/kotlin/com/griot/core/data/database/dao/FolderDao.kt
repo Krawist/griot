@@ -24,7 +24,10 @@ internal interface FolderDao {
     @Query(
         """
         SELECT f.id, f.name, f.color, f.kind,
-            (SELECT COUNT(*) FROM songs s WHERE s.folderId = f.id AND s.deleted = 0) AS songCount
+            (
+                SELECT COUNT(*) FROM song_folders sf JOIN songs s ON s.id = sf.songId
+                WHERE sf.folderId = f.id AND sf.deleted = 0 AND s.deleted = 0
+            ) AS songCount
         FROM folders f
         WHERE f.deleted = 0
         ORDER BY f.kind = 'ARCHIVES', f.position

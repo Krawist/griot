@@ -33,9 +33,6 @@ interface SongRepository {
      */
     suspend fun detectLanguages()
 
-    /** Files the songs [ids] in the folder [folderId], or in « Aucun dossier » when it is `null`. */
-    suspend fun setFolder(ids: List<String>, folderId: String?)
-
     /** Tags the songs [ids] with the genre [genreId], or with none when it is `null`. */
     suspend fun setGenre(ids: List<String>, genreId: String?)
 

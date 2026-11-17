@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.griot.core.design.component.AnimatedPresence
+import com.griot.core.design.component.DashedAddButton
 import com.griot.core.design.component.JumpToTopButton
 import com.griot.core.design.component.ScrollControls
 import com.griot.core.design.component.TopControls
@@ -196,7 +197,11 @@ private fun EditorLyrics(
             )
         }
         item(key = "add") {
-            AddSectionButton(onClick = onAddSection, modifier = Modifier.animateItem().padding(top = SectionGap))
+            DashedAddButton(
+                label = stringResource(R.string.editor_add_section),
+                onClick = onAddSection,
+                modifier = Modifier.animateItem().padding(top = SectionGap),
+            )
         }
     }
 }

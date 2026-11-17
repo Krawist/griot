@@ -11,7 +11,7 @@ import java.time.Instant
  * @property title Title; empty for a song not named yet.
  * @property language Writing language.
  * @property status Draft or in progress.
- * @property folderId The folder it is in; `null` for « Aucun dossier ».
+ * @property folderIds The ids of the folders it is in, separated by commas; `null` when it is in none.
  * @property genreId Its genre; `null` without one.
  * @property updatedAt Last change of the song.
  * @property sectionCount Number of sections that are not deleted, repeats included.
@@ -23,7 +23,7 @@ internal data class LibrarySongRow(
     val title: String,
     val language: SongLanguage,
     val status: SongStatus,
-    val folderId: String? = null,
+    val folderIds: String? = null,
     val genreId: String? = null,
     val updatedAt: Instant,
     val sectionCount: Int,

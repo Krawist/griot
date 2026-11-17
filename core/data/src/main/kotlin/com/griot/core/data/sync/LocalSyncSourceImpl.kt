@@ -9,6 +9,7 @@ import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.IdeaEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
+import com.griot.core.data.database.entity.SongFolderEntity
 import com.griot.core.data.database.entity.SyncStateEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.database.entity.VersionEntity
@@ -82,6 +83,13 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
             update = database.genreDao()::update,
             updatedAt = GenreEntity::updatedAt,
         ),
+        SyncEntityType.SONG_FOLDER to Table(
+            serializer = SongFolderEntity.serializer(),
+            get = database.songFolderDao()::getById,
+            insert = database.songFolderDao()::insert,
+            update = database.songFolderDao()::update,
+            updatedAt = SongFolderEntity::updatedAt,
+        ),
     )
 
     override fun observePendingCount(): Flow<Int> = syncDao.observePendingCount()
@@ -94,7 +102,10 @@ internal class LocalSyncSourceImpl @Inject constructor(private val database: Gri
                 syncDao.pendingVersions().map { record(SyncEntityType.VERSION, it.id, it.updatedAt, it.deleted, it) } +
                 syncDao.pendingIdeas().map { record(SyncEntityType.IDEA, it.id, it.updatedAt, it.deleted, it) } +
                 syncDao.pendingFolders().map { record(SyncEntityType.FOLDER, it.id, it.updatedAt, it.deleted, it) } +
-                syncDao.pendingGenres().map { record(SyncEntityType.GENRE, it.id, it.updatedAt, it.deleted, it) }
+                syncDao.pendingGenres().map { record(SyncEntityType.GENRE, it.id, it.updatedAt, it.deleted, it) } +
+                syncDao.pendingSongFolders().map {
+                    record(SyncEntityType.SONG_FOLDER, it.id, it.updatedAt, it.deleted, it)
+                }
         }
     }
 

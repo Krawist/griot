@@ -65,7 +65,10 @@ internal fun FolderTopBar(
                 text = if (uiState.selecting) {
                     pluralStringResource(R.plurals.folder_selected, uiState.selected.size, uiState.selected.size)
                 } else {
-                    uiState.folder?.displayName() ?: stringResource(R.string.folder_all_texts)
+                    when {
+                        uiState.recent -> stringResource(R.string.library_recent)
+                        else -> uiState.folder?.displayName() ?: stringResource(R.string.folder_all_texts)
+                    }
                 },
                 style = GriotTheme.type.pageTitle,
                 color = palette.ink,

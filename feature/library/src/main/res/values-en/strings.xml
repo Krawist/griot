@@ -49,6 +49,7 @@
     <string name="library_no_result_body">Try another word or another filter.</string>
     <string name="library_no_result_title">No song matches</string>
     <string name="library_no_text">No lyrics yet</string>
+    <string name="library_recent">Recent</string>
     <string name="library_rename">Rename</string>
     <string name="library_rename_label">Title</string>
     <string name="library_resume">Pick up</string>

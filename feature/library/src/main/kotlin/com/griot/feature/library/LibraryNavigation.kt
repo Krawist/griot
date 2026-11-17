@@ -22,7 +22,7 @@ internal data object TrashRoute
 /**
  * The songs of a folder, or every song.
  *
- * @property folderId Id of the folder; `null` for « Tous les textes ».
+ * @property folderId Id of the folder, [RECENT_FOLDER_ID] for « Récents »; `null` for « Tous les textes ».
  */
 @Serializable
 internal data class FolderRoute(val folderId: String?)

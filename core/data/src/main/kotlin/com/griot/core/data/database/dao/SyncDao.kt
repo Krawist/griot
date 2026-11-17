@@ -7,6 +7,7 @@ import com.griot.core.data.database.entity.GenreEntity
 import com.griot.core.data.database.entity.IdeaEntity
 import com.griot.core.data.database.entity.SectionEntity
 import com.griot.core.data.database.entity.SongEntity
+import com.griot.core.data.database.entity.SongFolderEntity
 import com.griot.core.data.database.entity.VerseEntity
 import com.griot.core.data.database.entity.VersionEntity
 import kotlinx.coroutines.flow.Flow
@@ -73,6 +74,14 @@ internal interface SyncDao {
     )
     suspend fun pendingGenres(): List<GenreEntity>
 
+    @Query(
+        """
+        SELECT t.* FROM song_folders t LEFT JOIN sync_state s ON s.entityType = 'SONG_FOLDER' AND s.entityId = t.id
+        WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt
+        """,
+    )
+    suspend fun pendingSongFolders(): List<SongFolderEntity>
+
     /** How many rows have changes to push, updated on every write. */
     @Query(
         """
@@ -91,6 +100,8 @@ internal interface SyncDao {
             WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
         + (SELECT COUNT(*) FROM genres t LEFT JOIN sync_state s ON s.entityType = 'GENRE' AND s.entityId = t.id
             WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
+        + (SELECT COUNT(*) FROM song_folders t LEFT JOIN sync_state s ON s.entityType = 'SONG_FOLDER'
+            AND s.entityId = t.id WHERE s.entityId IS NULL OR t.updatedAt > s.syncedUpdatedAt)
         """,
     )
     fun observePendingCount(): Flow<Int>

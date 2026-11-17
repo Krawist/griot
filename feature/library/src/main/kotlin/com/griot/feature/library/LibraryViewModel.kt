@@ -10,7 +10,6 @@ import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
-import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -53,14 +52,14 @@ internal class LibraryViewModel @Inject constructor(
         ->
         val now = Instant.now(clock)
         val all = library.map { items.itemOf(song = it, folders = folders, genres = genres, now = now) }
-        // A rolling window: a song changed 25 hours ago is no longer of today.
-        val today = all.filter { Duration.between(it.song.updatedAt, now) < TODAY }
+        val recent = all.filter { it.song.isRecent(now) }
         LibraryUiState(
             authorName = authorName?.takeIf { it.isNotBlank() },
             query = query,
             results = if (query.isBlank()) emptyList() else all.filter { it.song.matches(query) },
-            today = today,
-            resume = all.firstOrNull()?.takeIf { today.isEmpty() }?.let { item ->
+            today = recent.take(TODAY_SONGS),
+            recentCount = recent.size,
+            resume = all.firstOrNull()?.takeIf { recent.isEmpty() }?.let { item ->
                 ResumeSong(item = item, verses = item.song.firstSection.filter { it.isNotBlank() }.take(RESUME_VERSES))
             },
             folders = folders,
@@ -92,7 +91,9 @@ internal class LibraryViewModel @Inject constructor(
     private companion object {
         const val STOP_TIMEOUT_MILLIS = 5_000L
         const val RESUME_VERSES = 2
-        val TODAY: Duration = Duration.ofHours(24)
+
+        // The home screen shows the last three: « Récents » holds the others.
+        const val TODAY_SONGS = 3
 
         // New folders take the accents in turn.
         val FolderColors = listOf(FolderColor.MAGENTA, FolderColor.TURQUOISE, FolderColor.ORANGE, FolderColor.YELLOW)

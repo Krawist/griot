@@ -36,10 +36,6 @@ class FakeSongRepository(library: List<LibrarySong> = emptyList(), trash: List<T
         calls += "detect languages"
     }
 
-    override suspend fun setFolder(ids: List<String>, folderId: String?) {
-        calls += "folder ${ids.joinToString()} $folderId"
-    }
-
     override suspend fun setGenre(ids: List<String>, genreId: String?) {
         calls += "genre ${ids.joinToString()} $genreId"
     }

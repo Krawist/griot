@@ -2,6 +2,7 @@ package com.griot.core.data.organisation
 
 import com.griot.core.data.database.entity.FolderEntity
 import com.griot.core.data.database.entity.SongEntity
+import com.griot.core.data.database.entity.SongFolderEntity
 import com.griot.core.data.database.inMemoryDatabase
 import com.griot.core.data.model.Folder
 import com.griot.core.data.model.FolderColor
@@ -112,10 +113,17 @@ internal class FolderRepositoryImplTest {
                         title = "my-title",
                         language = SongLanguage.FRENCH,
                         status = SongStatus.DRAFT,
-                        folderId = "my-folder-id",
                         createdAt = Instant.parse("2026-11-01T10:00:00Z"),
                         updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
                         deleted = deleted,
+                    ),
+                )
+                database.songFolderDao().insert(
+                    SongFolderEntity(
+                        id = "$id:my-folder-id",
+                        songId = id,
+                        folderId = "my-folder-id",
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
                     ),
                 )
             }
@@ -227,7 +235,7 @@ internal class FolderRepositoryImplTest {
     @Nested
     inner class DeleteFolder {
         @Test
-        fun `should delete the folder and put its songs back in no folder`() = runTest {
+        fun `should delete the folder and take its songs out of it`() = runTest {
             // given
             database.folderDao().insert(
                 FolderEntity(
@@ -238,14 +246,11 @@ internal class FolderRepositoryImplTest {
                     updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
                 ),
             )
-            database.songDao().insert(
-                SongEntity(
-                    id = "my-song-id",
-                    title = "my-title",
-                    language = SongLanguage.FRENCH,
-                    status = SongStatus.DRAFT,
+            database.songFolderDao().insert(
+                SongFolderEntity(
+                    id = "my-song-id:my-folder-id",
+                    songId = "my-song-id",
                     folderId = "my-folder-id",
-                    createdAt = Instant.parse("2026-11-01T10:00:00Z"),
                     updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
                 ),
             )
@@ -255,8 +260,8 @@ internal class FolderRepositoryImplTest {
 
             // then
             database.folderDao().getById("my-folder-id")?.deleted shouldBe true
-            database.songDao().getById("my-song-id")?.let { Triple(it.folderId, it.deleted, it.updatedAt) } shouldBe
-                Triple(null, false, Instant.parse("2026-11-17T10:00:00Z"))
+            database.songFolderDao().getById("my-song-id:my-folder-id")?.let { it.deleted to it.updatedAt } shouldBe
+                (true to Instant.parse("2026-11-17T10:00:00Z"))
         }
 
         @Test
@@ -277,6 +282,70 @@ internal class FolderRepositoryImplTest {
 
             // then
             database.folderDao().getById("archives") shouldBe archives
+        }
+    }
+
+    @Nested
+    inner class FileSongs {
+        @Test
+        fun `should file the songs in the folders added`() = runTest {
+            // when
+            repository.fileSongs(
+                songIds = listOf("my-song-id-1", "my-song-id-2"),
+                add = setOf("my-folder-id"),
+                remove = emptySet(),
+            )
+
+            // then
+            database.songFolderDao().getById("my-song-id-2:my-folder-id") shouldBe SongFolderEntity(
+                id = "my-song-id-2:my-folder-id",
+                songId = "my-song-id-2",
+                folderId = "my-folder-id",
+                updatedAt = Instant.parse("2026-11-17T10:00:00Z"),
+            )
+            database.songFolderDao().getById("my-song-id-1:my-folder-id")?.deleted shouldBe false
+        }
+
+        @Test
+        fun `should take the songs out of the folders removed and keep them in the others`() = runTest {
+            // given
+            listOf("my-folder-id-1", "my-folder-id-2").forEach { folderId ->
+                database.songFolderDao().insert(
+                    SongFolderEntity(
+                        id = "my-song-id:$folderId",
+                        songId = "my-song-id",
+                        folderId = folderId,
+                        updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    ),
+                )
+            }
+
+            // when
+            repository.fileSongs(songIds = listOf("my-song-id"), add = emptySet(), remove = setOf("my-folder-id-1"))
+
+            // then
+            database.songFolderDao().getById("my-song-id:my-folder-id-1")?.deleted shouldBe true
+            database.songFolderDao().getById("my-song-id:my-folder-id-2")?.deleted shouldBe false
+        }
+
+        @Test
+        fun `should file again a song taken out of a folder`() = runTest {
+            // given
+            database.songFolderDao().insert(
+                SongFolderEntity(
+                    id = "my-song-id:my-folder-id",
+                    songId = "my-song-id",
+                    folderId = "my-folder-id",
+                    updatedAt = Instant.parse("2026-11-01T10:00:00Z"),
+                    deleted = true,
+                ),
+            )
+
+            // when
+            repository.fileSongs(songIds = listOf("my-song-id"), add = setOf("my-folder-id"), remove = emptySet())
+
+            // then
+            database.songFolderDao().getById("my-song-id:my-folder-id")?.deleted shouldBe false
         }
     }
 }

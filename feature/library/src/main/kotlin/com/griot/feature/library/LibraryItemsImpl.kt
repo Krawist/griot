@@ -21,7 +21,7 @@ internal class LibraryItemsImpl @Inject constructor(private val engines: Phoneti
         song = song,
         updated = relativeTime(song.updatedAt, now = now, zone = clock.zone),
         rhymes = rhymesOf(song),
-        folder = folders.firstOrNull { it.id == song.folderId },
+        folders = folders.filter { it.id in song.folderIds },
         genre = genres.firstOrNull { it.id == song.genreId },
     )
 

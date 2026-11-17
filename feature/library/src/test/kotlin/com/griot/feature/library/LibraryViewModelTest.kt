@@ -94,6 +94,39 @@ internal class LibraryViewModelTest {
         }
 
         @Test
+        fun `should show the last three songs of the day and count them all for Récents`() = runTest {
+            // given
+            val songs = (1..4).map { index ->
+                LibrarySong(
+                    id = "my-song-id-$index",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.DRAFT,
+                    updatedAt = Instant.parse("2026-11-16T1$index:00:00Z"),
+                    sectionCount = 1,
+                    firstVerse = null,
+                    lyrics = "my-lyrics",
+                )
+            }.reversed()
+            val viewModel = LibraryViewModel(
+                songs = FakeSongRepository(library = songs),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            val state = viewModel.uiState.first { !it.loading }
+
+            // then
+            state.today.map { it.song.id } shouldContainExactly listOf("my-song-id-4", "my-song-id-3", "my-song-id-2")
+            state.recentCount shouldBe 4
+        }
+
+        @Test
         fun `should offer to pick up the last song touched when nothing changed today`() = runTest {
             // given
             val song = LibrarySong(

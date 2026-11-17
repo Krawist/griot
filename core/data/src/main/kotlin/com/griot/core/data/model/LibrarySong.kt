@@ -9,7 +9,7 @@ import java.time.Instant
  * @property title Title; empty for a song not named yet.
  * @property language Writing language.
  * @property status Draft or in progress.
- * @property folderId The folder it is in; `null` for « Aucun dossier ».
+ * @property folderIds The folders it is in; empty for « Sans dossier ».
  * @property genreId Its genre; `null` without one.
  * @property updatedAt Last change of the song.
  * @property sectionCount Number of sections, repeats included.
@@ -22,7 +22,7 @@ data class LibrarySong(
     val title: String,
     val language: SongLanguage,
     val status: SongStatus,
-    val folderId: String? = null,
+    val folderIds: List<String> = emptyList(),
     val genreId: String? = null,
     val updatedAt: Instant,
     val sectionCount: Int,

@@ -314,13 +314,16 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (id `archives`, `FolderKind.ARCHIVES`, `FolderColor.NEUTRAL`) and the built-in genres (`BuiltInGenre`, fixed ids,
   names from the interface) when missing, dated at the epoch. `FolderRepository` and `GenreRepository`
   (`:core:data` `organisation`): built-ins cannot be renamed or deleted; deleting a folder puts its songs back in no
-  folder, deleting a genre removes it from its songs. `SongRepository.setFolder`/`setGenre` file several songs at
-  once. Folders and genres sync (`SyncEntityType.FOLDER`, `GENRE`).
+  folder, deleting a genre removes it from its songs. `SongRepository.setGenre` tags several songs at once. Folders
+  and genres sync (`SyncEntityType.FOLDER`, `GENRE`). A song can be in several folders (decided after GRI-57):
+  `song_folders` (database version 6, id `songId:folderId`, synced as `SONG_FOLDER`), `LibrarySong.folderIds`,
+  `FolderRepository.fileSongs(songIds, add, remove)`.
 - [x] **GRI-56** — the home screen (`LibraryScreen`): greeting, « Tes chansons » and « + » (new song), the search on
   all texts (its results replace the rest while a text is typed), « Aujourd'hui » (songs changed in the last
   24 hours, a rolling window) or « Reprendre » (the last song touched, its first two verses, « Continuer à écrire »),
-  then « Dossiers » (`FolderGrid`, two by two, « Nouveau dossier » last, new folders taking the accents in turn) and
-  « Tous les textes · N ». Song cards read « folder · genre · time » (`LibraryItem.meta`); `LibraryItems` builds
+  then « Dossiers » (`FolderGrid`, two by two, « Récents » first: the songs of the last 24 hours, never stored,
+  `RECENT_FOLDER_ID`) and « Tous les textes · N ». « Aujourd'hui » shows three songs at most. « Nouveau dossier » is a
+  `DashedAddButton` (`:core:design`, shared with « Ajouter une section »); new folders take the accents in turn. Song cards read « folder · genre · time » (`LibraryItem.meta`); `LibraryItems` builds
   the cards for both library screens. The filters left the home screen for the folder screen (GRI-57).
 - [x] **GRI-57** — `FolderScreen` (`FolderRoute(folderId)`, `null` for « Tous les textes », outside the tabs):
   title and count, « Tous » and the genres present as `FilterChip`s, a language filter menu that reads « FR » or
