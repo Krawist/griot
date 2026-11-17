@@ -316,6 +316,12 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   (`:core:data` `organisation`): built-ins cannot be renamed or deleted; deleting a folder puts its songs back in no
   folder, deleting a genre removes it from its songs. `SongRepository.setFolder`/`setGenre` file several songs at
   once. Folders and genres sync (`SyncEntityType.FOLDER`, `GENRE`).
+- [x] **GRI-56** — the home screen (`LibraryScreen`): greeting, « Tes chansons » and « + » (new song), the search on
+  all texts (its results replace the rest while a text is typed), « Aujourd'hui » (songs changed in the last
+  24 hours, a rolling window) or « Reprendre » (the last song touched, its first two verses, « Continuer à écrire »),
+  then « Dossiers » (`FolderGrid`, two by two, « Nouveau dossier » last, new folders taking the accents in turn) and
+  « Tous les textes · N ». Song cards read « folder · genre · time » (`LibraryItem.meta`); `LibraryItems` builds
+  the cards for both library screens. The filters left the home screen for the folder screen (GRI-57).
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 

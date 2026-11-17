@@ -1,28 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="genre_afro">Afro</string>
+    <string name="genre_gospel">Gospel</string>
+    <string name="genre_other">Autre</string>
+    <string name="genre_pop">Pop</string>
+    <string name="genre_rap">Rap</string>
+    <string name="genre_rnb">R&amp;B</string>
+    <string name="library_all_texts">Tous les textes · %1$d</string>
+    <string name="library_archives">Archives</string>
     <string name="library_copy_title">%1$s (copie)</string>
+    <string name="library_create">Créer</string>
     <string name="library_delete">Supprimer</string>
     <string name="library_deleted">« %1$s » est dans la corbeille</string>
-    <string name="library_draft">Brouillon</string>
     <string name="library_duplicate">Dupliquer</string>
-    <string name="library_empty_body">Touche « Nouvelle chanson » pour écrire ta première chanson.</string>
+    <string name="library_empty_body">Touche « + » pour écrire ta première chanson.</string>
     <string name="library_empty_title">Pas encore de chanson</string>
     <string name="library_filter_all">Toutes</string>
     <string name="library_filter_drafts">Brouillons</string>
     <string name="library_filter_english">English</string>
     <string name="library_filter_french">Français</string>
+    <string name="library_folders">Dossiers</string>
     <string name="library_greeting">Salut %1$s</string>
     <string name="library_jump_to_top">Haut de la liste</string>
     <string name="library_language_english" translatable="false">EN</string>
     <string name="library_language_french" translatable="false">FR</string>
+    <string name="library_new_folder">Nouveau dossier</string>
+    <string name="library_new_folder_label">Nom du dossier</string>
     <string name="library_new_song">Nouvelle chanson</string>
+    <string name="library_no_folder">Sans dossier</string>
     <string name="library_no_result_body">Essaie un autre mot ou un autre filtre.</string>
     <string name="library_no_result_title">Aucune chanson ne correspond</string>
     <string name="library_no_text">Pas encore de texte</string>
     <string name="library_rename">Renommer</string>
     <string name="library_rename_label">Titre</string>
+    <string name="library_resume">Reprendre</string>
+    <string name="library_resume_continue">Continuer à écrire</string>
+    <string name="library_resume_meta">Rien écrit aujourd\'hui · dernier texte touché %1$s</string>
     <string name="library_search">Chercher un titre, un vers…</string>
     <string name="library_title">Tes chansons</string>
+    <string name="library_today">Aujourd\'hui</string>
     <string name="library_untitled">Sans titre</string>
     <string name="trash_back">Retour</string>
     <string name="trash_body">Les chansons supprimées restent ici 30 jours, puis sont effacées partout.</string>
@@ -30,10 +46,10 @@
     <string name="trash_meta">Supprimée %1$s · %2$s</string>
     <string name="trash_restore">Restaurer</string>
     <string name="trash_title">Corbeille</string>
-    <plurals name="library_sections">
-        <item quantity="one">%1$d section</item>
-        <item quantity="many">%1$d sections</item>
-        <item quantity="other">%1$d sections</item>
+    <plurals name="library_texts">
+        <item quantity="one">%1$d texte</item>
+        <item quantity="many">%1$d textes</item>
+        <item quantity="other">%1$d textes</item>
     </plurals>
     <plurals name="trash_days_left">
         <item quantity="one">encore %1$d jour</item>

@@ -2,16 +2,15 @@ package com.griot.feature.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.griot.core.data.model.LibrarySong
-import com.griot.core.data.model.SongLanguage
+import com.griot.core.data.model.FolderColor
+import com.griot.core.data.model.FolderKind
+import com.griot.core.data.organisation.FolderRepository
+import com.griot.core.data.organisation.GenreRepository
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongRepository
-import com.griot.core.design.format.relativeTime
-import com.griot.core.phonetics.PhoneticEngines
-import com.griot.core.phonetics.PhoneticLanguage
-import com.griot.core.phonetics.rhymeLetters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -23,39 +22,47 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/** The home screen: the songs of the last 24 hours (or the last one touched), the folders, and the search. */
 @HiltViewModel
 internal class LibraryViewModel @Inject constructor(
     private val songs: SongRepository,
+    private val folders: FolderRepository,
+    genres: GenreRepository,
     preferences: UserPreferencesRepository,
-    private val engines: PhoneticEngines,
+    private val items: LibraryItems,
     private val clock: Clock,
 ) : ViewModel() {
     private val query = MutableStateFlow("")
-    private val filter = MutableStateFlow(LibraryFilter.ALL)
     private val deleted = MutableStateFlow<DeletedSong?>(null)
 
-    val uiState: StateFlow<LibraryUiState> = combine(
-        songs.observeLibrary(),
-        preferences.authorName,
-        query,
-        filter,
-        deleted,
-    ) { library, authorName, query, filter, deleted ->
+    private val library = combine(songs.observeLibrary(), folders.observeFolders(), genres.observeGenres()) {
+            library,
+            folders,
+            genres,
+        ->
+        Triple(library, folders, genres)
+    }
+
+    val uiState: StateFlow<LibraryUiState> = combine(library, preferences.authorName, query, deleted) {
+            (library, folders, genres),
+            authorName,
+            query,
+            deleted,
+        ->
         val now = Instant.now(clock)
+        val all = library.map { items.itemOf(song = it, folders = folders, genres = genres, now = now) }
+        // A rolling window: a song changed 25 hours ago is no longer of today.
+        val today = all.filter { Duration.between(it.song.updatedAt, now) < TODAY }
         LibraryUiState(
             authorName = authorName?.takeIf { it.isNotBlank() },
             query = query,
-            filter = filter,
-            items = library
-                .filter { it.isIn(filter) && it.matches(query) }
-                .map { song ->
-                    LibraryItem(
-                        song = song,
-                        updated = relativeTime(song.updatedAt, now = now, zone = clock.zone),
-                        rhymes = rhymesOf(song),
-                    )
-                },
-            hasSongs = library.isNotEmpty(),
+            results = if (query.isBlank()) emptyList() else all.filter { it.song.matches(query) },
+            today = today,
+            resume = all.firstOrNull()?.takeIf { today.isEmpty() }?.let { item ->
+                ResumeSong(item = item, verses = item.song.firstSection.filter { it.isNotBlank() }.take(RESUME_VERSES))
+            },
+            folders = folders,
+            songCount = library.size,
             loading = false,
             deleted = deleted,
         )
@@ -64,25 +71,20 @@ internal class LibraryViewModel @Inject constructor(
         .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), LibraryUiState())
 
-    // The rhyme ranks of the first section, read in English for an English song and in French otherwise: each engine
-    // reads the other language's words.
-    private fun rhymesOf(song: LibrarySong): List<Int> {
-        val language = if (song.language == SongLanguage.ENGLISH) PhoneticLanguage.ENGLISH else PhoneticLanguage.FRENCH
-        val engine = engines.of(language)
-        return rhymeLetters(song.firstSection.map { engine.rhyme(it) }).filterNotNull()
-    }
-
     fun onQueryChange(text: String) {
         query.value = text
-    }
-
-    fun onFilterSelected(selected: LibraryFilter) {
-        filter.value = selected
     }
 
     /** Creates an empty song, then opens it with [onCreated]. */
     fun onNewSong(onCreated: (String) -> Unit) {
         viewModelScope.launch { onCreated(songs.createSong()) }
+    }
+
+    /** Creates a folder named [name], in the next of the accent colours. */
+    fun onNewFolder(name: String) {
+        if (name.isBlank()) return
+        val count = uiState.value.folders.count { it.kind == FolderKind.CUSTOM }
+        viewModelScope.launch { folders.createFolder(name = name, color = FolderColors[count % FolderColors.size]) }
     }
 
     fun onRename(id: String, title: String) {
@@ -115,5 +117,10 @@ internal class LibraryViewModel @Inject constructor(
 
     private companion object {
         const val STOP_TIMEOUT_MILLIS = 5_000L
+        const val RESUME_VERSES = 2
+        val TODAY: Duration = Duration.ofHours(24)
+
+        // New folders take the accents in turn.
+        val FolderColors = listOf(FolderColor.MAGENTA, FolderColor.TURQUOISE, FolderColor.ORANGE, FolderColor.YELLOW)
     }
 }

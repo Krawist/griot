@@ -1,26 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="genre_afro">Afro</string>
+    <string name="genre_gospel">Gospel</string>
+    <string name="genre_other">Other</string>
+    <string name="genre_pop">Pop</string>
+    <string name="genre_rap">Rap</string>
+    <string name="genre_rnb">R&amp;B</string>
+    <string name="library_all_texts">All texts · %1$d</string>
+    <string name="library_archives">Archives</string>
     <string name="library_copy_title">%1$s (copy)</string>
+    <string name="library_create">Create</string>
     <string name="library_delete">Delete</string>
     <string name="library_deleted">“%1$s” is in the trash</string>
-    <string name="library_draft">Draft</string>
     <string name="library_duplicate">Duplicate</string>
-    <string name="library_empty_body">Tap “New song” to write your first song.</string>
+    <string name="library_empty_body">Tap « + » to write your first song.</string>
     <string name="library_empty_title">No songs yet</string>
     <string name="library_filter_all">All</string>
     <string name="library_filter_drafts">Drafts</string>
     <string name="library_filter_english">English</string>
     <string name="library_filter_french">Français</string>
+    <string name="library_folders">Folders</string>
     <string name="library_greeting">Hi %1$s</string>
     <string name="library_jump_to_top">Top of the list</string>
+    <string name="library_new_folder">New folder</string>
+    <string name="library_new_folder_label">Folder name</string>
     <string name="library_new_song">New song</string>
+    <string name="library_no_folder">No folder</string>
     <string name="library_no_result_body">Try another word or another filter.</string>
     <string name="library_no_result_title">No song matches</string>
     <string name="library_no_text">No lyrics yet</string>
     <string name="library_rename">Rename</string>
     <string name="library_rename_label">Title</string>
+    <string name="library_resume">Pick up</string>
+    <string name="library_resume_continue">Keep writing</string>
+    <string name="library_resume_meta">Nothing written today · last text touched %1$s</string>
     <string name="library_search">Search a title, a verse…</string>
     <string name="library_title">Your songs</string>
+    <string name="library_today">Today</string>
     <string name="library_untitled">Untitled</string>
     <string name="trash_back">Back</string>
     <string name="trash_body">Deleted songs stay here for 30 days, then are erased everywhere.</string>
@@ -28,9 +44,9 @@
     <string name="trash_meta">Deleted %1$s · %2$s</string>
     <string name="trash_restore">Restore</string>
     <string name="trash_title">Trash</string>
-    <plurals name="library_sections">
-        <item quantity="one">%1$d section</item>
-        <item quantity="other">%1$d sections</item>
+    <plurals name="library_texts">
+        <item quantity="one">%1$d text</item>
+        <item quantity="other">%1$d texts</item>
     </plurals>
     <plurals name="trash_days_left">
         <item quantity="one">%1$d day left</item>

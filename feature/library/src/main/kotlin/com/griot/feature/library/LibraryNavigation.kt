@@ -24,17 +24,23 @@ fun NavController.navigateToTrash() = navigate(TrashRoute)
  * Library of songs and its trash (GRI-12, GRI-13). The editor is opened through the callback, never directly.
  *
  * @param onOpenSong Opens the song with this id in the editor, a new one included.
+ * @param onOpenFolder Opens the folder with this id, or every song when `null`.
  * @param onBack Leaves the trash.
  * @param onControlsShownChange Whether the library's controls show while the songs scroll: the bottom bar follows them.
  */
 fun NavGraphBuilder.libraryGraph(
     onOpenSong: (String) -> Unit,
+    onOpenFolder: (String?) -> Unit,
     onBack: () -> Unit,
     onControlsShownChange: (Boolean) -> Unit,
 ) {
     navigation<LibraryGraph>(startDestination = LibraryRoute) {
         composable<LibraryRoute> {
-            LibraryScreen(onOpenSong = onOpenSong, onControlsShownChange = onControlsShownChange)
+            LibraryScreen(
+                onOpenSong = onOpenSong,
+                onOpenFolder = onOpenFolder,
+                onControlsShownChange = onControlsShownChange,
+            )
         }
     }
     composable<TrashRoute> { TrashScreen(onBack = onBack) }

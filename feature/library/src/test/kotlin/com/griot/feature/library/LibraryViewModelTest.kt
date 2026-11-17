@@ -1,12 +1,18 @@
 package com.griot.feature.library
 
+import com.griot.core.data.model.Folder
+import com.griot.core.data.model.FolderColor
+import com.griot.core.data.model.FolderKind
 import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
+import com.griot.core.data.organisation.FakeFolderRepository
+import com.griot.core.data.organisation.FakeGenreRepository
 import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.data.song.FakeSongRepository
 import com.griot.core.design.format.RelativeTime
 import com.griot.core.phonetics.PhoneticEngines
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -44,22 +50,69 @@ internal class LibraryViewModelTest {
     @Nested
     inner class UiState {
         @Test
-        fun `should list the songs with when they last changed`() = runTest {
+        fun `should show the songs changed in the last 24 hours`() = runTest {
+            // given
+            val today = LibrarySong(
+                id = "my-song-id-1",
+                title = "my-title",
+                language = SongLanguage.FRENCH,
+                status = SongStatus.DRAFT,
+                updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                sectionCount = 1,
+                firstVerse = null,
+                lyrics = "my-lyrics",
+                firstSection = emptyList(),
+            )
+            val older = LibrarySong(
+                id = "my-song-id-2",
+                title = "my-title",
+                language = SongLanguage.FRENCH,
+                status = SongStatus.DRAFT,
+                updatedAt = Instant.parse("2026-11-15T15:00:00Z"),
+                sectionCount = 1,
+                firstVerse = null,
+                lyrics = "my-lyrics",
+                firstSection = emptyList(),
+            )
+            val viewModel = LibraryViewModel(
+                songs = FakeSongRepository(library = listOf(today, older)),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            val state = viewModel.uiState.first { !it.loading }
+
+            // then
+            state.today shouldContainExactly listOf(LibraryItem(song = today, updated = RelativeTime.HoursAgo(2)))
+            state.resume.shouldBeNull()
+            state.songCount shouldBe 2
+        }
+
+        @Test
+        fun `should offer to pick up the last song touched when nothing changed today`() = runTest {
             // given
             val song = LibrarySong(
                 id = "my-song-id",
                 title = "my-title",
                 language = SongLanguage.FRENCH,
                 status = SongStatus.DRAFT,
-                updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                updatedAt = Instant.parse("2026-11-13T15:00:00Z"),
                 sectionCount = 1,
-                firstVerse = "my-first-verse",
+                firstVerse = null,
                 lyrics = "my-lyrics",
+                firstSection = listOf("my-verse-1", "", "my-verse-2", "my-verse-3"),
             )
             val viewModel = LibraryViewModel(
                 songs = FakeSongRepository(library = listOf(song)),
-                preferences = FakeUserPreferencesRepository(authorName = "my-author-name"),
-                engines = engines,
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -68,38 +121,26 @@ internal class LibraryViewModelTest {
             val state = viewModel.uiState.first { !it.loading }
 
             // then
-            state shouldBe LibraryUiState(
-                authorName = "my-author-name",
-                items = listOf(LibraryItem(song = song, updated = RelativeTime.HoursAgo(2))),
-                hasSongs = true,
-                loading = false,
-            )
+            state.today.shouldBeEmpty()
+            state.resume?.let { it.item.song to it.verses } shouldBe (song to listOf("my-verse-1", "my-verse-2"))
         }
 
         @Test
-        fun `should give each card the rhymes of its first section`() = runTest {
+        fun `should list the folders`() = runTest {
             // given
-            val song = LibrarySong(
-                id = "my-song-id",
-                title = "my-title",
-                language = SongLanguage.FRENCH,
-                status = SongStatus.IN_PROGRESS,
-                updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
-                sectionCount = 1,
-                firstVerse = "Je marche seul dans la ville",
-                lyrics = "my-lyrics",
-                firstSection = listOf(
-                    "Je marche seul dans la ville",
-                    "Les néons pleurent sur le bitume",
-                    "",
-                    "Mon cœur bat, fragile",
-                    "Comme une flamme dans la brume",
-                ),
+            val folder = Folder(
+                id = "my-folder-id",
+                name = "my-name",
+                color = FolderColor.MAGENTA,
+                kind = FolderKind.CUSTOM,
+                songCount = 0,
             )
             val viewModel = LibraryViewModel(
-                songs = FakeSongRepository(library = listOf(song)),
+                songs = FakeSongRepository(),
+                folders = FakeFolderRepository(folders = listOf(folder)),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -108,7 +149,7 @@ internal class LibraryViewModelTest {
             val state = viewModel.uiState.first { !it.loading }
 
             // then
-            state.items.single().rhymes shouldContainExactly listOf(0, 1, 0, 1)
+            state.folders shouldContainExactly listOf(folder)
         }
 
         @Test
@@ -116,8 +157,10 @@ internal class LibraryViewModelTest {
             // given
             val viewModel = LibraryViewModel(
                 songs = FakeSongRepository(),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(authorName = " "),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -135,67 +178,89 @@ internal class LibraryViewModelTest {
         @Test
         fun `should keep only the songs matching the search`() = runTest {
             // given
-            val neons = LibrarySong(
-                id = "my-song-id-1",
-                title = "Les néons",
+            val song = LibrarySong(
+                id = "my-song-id",
+                title = "my-title",
                 language = SongLanguage.FRENCH,
                 status = SongStatus.DRAFT,
                 updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
                 sectionCount = 1,
                 firstVerse = null,
-                lyrics = "",
+                lyrics = "my-lyrics",
+                firstSection = emptyList(),
             )
-            val dry = neons.copy(id = "my-song-id-2", title = "Saison sèche")
             val viewModel = LibraryViewModel(
-                songs = FakeSongRepository(library = listOf(neons, dry)),
+                songs = FakeSongRepository(library = listOf(song, song.copy(id = "my-song-id-2", title = "other"))),
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
 
             // when
-            viewModel.onQueryChange("neons")
+            viewModel.onQueryChange("my-title")
 
             // then
-            val state = viewModel.uiState.first { !it.loading }
-            state.query shouldBe "neons"
-            state.items.map { it.song } shouldContainExactly listOf(neons)
-            state.hasSongs shouldBe true
+            viewModel.uiState.first { it.query == "my-title" }.results.map { it.song.id } shouldContainExactly
+                listOf("my-song-id")
         }
     }
 
     @Nested
-    inner class OnFilterSelected {
+    inner class OnNewFolder {
         @Test
-        fun `should keep only the songs under the filter`() = runTest {
+        fun `should create the folder in the next accent colour`() = runTest {
             // given
-            val draft = LibrarySong(
-                id = "my-song-id-1",
-                title = "my-title-1",
-                language = SongLanguage.FRENCH,
-                status = SongStatus.DRAFT,
-                updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
-                sectionCount = 1,
-                firstVerse = null,
-                lyrics = "",
+            val folders = FakeFolderRepository(
+                folders = listOf(
+                    Folder(
+                        id = "my-folder-id",
+                        name = "my-name-1",
+                        color = FolderColor.MAGENTA,
+                        kind = FolderKind.CUSTOM,
+                        songCount = 0,
+                    ),
+                ),
             )
-            val inProgress = draft.copy(id = "my-song-id-2", title = "my-title-2", status = SongStatus.IN_PROGRESS)
             val viewModel = LibraryViewModel(
-                songs = FakeSongRepository(library = listOf(draft, inProgress)),
+                songs = FakeSongRepository(),
+                folders = folders,
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.uiState.first { !it.loading }
+
+            // when
+            viewModel.onNewFolder("my-name-2")
+
+            // then
+            folders.calls shouldContainExactly listOf("create my-name-2 TURQUOISE")
+        }
+
+        @Test
+        fun `should not create a folder without a name`() = runTest {
+            // given
+            val folders = FakeFolderRepository()
+            val viewModel = LibraryViewModel(
+                songs = FakeSongRepository(),
+                folders = folders,
+                genres = FakeGenreRepository(),
+                preferences = FakeUserPreferencesRepository(),
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
 
             // when
-            viewModel.onFilterSelected(LibraryFilter.DRAFTS)
+            viewModel.onNewFolder(" ")
 
             // then
-            val state = viewModel.uiState.first { !it.loading }
-            state.filter shouldBe LibraryFilter.DRAFTS
-            state.items.map { it.song } shouldContainExactly listOf(draft)
+            folders.calls.shouldBeEmpty()
         }
     }
 
@@ -207,8 +272,10 @@ internal class LibraryViewModelTest {
             val songs = FakeSongRepository()
             val viewModel = LibraryViewModel(
                 songs = songs,
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             var opened: String? = null
@@ -230,8 +297,10 @@ internal class LibraryViewModelTest {
             val songs = FakeSongRepository()
             val viewModel = LibraryViewModel(
                 songs = songs,
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
 
@@ -251,8 +320,10 @@ internal class LibraryViewModelTest {
             val songs = FakeSongRepository()
             val viewModel = LibraryViewModel(
                 songs = songs,
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
 
@@ -272,8 +343,10 @@ internal class LibraryViewModelTest {
             val songs = FakeSongRepository()
             val viewModel = LibraryViewModel(
                 songs = songs,
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -295,8 +368,10 @@ internal class LibraryViewModelTest {
             val songs = FakeSongRepository()
             val viewModel = LibraryViewModel(
                 songs = songs,
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -319,8 +394,10 @@ internal class LibraryViewModelTest {
             val songs = FakeSongRepository()
             val viewModel = LibraryViewModel(
                 songs = songs,
+                folders = FakeFolderRepository(),
+                genres = FakeGenreRepository(),
                 preferences = FakeUserPreferencesRepository(),
-                engines = engines,
+                items = LibraryItemsImpl(engines = engines, clock = clock),
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)

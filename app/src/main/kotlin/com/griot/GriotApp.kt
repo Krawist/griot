@@ -116,6 +116,8 @@ private fun GriotNavHost(
             )
             libraryGraph(
                 onOpenSong = { songId -> navController.navigateToEditor(songId) },
+                // The folder screen comes with GRI-57.
+                onOpenFolder = {},
                 onBack = { navController.popBackStack() },
                 onControlsShownChange = { shown -> barHidden = !shown },
             )
