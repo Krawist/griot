@@ -1,6 +1,5 @@
 package com.griot.feature.editor
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -28,7 +27,7 @@ internal fun EditorMenuSheet(
         if (texts.isNotEmpty()) {
             Text(
                 text = stringResource(R.string.editor_ideas),
-                style = MaterialTheme.typography.labelSmall,
+                style = GriotTheme.type.captionStrong,
                 color = GriotTheme.palette.muted,
             )
             texts.forEach { idea ->

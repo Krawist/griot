@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,9 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.theme.GriotRadius
@@ -64,7 +61,7 @@ internal fun EditorTopBar(
         SyncedTextField(
             text = title,
             onTextChange = onTitleChange,
-            style = MaterialTheme.typography.titleLarge,
+            style = GriotTheme.type.songTitle,
             placeholder = stringResource(R.string.editor_title_placeholder),
             modifier = Modifier.weight(1f),
         )
@@ -94,7 +91,7 @@ private fun FontSizeButton(onClick: () -> Unit) {
     ) {
         Text(
             text = stringResource(R.string.editor_font_size_button),
-            style = MaterialTheme.typography.titleMedium.copy(fontSize = 17.sp),
+            style = GriotTheme.type.cardTitle,
             color = palette.ink,
         )
     }
@@ -125,7 +122,7 @@ private fun LanguageChip(language: SongLanguage, detectedLanguage: SongLanguage?
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, fontWeight = FontWeight.SemiBold),
+            style = GriotTheme.type.smallStrong,
             color = palette.ink,
         )
     }

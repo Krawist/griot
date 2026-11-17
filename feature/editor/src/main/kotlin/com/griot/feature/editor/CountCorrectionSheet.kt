@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,12 +41,12 @@ internal fun CountCorrectionSheet(word: String, count: Int, onSave: (Int) -> Uni
     GriotSheet(onDismiss = onDismiss) {
         Text(
             text = stringResource(R.string.editor_count_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = GriotTheme.type.sheetTitle,
             color = palette.ink,
         )
         Text(
             text = stringResource(R.string.editor_count_body, word),
-            style = MaterialTheme.typography.bodyMedium,
+            style = GriotTheme.type.body,
             color = palette.ink2,
         )
         Row(
@@ -68,7 +67,7 @@ internal fun CountCorrectionSheet(word: String, count: Int, onSave: (Int) -> Uni
             RollingNumber(value = syllables, modifier = Modifier.widthIn(min = CountWidth)) {
                 Text(
                     text = it.toString(),
-                    style = MaterialTheme.typography.headlineLarge,
+                    style = GriotTheme.type.screenTitle,
                     color = palette.ink,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.widthIn(min = CountWidth),

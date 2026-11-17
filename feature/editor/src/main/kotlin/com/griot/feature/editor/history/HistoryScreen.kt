@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,12 +41,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.data.model.VersionSource
@@ -57,7 +53,6 @@ import com.griot.core.design.format.text
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
-import com.griot.core.design.theme.LyricTextStyle
 import com.griot.feature.editor.R
 import com.griot.feature.editor.text
 import java.time.format.DateTimeFormatter
@@ -95,10 +90,10 @@ internal fun HistoryScreen(
             Column {
                 Text(
                     text = stringResource(R.string.history_title),
-                    style = MaterialTheme.typography.titleLarge,
+                    style = GriotTheme.type.sheetTitle,
                     color = palette.ink,
                 )
-                Text(text = subtitle(uiState), style = MaterialTheme.typography.bodySmall, color = palette.muted)
+                Text(text = subtitle(uiState), style = GriotTheme.type.description, color = palette.muted)
             }
         }
         if (verseId != null) {
@@ -164,9 +159,7 @@ private fun ScopeTabs(selected: HistoryScope, onSelect: (HistoryScope) -> Unit) 
                 ) {
                     Text(
                         text = stringResource(label),
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
-                        ),
+                        style = GriotTheme.type.chip(selected = active),
                         color = if (active) palette.ink else palette.ink2,
                     )
                 }
@@ -220,7 +213,7 @@ private fun Header(entry: HistoryEntry) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(GriotSpacing.s)) {
         Text(
             text = whenText.replaceFirstChar { it.uppercase() },
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+            style = GriotTheme.type.smallMedium,
             color = palette.muted,
         )
         Badge(source = entry.source, current = entry.versionId == null)
@@ -241,7 +234,7 @@ private fun Badge(source: VersionSource?, current: Boolean) {
     val ai = source == VersionSource.AI_SUGGESTION
     Text(
         text = stringResource(label),
-        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, letterSpacing = 0.em),
+        style = GriotTheme.type.tag,
         color = when {
             current -> palette.accentText
             ai -> palette.aiText
@@ -267,7 +260,7 @@ private fun Line(line: HistoryLine, old: Boolean) {
     if (label != null) {
         Text(
             text = label.text().uppercase(),
-            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.04.em),
+            style = GriotTheme.type.sectionLabel,
             color = palette.accentText,
         )
         return
@@ -288,7 +281,7 @@ private fun Line(line: HistoryLine, old: Boolean) {
                 }
             }
         },
-        style = LyricTextStyle.copy(fontSize = 17.sp),
+        style = GriotTheme.type.quote,
         color = if (old) palette.ink2 else palette.ink,
     )
 }
@@ -306,7 +299,7 @@ private fun Actions(entry: HistoryEntry, onRestore: () -> Unit) {
         TextButton(onClick = onRestore, colors = ButtonDefaults.textButtonColors(contentColor = palette.accentText)) {
             Text(
                 text = stringResource(R.string.history_restore),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                style = GriotTheme.type.smallStrong,
             )
         }
         TextButton(
@@ -315,7 +308,7 @@ private fun Actions(entry: HistoryEntry, onRestore: () -> Unit) {
         ) {
             Text(
                 text = stringResource(R.string.history_copy),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                style = GriotTheme.type.smallStrong,
             )
         }
     }

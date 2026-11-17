@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,12 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.data.model.TrashedSong
@@ -76,19 +73,19 @@ private fun TrashContent(uiState: TrashUiState, onBack: () -> Unit, onRestore: (
         }
         Text(
             text = stringResource(R.string.trash_title),
-            style = MaterialTheme.typography.headlineLarge,
+            style = GriotTheme.type.screenTitle,
             color = palette.ink,
         )
         Text(
             text = stringResource(R.string.trash_body),
-            style = MaterialTheme.typography.bodyMedium,
+            style = GriotTheme.type.body,
             color = palette.ink2,
         )
         when {
             uiState.loading -> Unit
             uiState.items.isEmpty() -> Text(
                 text = stringResource(R.string.trash_empty),
-                style = MaterialTheme.typography.bodyMedium,
+                style = GriotTheme.type.body,
                 color = palette.muted,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth().padding(top = GriotSpacing.xxl * 2),
@@ -121,7 +118,7 @@ private fun TrashRow(item: TrashItem, onRestore: () -> Unit, modifier: Modifier 
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(GriotSpacing.xs)) {
                 Text(
                     text = item.song.title.ifBlank { stringResource(R.string.library_untitled) },
-                    style = MaterialTheme.typography.titleMedium,
+                    style = GriotTheme.type.cardTitle,
                     color = palette.ink,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -132,7 +129,7 @@ private fun TrashRow(item: TrashItem, onRestore: () -> Unit, modifier: Modifier 
                         item.deleted.text(),
                         pluralStringResource(R.plurals.trash_days_left, item.daysLeft.toInt(), item.daysLeft),
                     ),
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    style = GriotTheme.type.caption,
                     color = palette.muted,
                 )
             }
@@ -147,7 +144,7 @@ private fun TrashRow(item: TrashItem, onRestore: () -> Unit, modifier: Modifier 
                 )
                 Text(
                     text = stringResource(R.string.trash_restore),
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    style = GriotTheme.type.bodyStrong,
                     modifier = Modifier.padding(start = GriotSpacing.xs),
                 )
             }

@@ -1,6 +1,5 @@
 package com.griot.feature.editor
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -27,7 +26,7 @@ internal fun AddSectionSheet(onAdd: (SectionKind) -> Unit, onDismiss: () -> Unit
     GriotSheet(onDismiss = onDismiss) {
         Text(
             text = stringResource(R.string.editor_add_section),
-            style = MaterialTheme.typography.titleMedium,
+            style = GriotTheme.type.sheetTitle,
             color = GriotTheme.palette.ink,
         )
         Kinds.forEach { kind ->

@@ -1,6 +1,5 @@
 package com.griot.feature.editor
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -17,7 +16,7 @@ internal fun LanguageSheet(language: SongLanguage, onSelect: (SongLanguage) -> U
     GriotSheet(onDismiss = onDismiss) {
         Text(
             text = stringResource(R.string.editor_language_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = GriotTheme.type.sheetTitle,
             color = palette.ink,
         )
         listOf(
@@ -35,7 +34,7 @@ internal fun LanguageSheet(language: SongLanguage, onSelect: (SongLanguage) -> U
         }
         Text(
             text = stringResource(R.string.editor_language_automatic_hint),
-            style = MaterialTheme.typography.bodySmall,
+            style = GriotTheme.type.description,
             color = palette.muted,
         )
     }

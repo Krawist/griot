@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
@@ -43,7 +41,7 @@ internal fun ConflictNotice(count: Int, onShow: () -> Unit, onDismiss: () -> Uni
     ) {
         Text(
             text = pluralStringResource(R.plurals.editor_conflicts, count, count),
-            style = MaterialTheme.typography.bodySmall,
+            style = GriotTheme.type.description,
             color = palette.syncText,
             modifier = Modifier.weight(1f).padding(vertical = GriotSpacing.m),
         )
@@ -64,7 +62,7 @@ private fun NoticeButton(text: String, onClick: () -> Unit) {
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+            style = GriotTheme.type.smallStrong,
             color = GriotTheme.palette.syncText,
         )
     }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,14 +29,13 @@ import com.griot.core.design.theme.GriotPalette
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
-import com.griot.core.design.theme.LyricTextStyle
 
 // Catalogue of the design tokens and components, in light and dark mode. Preview only: token names are not user text.
 
 @Composable
 private fun CatalogSection(title: String, content: @Composable () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(GriotSpacing.s)) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium)
+        Text(text = title, style = GriotTheme.type.cardTitle)
         content()
     }
 }
@@ -64,7 +62,7 @@ private fun Swatch(name: String, color: Color) {
                 .border(1.dp, GriotTheme.palette.line, RoundedCornerShape(GriotRadius.row))
                 .background(color, RoundedCornerShape(GriotRadius.row)),
         )
-        Text(text = name, style = MaterialTheme.typography.bodyMedium)
+        Text(text = name, style = GriotTheme.type.body)
     }
 }
 
@@ -135,7 +133,7 @@ private fun RhymeCatalogPreview() {
                     ) {
                         Text(
                             text = ('A' + index).toString(),
-                            style = MaterialTheme.typography.labelSmall,
+                            style = GriotTheme.type.captionStrong,
                             color = rhyme.letter,
                             modifier = Modifier.width(GriotSpacing.xl),
                         )
@@ -146,7 +144,7 @@ private fun RhymeCatalogPreview() {
                                     SpanStyle(background = rhyme.highlight, textDecoration = TextDecoration.Underline),
                                 ) { append("ille") }
                             },
-                            style = LyricTextStyle,
+                            style = GriotTheme.type.lyricsDefault,
                             color = GriotTheme.palette.ink,
                         )
                         Box(Modifier.size(width = 24.dp, height = 2.dp).background(rhyme.underline))
@@ -162,22 +160,40 @@ private fun RhymeCatalogPreview() {
 @Composable
 private fun TypographyCatalogPreview() {
     GriotTheme {
-        val typography = MaterialTheme.typography
+        val type = GriotTheme.type
         CatalogSurface {
             CatalogSection(title = "Typography") {
                 listOf(
-                    "displaySmall" to typography.displaySmall,
-                    "headlineLarge" to typography.headlineLarge,
-                    "headlineMedium" to typography.headlineMedium,
-                    "titleLarge" to typography.titleLarge,
-                    "titleMedium" to typography.titleMedium,
-                    "bodyLarge" to typography.bodyLarge,
-                    "bodyMedium" to typography.bodyMedium,
-                    "bodySmall" to typography.bodySmall,
-                    "labelLarge" to typography.labelLarge,
-                    "labelMedium" to typography.labelMedium,
-                    "labelSmall" to typography.labelSmall,
-                    "lyric" to LyricTextStyle,
+                    "display" to type.display,
+                    "brand" to type.brand,
+                    "wordmark" to type.wordmark,
+                    "screenTitle" to type.screenTitle,
+                    "pageTitle" to type.pageTitle,
+                    "sheetTitle" to type.sheetTitle,
+                    "songTitle" to type.songTitle,
+                    "cardTitle" to type.cardTitle,
+                    "code" to type.code,
+                    "lyricsDefault" to type.lyricsDefault,
+                    "verseLarge" to type.verseLarge,
+                    "word" to type.word,
+                    "quote" to type.quote,
+                    "button" to type.button,
+                    "field" to type.field,
+                    "heading" to type.heading,
+                    "bodyLarge" to type.bodyLarge,
+                    "body" to type.body,
+                    "bodyStrong" to type.bodyStrong,
+                    "textButton" to type.textButton,
+                    "description" to type.description,
+                    "label" to type.label,
+                    "small" to type.small,
+                    "smallStrong" to type.smallStrong,
+                    "smallMedium" to type.smallMedium,
+                    "caption" to type.caption,
+                    "captionStrong" to type.captionStrong,
+                    "sectionLabel" to type.sectionLabel,
+                    "tag" to type.tag,
+                    "counter" to type.counter,
                 ).forEach { (name, style) ->
                     Text(text = "$name · Écris tes chansons", style = style, color = GriotTheme.palette.ink)
                 }
@@ -219,7 +235,7 @@ private fun ShapeAndSpacingCatalogPreview() {
                             .border(1.dp, GriotTheme.palette.line, RoundedCornerShape(radius))
                             .background(GriotTheme.palette.glass, RoundedCornerShape(radius)),
                         contentAlignment = Alignment.Center,
-                    ) { Text(text = "$name $radius", style = MaterialTheme.typography.labelMedium) }
+                    ) { Text(text = "$name $radius", style = GriotTheme.type.label) }
                 }
             }
             CatalogSection(title = "Spacing") {
@@ -229,7 +245,7 @@ private fun ShapeAndSpacingCatalogPreview() {
                         horizontalArrangement = Arrangement.spacedBy(GriotSpacing.m),
                     ) {
                         Box(Modifier.size(width = spacing, height = 16.dp).background(GriotTheme.palette.accent))
-                        Text(text = "$name $spacing", style = MaterialTheme.typography.bodySmall)
+                        Text(text = "$name $spacing", style = GriotTheme.type.description)
                     }
                 }
             }

@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,7 +32,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.BackdropShape
 import com.griot.core.design.component.backdrop
@@ -106,9 +104,9 @@ internal fun OnboardingStep(
         Header(step = step, onBack = onBack)
         Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             Spacer(Modifier.height(TitleTop))
-            Text(text = title, style = MaterialTheme.typography.headlineLarge, color = palette.ink)
+            Text(text = title, style = GriotTheme.type.screenTitle, color = palette.ink)
             Spacer(Modifier.height(GriotSpacing.m))
-            Text(text = body, style = MaterialTheme.typography.bodyLarge, color = palette.ink2)
+            Text(text = body, style = GriotTheme.type.bodyLarge, color = palette.ink2)
             Spacer(Modifier.height(ContentTop))
             content()
             Spacer(Modifier.height(GriotSpacing.l))
@@ -150,7 +148,7 @@ private fun Header(step: Int?, onBack: () -> Unit) {
         }
         Text(
             text = stringResource(R.string.onboarding_progress, step, ONBOARDING_STEPS),
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
+            style = GriotTheme.type.small,
             color = palette.muted,
             textAlign = TextAlign.End,
             modifier = Modifier.widthIn(min = GriotSpacing.xxl),

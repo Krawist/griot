@@ -17,7 +17,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,10 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.data.model.AppLanguage
@@ -135,15 +132,15 @@ private fun LanguageOption(code: String, name: String, hint: String, selected: B
                 .border(1.dp, palette.line, RoundedCornerShape(GriotRadius.row)),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = code, style = MaterialTheme.typography.titleMedium.copy(fontSize = 15.sp), color = palette.ink)
+            Text(text = code, style = GriotTheme.type.code, color = palette.ink)
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
                 text = name,
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
+                style = GriotTheme.type.button,
                 color = palette.ink,
             )
-            Text(text = hint, style = MaterialTheme.typography.bodySmall, color = palette.muted)
+            Text(text = hint, style = GriotTheme.type.description, color = palette.muted)
         }
         Radio(selected = selected)
     }
@@ -192,7 +189,7 @@ private fun MixedTextsNote(modifier: Modifier = Modifier) {
         )
         Text(
             text = stringResource(R.string.language_mixed),
-            style = MaterialTheme.typography.bodySmall,
+            style = GriotTheme.type.description,
             color = palette.infoText,
         )
     }

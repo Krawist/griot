@@ -26,7 +26,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -201,7 +200,7 @@ private fun IdeasSheets(
 private fun EmptyIdeas() {
     Text(
         text = stringResource(R.string.ideas_empty),
-        style = MaterialTheme.typography.bodyMedium,
+        style = GriotTheme.type.body,
         color = GriotTheme.palette.muted,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth().padding(top = GriotSpacing.xxl),
@@ -217,12 +216,12 @@ private fun Header() {
     ) {
         Text(
             text = stringResource(R.string.ideas_title),
-            style = MaterialTheme.typography.headlineLarge,
+            style = GriotTheme.type.screenTitle,
             color = palette.ink,
         )
         Text(
             text = stringResource(R.string.ideas_subtitle),
-            style = MaterialTheme.typography.bodySmall,
+            style = GriotTheme.type.description,
             color = palette.muted,
         )
     }
@@ -238,7 +237,7 @@ private fun NewIdea(onAdd: (String) -> Unit, onImage: () -> Unit) {
         onAdd(text)
         text = ""
     }
-    val style = MaterialTheme.typography.bodyLarge.copy(color = palette.ink)
+    val style = GriotTheme.type.quote.copy(color = palette.ink)
     Row(
         modifier = Modifier
             .fillMaxWidth()

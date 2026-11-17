@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -52,7 +51,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.data.model.LibrarySong
@@ -269,13 +267,13 @@ private fun Header(authorName: String?) {
         if (authorName != null) {
             Text(
                 text = stringResource(R.string.library_greeting, authorName),
-                style = MaterialTheme.typography.bodySmall,
+                style = GriotTheme.type.description,
                 color = palette.muted,
             )
         }
         Text(
             text = stringResource(R.string.library_title),
-            style = MaterialTheme.typography.headlineLarge,
+            style = GriotTheme.type.screenTitle,
             color = palette.ink,
         )
     }
@@ -286,7 +284,7 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
     val palette = GriotTheme.palette
     val shape = RoundedCornerShape(GriotRadius.field)
     val placeholder = stringResource(R.string.library_search)
-    val textStyle = MaterialTheme.typography.bodyMedium.copy(color = palette.ink)
+    val textStyle = GriotTheme.type.body.copy(color = palette.ink)
     BasicTextField(
         value = query,
         onValueChange = onQueryChange,
@@ -364,13 +362,13 @@ private fun EmptyState(title: String, body: String) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
+            style = GriotTheme.type.cardTitle,
             color = palette.ink,
             textAlign = TextAlign.Center,
         )
         Text(
             text = body,
-            style = MaterialTheme.typography.bodyMedium,
+            style = GriotTheme.type.body,
             color = palette.muted,
             textAlign = TextAlign.Center,
         )
@@ -394,7 +392,7 @@ private fun NewSongButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         Icon(painter = painterResource(DesignR.drawable.ic_add), contentDescription = null, tint = palette.onAccent)
         Text(
             text = stringResource(R.string.library_new_song),
-            style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp),
+            style = GriotTheme.type.button,
             color = palette.onAccent,
         )
     }

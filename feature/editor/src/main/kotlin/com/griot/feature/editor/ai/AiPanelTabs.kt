@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -29,18 +28,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.ai.CheckedSuggestion
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
-import com.griot.core.design.theme.LyricTextStyle
 import com.griot.feature.editor.R
 import com.griot.feature.editor.history.changedWords
 
@@ -77,15 +72,14 @@ internal fun RhymesTab(uiState: AiPanelUiState, onWord: (String) -> Unit) {
             ) {
                 Text(
                     text = rhyme.word,
-                    style = LyricTextStyle.copy(
-                        fontSize = 16.sp,
+                    style = GriotTheme.type.word.copy(
                         textDecoration = if (rhyme.used) TextDecoration.LineThrough else null,
                     ),
                     color = palette.ink,
                 )
                 Text(
                     text = rhyme.syllables.toString(),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = GriotTheme.type.captionStrong,
                     color = palette.muted,
                 )
             }
@@ -135,7 +129,7 @@ internal fun <T> ModelTab(
 @Composable
 internal fun SuggestionCard(suggestion: CheckedSuggestion, verse: String, syllables: Int, onUse: () -> Unit) {
     val palette = GriotTheme.palette
-    val changed = SpanStyle(color = palette.aiText, fontWeight = FontWeight.SemiBold)
+    val changed = GriotTheme.type.emphasis.copy(color = palette.aiText)
     val text = remember(suggestion.text, verse, changed) {
         buildAnnotatedString {
             changedWords(text = suggestion.text, other = verse).forEach { segment ->
@@ -152,10 +146,10 @@ internal fun SuggestionCard(suggestion: CheckedSuggestion, verse: String, syllab
     }
     Card {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(GriotSpacing.xs)) {
-            Text(text = text, style = LyricTextStyle.copy(fontSize = 17.sp), color = palette.ink)
+            Text(text = text, style = GriotTheme.type.quote, color = palette.ink)
             Text(
                 text = stringResource(R.string.ai_suggestion_note, count, rhythm),
-                style = MaterialTheme.typography.bodySmall,
+                style = GriotTheme.type.description,
                 color = if (suggestion.guessed) palette.muted.copy(alpha = USED_ALPHA) else palette.muted,
             )
         }
@@ -170,7 +164,7 @@ internal fun SuggestionCard(suggestion: CheckedSuggestion, verse: String, syllab
         ) {
             Text(
                 text = stringResource(R.string.ai_use),
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                style = GriotTheme.type.smallStrong,
                 color = palette.onInverse,
             )
         }
@@ -183,7 +177,7 @@ internal fun RemarkCard(remark: String) {
     val palette = GriotTheme.palette
     Card(verticalAlignment = Alignment.Top) {
         Box(modifier = Modifier.padding(top = 7.dp).size(8.dp).background(palette.ai, CircleShape))
-        Text(text = remark, style = MaterialTheme.typography.bodyMedium, color = palette.ink2)
+        Text(text = remark, style = GriotTheme.type.body, color = palette.ink2)
     }
 }
 
@@ -210,7 +204,7 @@ private fun Card(
 private fun Note(text: String, small: Boolean = false) {
     Text(
         text = text,
-        style = if (small) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
+        style = if (small) GriotTheme.type.description else GriotTheme.type.body,
         color = GriotTheme.palette.ink2,
     )
 }

@@ -1,6 +1,5 @@
 package com.griot.feature.settings
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -17,7 +16,7 @@ internal fun AppLanguageSheet(language: AppLanguage, onSelect: (AppLanguage) -> 
     GriotSheet(onDismiss = onDismiss) {
         Text(
             text = stringResource(R.string.settings_language),
-            style = MaterialTheme.typography.titleMedium,
+            style = GriotTheme.type.sheetTitle,
             color = palette.ink,
         )
         listOf(AppLanguage.FRENCH, AppLanguage.ENGLISH, AppLanguage.SYSTEM).forEach { option ->
@@ -31,7 +30,7 @@ internal fun AppLanguageSheet(language: AppLanguage, onSelect: (AppLanguage) -> 
         }
         Text(
             text = stringResource(R.string.settings_language_hint),
-            style = MaterialTheme.typography.bodySmall,
+            style = GriotTheme.type.description,
             color = palette.muted,
         )
     }

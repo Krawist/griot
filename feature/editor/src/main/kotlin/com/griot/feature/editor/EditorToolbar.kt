@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,9 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
@@ -132,10 +129,7 @@ private fun ToolbarItem(
         Icon(painter = painterResource(icon), contentDescription = null, tint = content)
         Text(
             text = label,
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 11.sp,
-                fontWeight = if (selected || ai) FontWeight.SemiBold else FontWeight.Medium,
-            ),
+            style = GriotTheme.type.tab(selected = selected || ai),
             color = content,
         )
     }

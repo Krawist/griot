@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.component.GriotButton
 import com.griot.core.design.component.GriotSheet
@@ -29,7 +27,7 @@ internal fun SamsungNotesHelpSheet(onPickFiles: () -> Unit, onDismiss: () -> Uni
     GriotSheet(onDismiss = onDismiss) {
         Text(
             text = stringResource(R.string.import_samsung_help_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = GriotTheme.type.sheetTitle,
             color = palette.ink,
         )
         listOf(
@@ -45,11 +43,11 @@ internal fun SamsungNotesHelpSheet(onPickFiles: () -> Unit, onDismiss: () -> Uni
                 ) {
                     Text(
                         text = (index + 1).toString(),
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                        style = GriotTheme.type.smallStrong,
                         color = palette.accentText,
                     )
                 }
-                Text(text = stringResource(step), style = MaterialTheme.typography.bodyMedium, color = palette.ink2)
+                Text(text = stringResource(step), style = GriotTheme.type.body, color = palette.ink2)
             }
         }
         GriotButton(text = stringResource(R.string.import_pick_files), onClick = onPickFiles)

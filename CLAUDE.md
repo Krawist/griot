@@ -124,8 +124,7 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   `kotlinScriptAdditionalPaths` (the plugin does not see AGP 9's built-in Kotlin). CI workflow ready; the repository
   has no GitHub remote yet.
 - [x] **GRI-02** — Griot theme: palette (light and dark), eight rhyme colours (`RhymeColor`,
-  `GriotTheme.rhymeColor(index)`), Outfit and Inter embedded (OFL, `core/design/licenses/`), type scale and
-  `LyricTextStyle`, radii and spacing, contrast test, preview catalogue (`catalog/ThemeCatalog.kt`).
+  `GriotTheme.rhymeColor(index)`), Outfit and Inter embedded (OFL, `core/design/licenses/`), type scale (now `GriotType`, GRI-47), radii and spacing, contrast test, preview catalogue (`catalog/ThemeCatalog.kt`).
 - [x] **GRI-03** — logo masters in `core/design/logo/` (SVG), `logo_quill` (light and night), silhouette and
   notification icon; `LogoTile` and the `backdrop` modifier (blurred shapes as radial gradients) in `:core:design`;
   system splash (`splash_icon`, one vector per mode) handed off to `LaunchScreen` (2 s) at the same place; frosted
@@ -286,6 +285,10 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   and « N syllabes · autant que le vers / N de plus / N de moins · garde la rime », all read by Griot, not the model.
 - [x] **GRI-37** — `keepRemarks` drops a remark quoting three words or more that no verse of the section has (a
   rewritten verse); the critique prompt gives the section's counts from the engine. The online model (GRI-33) is next.
+- [x] **GRI-47** — `GriotType` (`GriotTheme.type`): one text style per role of the mockups (screen, sheet, song and
+  card titles, lyrics scaled by `lyrics(size)`, margins by `rhymeLetter`/`syllableCount`, body, captions, section
+  labels, `chip(selected)`, `tab(selected)`, `emphasis`…); Material's slots are filled from it. No screen sets a
+  size or a weight; `LyricTextStyle` is gone.
 - [ ] **Next tickets:** GRI-27 (Drive: needs a Google Cloud OAuth client), then GRI-10 and GRI-30; GRI-33 (online model:
   need setup).
 

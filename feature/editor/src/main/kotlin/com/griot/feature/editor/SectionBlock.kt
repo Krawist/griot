@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,17 +24,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import com.griot.core.data.model.SongVerse
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.RollingNumber
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
-import com.griot.core.design.theme.LyricTextStyle
 import com.griot.core.phonetics.rhymeLetter
 
 private val MarginWidth = 24.dp
@@ -102,13 +97,13 @@ private fun SectionHeader(
     ) {
         Text(
             text = label.uppercase(),
-            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.04.em),
+            style = GriotTheme.type.sectionLabel,
             color = palette.accentText,
         )
         val tag = if (section.section.repeatOf != null) stringResource(R.string.editor_repeat_tag) else null
         val scheme = section.sounds.scheme.takeIf { showRhymes && it.isNotEmpty() }
         listOfNotNull(tag, scheme).forEach {
-            Text(text = it, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = palette.muted)
+            Text(text = it, style = GriotTheme.type.caption, color = palette.muted)
         }
         Box(Modifier.weight(1f).height(1.dp).background(palette.line))
         IconButton(onClick = onActions, modifier = Modifier.size(GriotSpacing.touchTarget)) {
@@ -132,21 +127,19 @@ private fun VerseRow(
     input: VerseInput,
     modifier: Modifier = Modifier,
 ) {
-    // The margins scale with the lyrics, so the letters and counts stay aligned with them.
-    val marginStyle = MaterialTheme.typography.labelSmall.copy(fontSize = (fontSize * MARGIN_RATIO).sp)
     val marginTop = (fontSize * TOP_RATIO).dp
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
         VerseLetter(
             sound = sound,
             showRhymes = showRhymes,
-            style = marginStyle,
+            style = GriotTheme.type.rhymeLetter(lyricsSize = fontSize),
             modifier = Modifier.width(MarginWidth).padding(top = marginTop),
         )
         SyncedTextField(
             text = verse.text,
             onTextChange = { input.onChange(verse.id, it) },
             // In sp: the system font scale still applies on top of the size chosen.
-            style = LyricTextStyle.copy(fontSize = fontSize.sp),
+            style = GriotTheme.type.lyrics(size = fontSize),
             placeholder = stringResource(R.string.editor_verse_placeholder),
             modifier = Modifier.weight(1f).padding(vertical = GriotSpacing.xs),
             onLines = { lines, cursor -> input.onLines(verse.id, lines, cursor) },
@@ -160,7 +153,7 @@ private fun VerseRow(
         VerseCount(
             sound = sound.takeIf { verse.text.isNotBlank() },
             onLongPress = { input.onCountLongPress(verse.id) },
-            style = marginStyle,
+            style = GriotTheme.type.syllableCount(lyricsSize = fontSize),
             modifier = Modifier.width(MarginWidth).padding(top = marginTop),
         )
     }
@@ -215,7 +208,7 @@ private fun VerseCount(sound: VerseSound?, onLongPress: () -> Unit, style: TextS
             RollingNumber(value = sound.count.syllables) { syllables ->
                 Text(
                     text = syllables.toString(),
-                    style = style.copy(fontWeight = FontWeight.Medium),
+                    style = style,
                     color = if (sound.count.guessedWords.isNotEmpty()) {
                         palette.muted.copy(
                             alpha = GUESSED_ALPHA,
@@ -229,6 +222,5 @@ private fun VerseCount(sound: VerseSound?, onLongPress: () -> Unit, style: TextS
     }
 }
 
-// The margins' text is two thirds of the lyrics' size, and starts lower, on the lyrics' first line.
-private const val MARGIN_RATIO = 0.66f
+// The margins' text starts lower, on the lyrics' first line.
 private const val TOP_RATIO = 0.55f

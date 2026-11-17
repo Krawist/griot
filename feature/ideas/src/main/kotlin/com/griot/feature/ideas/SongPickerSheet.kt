@@ -3,7 +3,6 @@ package com.griot.feature.ideas
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,7 +27,7 @@ internal fun SongPickerSheet(
     GriotSheet(onDismiss = onDismiss) {
         Text(
             text = stringResource(R.string.ideas_pick_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = GriotTheme.type.sheetTitle,
             color = GriotTheme.palette.ink,
         )
         SheetAction(

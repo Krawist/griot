@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,9 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
@@ -64,10 +61,10 @@ internal fun ImportOption(
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
+                    style = GriotTheme.type.button,
                     color = palette.ink,
                 )
-                Text(text = hint, style = MaterialTheme.typography.bodySmall, color = palette.muted)
+                Text(text = hint, style = GriotTheme.type.description, color = palette.muted)
             }
         }
     }

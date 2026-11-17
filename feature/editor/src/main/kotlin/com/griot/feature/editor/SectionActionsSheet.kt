@@ -3,7 +3,6 @@ package com.griot.feature.editor
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,7 +51,7 @@ internal fun SectionActionsSheet(
             Column(verticalArrangement = Arrangement.spacedBy(GriotSpacing.s)) {
                 when (current) {
                     SectionSheetStep.ACTIONS -> {
-                        Text(text = label, style = MaterialTheme.typography.titleMedium, color = palette.ink)
+                        Text(text = label, style = GriotTheme.type.sheetTitle, color = palette.ink)
                         Actions(section = section, onRename = {
                             step = SectionSheetStep.RENAME
                         }, onRepeat = onRepeat, onMove = onMove, onMerge = onMerge) {
@@ -117,7 +116,7 @@ private fun DeleteConfirmation(section: EditorSection, label: String, onDelete: 
     val verses = section.section.verses.count { it.text.isNotBlank() }
     Text(
         text = stringResource(R.string.editor_delete_title, label),
-        style = MaterialTheme.typography.titleMedium,
+        style = GriotTheme.type.sheetTitle,
         color = palette.ink,
     )
     // Nothing to warn about for an empty section.
@@ -126,6 +125,6 @@ private fun DeleteConfirmation(section: EditorSection, label: String, onDelete: 
         verses > 0 -> pluralStringResource(R.plurals.editor_delete_verses, verses, verses)
         else -> null
     }
-    if (warning != null) Text(text = warning, style = MaterialTheme.typography.bodyMedium, color = palette.ink2)
+    if (warning != null) Text(text = warning, style = GriotTheme.type.body, color = palette.ink2)
     GriotButton(text = stringResource(R.string.editor_delete), onClick = onDelete)
 }

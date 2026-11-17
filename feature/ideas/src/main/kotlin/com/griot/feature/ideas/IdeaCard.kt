@@ -9,23 +9,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.format.text
 import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
-import com.griot.core.design.theme.LyricTextStyle
 
 // The sun yellow behind the « Libre » chip of a free idea.
 private const val FREE_ALPHA = 0.22f
@@ -50,7 +46,7 @@ internal fun IdeaCard(item: IdeaItem, onAction: () -> Unit, onLongClick: () -> U
         ) {
             idea.imagePath?.let { IdeaImage(path = it) }
             if (idea.text.isNotBlank()) {
-                Text(text = idea.text, style = LyricTextStyle.copy(fontSize = 17.sp), color = palette.ink)
+                Text(text = idea.text, style = GriotTheme.type.quote, color = palette.ink)
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -63,7 +59,7 @@ internal fun IdeaCard(item: IdeaItem, onAction: () -> Unit, onLongClick: () -> U
                 }
                 Text(
                     text = tag,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = GriotTheme.type.captionStrong,
                     color = if (linked) palette.accentText else palette.ink2,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -77,7 +73,7 @@ internal fun IdeaCard(item: IdeaItem, onAction: () -> Unit, onLongClick: () -> U
                 )
                 Text(
                     text = item.saved.text(),
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    style = GriotTheme.type.caption,
                     color = palette.muted,
                     modifier = Modifier.weight(1f),
                 )
@@ -87,7 +83,7 @@ internal fun IdeaCard(item: IdeaItem, onAction: () -> Unit, onLongClick: () -> U
                 ) {
                     Text(
                         text = stringResource(if (linked) R.string.ideas_open else R.string.ideas_link),
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                        style = GriotTheme.type.smallStrong,
                     )
                 }
             }

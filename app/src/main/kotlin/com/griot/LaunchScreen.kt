@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,8 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.component.BackdropShape
 import com.griot.core.design.component.LogoTile
 import com.griot.core.design.component.backdrop
@@ -87,14 +84,14 @@ internal fun LaunchScreen(modifier: Modifier = Modifier) {
             Box(modifier = Modifier.height(WordmarkHeight), contentAlignment = Alignment.Center) {
                 Text(
                     text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.headlineLarge.copy(fontSize = 40.sp, letterSpacing = (-0.02).em),
+                    style = GriotTheme.type.brand,
                     color = palette.ink,
                 )
             }
         }
         Text(
             text = stringResource(R.string.launch_tagline),
-            style = MaterialTheme.typography.bodySmall,
+            style = GriotTheme.type.description,
             color = palette.muted,
             textAlign = TextAlign.Center,
             modifier = Modifier

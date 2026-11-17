@@ -71,7 +71,7 @@ fun GriotTheme(
         LocalRhymeColors provides rhymeColors,
         LocalGlassBlur provides glassBlur,
     ) {
-        MaterialTheme(colorScheme = colorScheme, typography = GriotTypography, content = content)
+        MaterialTheme(colorScheme = colorScheme, typography = GriotMaterialTypography, content = content)
     }
 }
 
@@ -87,6 +87,10 @@ object GriotTheme {
         @ReadOnlyComposable
         get() = LocalRhymeColors.current
 
+    /** The type scale of the mockups: every text reads its style here. */
+    val type: GriotType
+        get() = GriotTypeScale
+
     /** The durations, easings and transitions of every animation. */
     val motion: GriotMotion
         @Composable
@@ -98,6 +102,10 @@ object GriotTheme {
     @ReadOnlyComposable
     fun rhymeColor(index: Int): RhymeColor = rhymeColors[index.mod(rhymeColors.size)]
 }
+
+private val GriotTypeScale = GriotType()
+
+private val GriotMaterialTypography = GriotTypeScale.material()
 
 internal val LocalRhymeColors = staticCompositionLocalOf { LightRhymeColors }
 

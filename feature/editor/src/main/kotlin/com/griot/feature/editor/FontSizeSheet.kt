@@ -3,7 +3,6 @@ package com.griot.feature.editor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -13,10 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.component.GriotSheet
 import com.griot.core.design.theme.GriotTheme
-import com.griot.core.design.theme.LyricTextStyle
 import kotlin.math.roundToInt
 
 /** The « Aa » menu: a slider for the size of the lyrics, from 14 to 28 sp, with a verse shown at that size. */
@@ -26,22 +23,22 @@ internal fun FontSizeSheet(size: Int, onSizeChange: (Int) -> Unit, onDismiss: ()
     val description = stringResource(R.string.editor_font_size)
     GriotSheet(onDismiss = onDismiss) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = description, style = MaterialTheme.typography.titleMedium, color = palette.ink)
+            Text(text = description, style = GriotTheme.type.sheetTitle, color = palette.ink)
             Text(
                 text = stringResource(R.string.editor_font_size_value, size),
-                style = MaterialTheme.typography.bodyMedium,
+                style = GriotTheme.type.body,
                 color = palette.muted,
             )
         }
         Text(
             text = stringResource(R.string.editor_font_size_sample),
-            style = LyricTextStyle.copy(fontSize = size.sp),
+            style = GriotTheme.type.lyrics(size = size),
             color = palette.ink,
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = stringResource(R.string.editor_font_size_letter),
-                style = LyricTextStyle.copy(fontSize = EditorViewModel.MIN_FONT_SIZE.sp),
+                style = GriotTheme.type.lyrics(size = EditorViewModel.MIN_FONT_SIZE),
                 color = palette.muted,
             )
             Slider(
@@ -60,7 +57,7 @@ internal fun FontSizeSheet(size: Int, onSizeChange: (Int) -> Unit, onDismiss: ()
             )
             Text(
                 text = stringResource(R.string.editor_font_size_letter),
-                style = LyricTextStyle.copy(fontSize = EditorViewModel.MAX_FONT_SIZE.sp),
+                style = GriotTheme.type.lyrics(size = EditorViewModel.MAX_FONT_SIZE),
                 color = palette.muted,
             )
         }

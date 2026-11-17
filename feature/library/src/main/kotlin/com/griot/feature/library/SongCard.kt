@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,7 +20,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.data.model.LibrarySong
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.model.SongStatus
@@ -53,7 +51,7 @@ internal fun SongCard(item: LibraryItem, onClick: () -> Unit, onLongClick: () ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = song.title.ifBlank { stringResource(R.string.library_untitled) },
-                    style = MaterialTheme.typography.titleMedium,
+                    style = GriotTheme.type.cardTitle,
                     color = palette.ink,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -63,7 +61,7 @@ internal fun SongCard(item: LibraryItem, onClick: () -> Unit, onLongClick: () ->
             }
             Text(
                 text = song.firstVerse ?: stringResource(R.string.library_no_text),
-                style = MaterialTheme.typography.bodySmall,
+                style = GriotTheme.type.small,
                 color = if (song.firstVerse == null) palette.muted else palette.ink2,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -72,7 +70,7 @@ internal fun SongCard(item: LibraryItem, onClick: () -> Unit, onLongClick: () ->
                 RhymeDots(ranks = item.rhymes)
                 Text(
                     text = song.meta(scheme = rhymeScheme(item.rhymes), updated = item.updated.text()),
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    style = GriotTheme.type.caption,
                     color = palette.muted,
                 )
             }
@@ -86,7 +84,7 @@ private fun LanguageBadge(language: SongLanguage) {
     val shape = RoundedCornerShape(GriotRadius.badge)
     Text(
         text = stringResource(language.badgeRes()),
-        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+        style = GriotTheme.type.tag,
         color = palette.ink2,
         modifier = Modifier.border(1.dp, palette.line, shape).padding(horizontal = 7.dp, vertical = 3.dp),
     )

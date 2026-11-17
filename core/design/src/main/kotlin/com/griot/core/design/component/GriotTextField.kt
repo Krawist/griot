@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,10 +30,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
@@ -65,7 +62,7 @@ fun GriotTextField(
     val palette = GriotTheme.palette
     val motion = GriotTheme.motion
     val shape = RoundedCornerShape(GriotRadius.field)
-    val textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, color = palette.ink)
+    val textStyle = GriotTheme.type.field.copy(color = palette.ink)
     // The cursor goes at the end of a value set from outside, such as a title to rename.
     var field by remember { mutableStateOf(TextFieldValue(value, TextRange(value.length))) }
     if (field.text != value) field = TextFieldValue(value, TextRange(value.length))
@@ -80,7 +77,7 @@ fun GriotTextField(
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(GriotSpacing.s)) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp, fontWeight = FontWeight.Medium),
+            style = GriotTheme.type.label,
             color = palette.ink,
         )
         BasicTextField(
@@ -116,7 +113,7 @@ fun GriotTextField(
         )
         // The last error stays drawn while it leaves.
         AnimatedPresence(value = error, enter = motion.itemEnter(), exit = motion.itemExit()) { message ->
-            Text(text = message, style = MaterialTheme.typography.bodySmall, color = palette.accentText)
+            Text(text = message, style = GriotTheme.type.description, color = palette.accentText)
         }
     }
 }

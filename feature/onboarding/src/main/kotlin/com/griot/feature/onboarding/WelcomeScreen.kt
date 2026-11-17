@@ -14,19 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.component.BackdropShape
 import com.griot.core.design.component.GriotButton
 import com.griot.core.design.component.LogoTile
@@ -110,20 +106,20 @@ private fun Promise() {
         Spacer(Modifier.height(WordmarkGap))
         Text(
             text = stringResource(R.string.welcome_wordmark),
-            style = MaterialTheme.typography.titleLarge.copy(fontSize = 22.sp, letterSpacing = (-0.02).em),
+            style = GriotTheme.type.wordmark,
             color = palette.ink,
         )
         Spacer(Modifier.height(WordmarkGap + HeadlineGap))
         Text(
             text = stringResource(R.string.welcome_headline),
-            style = MaterialTheme.typography.displaySmall,
+            style = GriotTheme.type.display,
             color = palette.ink,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(WordmarkGap))
         Text(
             text = stringResource(R.string.welcome_body),
-            style = MaterialTheme.typography.bodyLarge,
+            style = GriotTheme.type.bodyLarge,
             color = palette.ink2,
             textAlign = TextAlign.Center,
         )
@@ -142,7 +138,7 @@ private fun Actions(onStart: () -> Unit, onRestore: (() -> Unit)?) {
             ) {
                 Text(
                     text = stringResource(R.string.welcome_restore),
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                    style = GriotTheme.type.textButton,
                     color = palette.accentText,
                 )
             }

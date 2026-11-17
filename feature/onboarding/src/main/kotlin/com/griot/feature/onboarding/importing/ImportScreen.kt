@@ -6,7 +6,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -95,7 +94,7 @@ private fun ImportContent(
             if (step != null) {
                 Text(
                     text = stringResource(R.string.import_later),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = GriotTheme.type.description,
                     color = palette.muted,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
@@ -148,13 +147,13 @@ private fun ImportSummary(result: ImportResult) {
                 pluralStringResource(R.plurals.import_songs, result.songs, result.songs),
                 pluralStringResource(R.plurals.import_sections, result.sections, result.sections),
             ),
-            style = MaterialTheme.typography.bodyMedium,
+            style = GriotTheme.type.body,
             color = palette.syncText,
         )
         result.failed.forEach { name ->
             Text(
                 text = stringResource(R.string.import_failed, name),
-                style = MaterialTheme.typography.bodySmall,
+                style = GriotTheme.type.description,
                 color = palette.accentText,
             )
         }

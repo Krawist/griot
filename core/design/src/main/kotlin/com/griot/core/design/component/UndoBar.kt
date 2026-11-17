@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -15,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.R
@@ -57,7 +55,7 @@ fun UndoBar(message: String, onUndo: () -> Unit, onDismissed: () -> Unit, modifi
         ) {
             Text(
                 text = message,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                style = GriotTheme.type.textButton,
                 color = palette.ink,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -69,7 +67,7 @@ fun UndoBar(message: String, onUndo: () -> Unit, onDismissed: () -> Unit, modifi
             ) {
                 Text(
                     text = stringResource(R.string.undo),
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    style = GriotTheme.type.bodyStrong,
                 )
             }
         }

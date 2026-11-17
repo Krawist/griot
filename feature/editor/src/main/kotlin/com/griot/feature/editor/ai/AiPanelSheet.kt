@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,9 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.ai.AiLocation
@@ -40,7 +37,6 @@ import com.griot.core.design.component.GriotSheet
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
-import com.griot.core.design.theme.LyricTextStyle
 import com.griot.feature.editor.R
 import com.griot.feature.editor.text
 
@@ -119,17 +115,13 @@ private fun PanelHeader(uiState: AiPanelUiState, onClose: () -> Unit) {
                 val count = pluralStringResource(R.plurals.ai_syllables, uiState.syllables, uiState.syllables)
                 Text(
                     text = "$place · $count".uppercase(),
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 0.4.sp,
-                    ),
+                    style = GriotTheme.type.sectionLabel,
                     color = palette.aiText,
                 )
             }
             Text(
                 text = stringResource(R.string.ai_quoted, uiState.verse),
-                style = LyricTextStyle.copy(fontSize = 19.sp),
+                style = GriotTheme.type.verseLarge,
                 color = palette.ink,
             )
         }
@@ -168,9 +160,7 @@ private fun PanelTabs(selected: AiTab, onSelect: (AiTab) -> Unit) {
             ) {
                 Text(
                     text = stringResource(tab.labelRes()),
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = if (on) FontWeight.SemiBold else FontWeight.Medium,
-                    ),
+                    style = GriotTheme.type.chip(selected = on),
                     color = if (on) palette.onAi else palette.ink2,
                 )
             }
@@ -198,7 +188,7 @@ private fun PanelFooter(tab: AiTab, location: AiLocation?, preparing: Boolean, o
         )
         Text(
             text = stringResource(source),
-            style = MaterialTheme.typography.bodySmall,
+            style = GriotTheme.type.description,
             color = palette.muted,
             modifier = Modifier.weight(1f),
         )
@@ -221,7 +211,7 @@ internal fun TextAction(text: String, onClick: () -> Unit) {
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+            style = GriotTheme.type.smallStrong,
             color = GriotTheme.palette.aiText,
         )
     }

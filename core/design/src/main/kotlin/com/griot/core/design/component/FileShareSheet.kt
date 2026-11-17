@@ -3,7 +3,6 @@ package com.griot.core.design.component
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -33,12 +32,12 @@ fun FileShareSheet(name: String, path: String, mimeType: String, onSave: (String
     GriotSheet(onDismiss = onDismiss) {
         Text(
             text = stringResource(R.string.export_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = GriotTheme.type.sheetTitle,
             color = palette.ink,
         )
         Text(
             text = name,
-            style = MaterialTheme.typography.bodySmall,
+            style = GriotTheme.type.description,
             color = palette.muted,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

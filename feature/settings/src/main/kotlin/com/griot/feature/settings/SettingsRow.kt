@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -28,10 +27,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
@@ -84,12 +81,12 @@ internal fun SettingsRow(
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp, fontWeight = FontWeight.Medium),
+                style = GriotTheme.type.textButton,
                 color = palette.ink,
             )
             Text(
                 text = sub,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                style = GriotTheme.type.caption,
                 color = palette.muted,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -120,7 +117,7 @@ private fun IconBox(letter: String, @DrawableRes icon: Int?, tone: SettingsTone)
         } else {
             Text(
                 text = letter,
-                style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                style = GriotTheme.type.label,
                 color = foreground,
             )
         }
@@ -143,7 +140,7 @@ internal fun SettingsValue(value: String, chevron: Boolean = true) {
     val palette = GriotTheme.palette
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(GriotSpacing.xs)) {
         if (value.isNotEmpty()) {
-            Text(text = value, style = MaterialTheme.typography.bodyMedium, color = palette.muted, maxLines = 1)
+            Text(text = value, style = GriotTheme.type.body, color = palette.muted, maxLines = 1)
         }
         if (chevron) {
             Icon(
@@ -193,7 +190,7 @@ internal fun SettingsButton(label: String, tone: SettingsTone, enabled: Boolean,
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp, fontWeight = FontWeight.SemiBold),
+            style = GriotTheme.type.smallStrong,
             color = foreground,
         )
     }
