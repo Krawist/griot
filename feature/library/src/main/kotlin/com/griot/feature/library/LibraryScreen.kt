@@ -327,6 +327,10 @@ private fun SongList(
     onSongActions: (String) -> Unit,
 ) {
     val motion = GriotTheme.motion
+    // A song changed goes to the top of the list. The list keeps the card it showed first, now just below: when it was
+    // at the top, it goes back up to show the song.
+    val first = items.firstOrNull()?.song?.id
+    LaunchedEffect(first) { if (list.firstVisibleItemIndex <= 1) list.scrollToItem(0) }
     LazyColumn(
         state = list,
         modifier = Modifier.fillMaxSize().nestedScroll(controls.connection),
