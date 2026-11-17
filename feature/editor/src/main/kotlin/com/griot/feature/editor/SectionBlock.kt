@@ -36,6 +36,7 @@ import com.griot.core.design.component.RollingNumber
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.core.design.theme.LyricTextStyle
+import com.griot.core.phonetics.rhymeLetter
 
 private val MarginWidth = 24.dp
 
@@ -176,7 +177,7 @@ private fun VerseLetter(sound: VerseSound?, showRhymes: Boolean, style: TextStyl
     val letter = sound?.letter?.takeIf { showRhymes }
     val color = letter?.takeIf { sound.coloured(showRhymes) }?.let { GriotTheme.rhymeColor(it).letter }
     Text(
-        text = letter?.let { letter(it).toString() }.orEmpty(),
+        text = letter?.let { rhymeLetter(it).toString() }.orEmpty(),
         style = style,
         color = color ?: GriotTheme.palette.muted,
         textAlign = TextAlign.Center,

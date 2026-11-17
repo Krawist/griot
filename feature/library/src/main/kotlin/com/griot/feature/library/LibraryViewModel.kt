@@ -2,17 +2,24 @@ package com.griot.feature.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.griot.core.data.model.LibrarySong
+import com.griot.core.data.model.SongLanguage
 import com.griot.core.data.preferences.UserPreferencesRepository
 import com.griot.core.data.song.SongRepository
 import com.griot.core.design.format.relativeTime
+import com.griot.core.phonetics.PhoneticEngines
+import com.griot.core.phonetics.PhoneticLanguage
+import com.griot.core.phonetics.rhymeLetters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -20,6 +27,7 @@ import kotlinx.coroutines.launch
 internal class LibraryViewModel @Inject constructor(
     private val songs: SongRepository,
     preferences: UserPreferencesRepository,
+    private val engines: PhoneticEngines,
     private val clock: Clock,
 ) : ViewModel() {
     private val query = MutableStateFlow("")
@@ -40,12 +48,29 @@ internal class LibraryViewModel @Inject constructor(
             filter = filter,
             items = library
                 .filter { it.isIn(filter) && it.matches(query) }
-                .map { LibraryItem(song = it, updated = relativeTime(it.updatedAt, now = now, zone = clock.zone)) },
+                .map { song ->
+                    LibraryItem(
+                        song = song,
+                        updated = relativeTime(song.updatedAt, now = now, zone = clock.zone),
+                        rhymes = rhymesOf(song),
+                    )
+                },
             hasSongs = library.isNotEmpty(),
             loading = false,
             deleted = deleted,
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), LibraryUiState())
+    }
+        // The rhymes are read from the dictionaries: never on the main thread.
+        .flowOn(Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), LibraryUiState())
+
+    // The rhyme ranks of the first section, read in English for an English song and in French otherwise: each engine
+    // reads the other language's words.
+    private fun rhymesOf(song: LibrarySong): List<Int> {
+        val language = if (song.language == SongLanguage.ENGLISH) PhoneticLanguage.ENGLISH else PhoneticLanguage.FRENCH
+        val engine = engines.of(language)
+        return rhymeLetters(song.firstSection.map { engine.rhyme(it) }).filterNotNull()
+    }
 
     fun onQueryChange(text: String) {
         query.value = text

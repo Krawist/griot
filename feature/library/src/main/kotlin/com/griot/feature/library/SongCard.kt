@@ -1,12 +1,16 @@
 package com.griot.feature.library
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,8 +30,12 @@ import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import com.griot.core.phonetics.rhymeScheme
 
-/** One song of the library: its title, language, first verse, and how far it is. */
+private val DotSize = 8.dp
+private const val MAX_DOTS = 8
+
+/** One song of the library: its title, language, first verse, the rhymes of its first section, and how far it is. */
 @Composable
 internal fun SongCard(item: LibraryItem, onClick: () -> Unit, onLongClick: () -> Unit, modifier: Modifier = Modifier) {
     val palette = GriotTheme.palette
@@ -59,11 +67,14 @@ internal fun SongCard(item: LibraryItem, onClick: () -> Unit, onLongClick: () ->
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                text = song.meta(updated = item.updated.text()),
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                color = palette.muted,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                RhymeDots(ranks = item.rhymes)
+                Text(
+                    text = song.meta(scheme = rhymeScheme(item.rhymes), updated = item.updated.text()),
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    color = palette.muted,
+                )
+            }
         }
     }
 }
@@ -80,12 +91,24 @@ private fun LanguageBadge(language: SongLanguage) {
     )
 }
 
-// « Brouillon · 1 section · hier », or « 3 sections · il y a 2 h » for a song in progress.
+// The rhymes of the first section, one dot per verse coloured as in the editor; at most [MAX_DOTS].
 @Composable
-private fun LibrarySong.meta(updated: String): String {
+private fun RhymeDots(ranks: List<Int>) {
+    if (ranks.isEmpty()) return
+    Row(horizontalArrangement = Arrangement.spacedBy(GriotSpacing.xs)) {
+        ranks.take(MAX_DOTS).forEach { rank ->
+            Box(modifier = Modifier.size(DotSize).background(GriotTheme.rhymeColor(rank).underline, CircleShape))
+        }
+    }
+}
+
+// « Brouillon · 1 section · hier », or « ABAB · 3 sections · il y a 2 h » for a song in progress.
+@Composable
+private fun LibrarySong.meta(scheme: String, updated: String): String {
     val sections = pluralStringResource(R.plurals.library_sections, sectionCount, sectionCount)
     val parts = listOfNotNull(
         stringResource(R.string.library_draft).takeIf { status == SongStatus.DRAFT },
+        scheme.take(MAX_DOTS).takeIf { status != SongStatus.DRAFT && it.isNotEmpty() },
         sections,
         updated,
     )

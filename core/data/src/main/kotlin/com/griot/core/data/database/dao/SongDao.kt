@@ -62,6 +62,22 @@ internal interface SongDao {
     )
     fun observeLibrary(): Flow<List<LibrarySongRow>>
 
+    /**
+     * The verses of the first section of every song out of the trash, in order (those of its source for a repeat):
+     * the library shows their rhyme scheme.
+     */
+    @Query(
+        """
+        SELECT c.songId AS songId, v.text AS text
+        FROM sections c JOIN songs s ON s.id = c.songId
+        JOIN verses v ON v.sectionId = COALESCE(c.repeatOfSectionId, c.id)
+        WHERE s.deleted = 0 AND c.deleted = 0 AND v.deleted = 0
+            AND c.position = (SELECT MIN(f.position) FROM sections f WHERE f.songId = c.songId AND f.deleted = 0)
+        ORDER BY c.songId, v.position
+        """,
+    )
+    fun observeFirstSections(): Flow<List<FirstSectionVerseRow>>
+
     /** The songs in the trash, last deleted first. */
     @Query("SELECT id, title, updatedAt AS deletedAt FROM songs WHERE deleted = 1 ORDER BY updatedAt DESC")
     fun observeTrash(): Flow<List<TrashedSongRow>>

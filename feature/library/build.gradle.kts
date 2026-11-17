@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(projects.core.data)
+    implementation(projects.core.phonetics)
 
     testImplementation(testFixtures(projects.core.data))
     testImplementation(libs.mockk)

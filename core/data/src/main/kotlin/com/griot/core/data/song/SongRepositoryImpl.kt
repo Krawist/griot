@@ -22,6 +22,7 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -37,7 +38,10 @@ internal class SongRepositoryImpl @Inject constructor(
     private val clock: Clock,
 ) : SongRepository {
     override fun observeLibrary(): Flow<List<LibrarySong>> =
-        songDao.observeLibrary().map { rows -> rows.map { it.toLibrarySong() } }
+        combine(songDao.observeLibrary(), songDao.observeFirstSections()) { rows, firstSections ->
+            val verses = firstSections.groupBy(keySelector = { it.songId }, valueTransform = { it.text })
+            rows.map { it.toLibrarySong(firstSection = verses[it.id].orEmpty()) }
+        }
 
     override fun observeTrash(): Flow<List<TrashedSong>> = songDao.observeTrash().map { rows ->
         rows.map { TrashedSong(id = it.id, title = it.title, deletedAt = it.deletedAt) }
@@ -129,7 +133,7 @@ internal class SongRepositoryImpl @Inject constructor(
 
     private fun newId() = UUID.randomUUID().toString()
 
-    private fun LibrarySongRow.toLibrarySong() = LibrarySong(
+    private fun LibrarySongRow.toLibrarySong(firstSection: List<String>) = LibrarySong(
         id = id,
         title = title,
         language = language,
@@ -138,5 +142,6 @@ internal class SongRepositoryImpl @Inject constructor(
         sectionCount = sectionCount,
         firstVerse = firstVerse,
         lyrics = lyrics.orEmpty(),
+        firstSection = firstSection,
     )
 }

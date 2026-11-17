@@ -1,5 +1,6 @@
 package com.griot.core.data.song
 
+import com.griot.core.data.database.dao.FirstSectionVerseRow
 import com.griot.core.data.database.dao.LibrarySongRow
 import com.griot.core.data.database.dao.SectionDao
 import com.griot.core.data.database.dao.SongDao
@@ -68,6 +69,12 @@ internal class SongRepositoryImplTest {
                     ),
                 ),
             )
+            every { songDao.observeFirstSections() } returns flowOf(
+                listOf(
+                    FirstSectionVerseRow(songId = "my-song-id", text = "my-verse-1"),
+                    FirstSectionVerseRow(songId = "my-song-id", text = "my-verse-2"),
+                ),
+            )
 
             // when
             val library = repository.observeLibrary().first()
@@ -83,9 +90,13 @@ internal class SongRepositoryImplTest {
                     sectionCount = 3,
                     firstVerse = "my-first-verse",
                     lyrics = "my-lyrics",
+                    firstSection = listOf("my-verse-1", "my-verse-2"),
                 ),
             )
-            verifySequence { songDao.observeLibrary() }
+            verifySequence {
+                songDao.observeLibrary()
+                songDao.observeFirstSections()
+            }
         }
 
         @Test
@@ -105,13 +116,17 @@ internal class SongRepositoryImplTest {
                     ),
                 ),
             )
+            every { songDao.observeFirstSections() } returns flowOf(emptyList())
 
             // when
             val library = repository.observeLibrary().first()
 
             // then
             library.single().lyrics shouldBe ""
-            verifySequence { songDao.observeLibrary() }
+            verifySequence {
+                songDao.observeLibrary()
+                songDao.observeFirstSections()
+            }
         }
     }
 

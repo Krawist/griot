@@ -6,6 +6,7 @@ import com.griot.core.data.model.SongStatus
 import com.griot.core.data.preferences.FakeUserPreferencesRepository
 import com.griot.core.data.song.FakeSongRepository
 import com.griot.core.design.format.RelativeTime
+import com.griot.core.phonetics.PhoneticEngines
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class LibraryViewModelTest {
+    private val engines = PhoneticEngines()
     private val clock = Clock.fixed(Instant.parse("2026-11-16T16:00:00Z"), ZoneOffset.UTC)
 
     @BeforeEach
@@ -57,6 +59,7 @@ internal class LibraryViewModelTest {
             val viewModel = LibraryViewModel(
                 songs = FakeSongRepository(library = listOf(song)),
                 preferences = FakeUserPreferencesRepository(authorName = "my-author-name"),
+                engines = engines,
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -74,11 +77,47 @@ internal class LibraryViewModelTest {
         }
 
         @Test
+        fun `should give each card the rhymes of its first section`() = runTest {
+            // given
+            val song = LibrarySong(
+                id = "my-song-id",
+                title = "my-title",
+                language = SongLanguage.FRENCH,
+                status = SongStatus.IN_PROGRESS,
+                updatedAt = Instant.parse("2026-11-16T14:00:00Z"),
+                sectionCount = 1,
+                firstVerse = "Je marche seul dans la ville",
+                lyrics = "my-lyrics",
+                firstSection = listOf(
+                    "Je marche seul dans la ville",
+                    "Les néons pleurent sur le bitume",
+                    "",
+                    "Mon cœur bat, fragile",
+                    "Comme une flamme dans la brume",
+                ),
+            )
+            val viewModel = LibraryViewModel(
+                songs = FakeSongRepository(library = listOf(song)),
+                preferences = FakeUserPreferencesRepository(),
+                engines = engines,
+                clock = clock,
+            )
+            viewModel.uiState.launchIn(backgroundScope)
+
+            // when
+            val state = viewModel.uiState.first { !it.loading }
+
+            // then
+            state.items.single().rhymes shouldContainExactly listOf(0, 1, 0, 1)
+        }
+
+        @Test
         fun `should not greet a blank name`() = runTest {
             // given
             val viewModel = LibraryViewModel(
                 songs = FakeSongRepository(),
                 preferences = FakeUserPreferencesRepository(authorName = " "),
+                engines = engines,
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -110,6 +149,7 @@ internal class LibraryViewModelTest {
             val viewModel = LibraryViewModel(
                 songs = FakeSongRepository(library = listOf(neons, dry)),
                 preferences = FakeUserPreferencesRepository(),
+                engines = engines,
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -144,6 +184,7 @@ internal class LibraryViewModelTest {
             val viewModel = LibraryViewModel(
                 songs = FakeSongRepository(library = listOf(draft, inProgress)),
                 preferences = FakeUserPreferencesRepository(),
+                engines = engines,
                 clock = clock,
             )
             viewModel.uiState.launchIn(backgroundScope)
@@ -167,6 +208,7 @@ internal class LibraryViewModelTest {
             val viewModel = LibraryViewModel(
                 songs = songs,
                 preferences = FakeUserPreferencesRepository(),
+                engines = engines,
                 clock = clock,
             )
             var opened: String? = null
@@ -186,8 +228,12 @@ internal class LibraryViewModelTest {
         fun `should rename the song without the spaces around the title`() = runTest {
             // given
             val songs = FakeSongRepository()
-            val viewModel =
-                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+            val viewModel = LibraryViewModel(
+                songs = songs,
+                preferences = FakeUserPreferencesRepository(),
+                engines = engines,
+                clock = clock,
+            )
 
             // when
             viewModel.onRename(id = "my-song-id", title = " my-title ")
@@ -203,8 +249,12 @@ internal class LibraryViewModelTest {
         fun `should copy the song under the title given`() = runTest {
             // given
             val songs = FakeSongRepository()
-            val viewModel =
-                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+            val viewModel = LibraryViewModel(
+                songs = songs,
+                preferences = FakeUserPreferencesRepository(),
+                engines = engines,
+                clock = clock,
+            )
 
             // when
             viewModel.onDuplicate(id = "my-song-id", title = "my-title")
@@ -220,8 +270,12 @@ internal class LibraryViewModelTest {
         fun `should move the song to the trash and offer to undo`() = runTest {
             // given
             val songs = FakeSongRepository()
-            val viewModel =
-                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+            val viewModel = LibraryViewModel(
+                songs = songs,
+                preferences = FakeUserPreferencesRepository(),
+                engines = engines,
+                clock = clock,
+            )
             viewModel.uiState.launchIn(backgroundScope)
 
             // when
@@ -239,8 +293,12 @@ internal class LibraryViewModelTest {
         fun `should take the song just deleted out of the trash`() = runTest {
             // given
             val songs = FakeSongRepository()
-            val viewModel =
-                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+            val viewModel = LibraryViewModel(
+                songs = songs,
+                preferences = FakeUserPreferencesRepository(),
+                engines = engines,
+                clock = clock,
+            )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.onDelete(id = "my-song-id", title = "my-title")
 
@@ -259,8 +317,12 @@ internal class LibraryViewModelTest {
         fun `should hide the undo bar and keep the song in the trash`() = runTest {
             // given
             val songs = FakeSongRepository()
-            val viewModel =
-                LibraryViewModel(songs = songs, preferences = FakeUserPreferencesRepository(), clock = clock)
+            val viewModel = LibraryViewModel(
+                songs = songs,
+                preferences = FakeUserPreferencesRepository(),
+                engines = engines,
+                clock = clock,
+            )
             viewModel.uiState.launchIn(backgroundScope)
             viewModel.onDelete(id = "my-song-id", title = "my-title")
 

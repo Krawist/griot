@@ -450,4 +450,117 @@ internal class SongDaoTest {
             )
         }
     }
+
+    @Nested
+    inner class ObserveFirstSections {
+        @Test
+        fun `should list the verses of the first section of each song, in order`() = runTest {
+            // given
+            songDao.insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.IN_PROGRESS,
+                    createdAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.VERSE,
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id-1",
+                        sectionId = "my-section-id-1",
+                        text = "my-text-1",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-2",
+                        sectionId = "my-section-id-2",
+                        text = "my-text-2",
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                    VerseEntity(
+                        id = "my-verse-id-3",
+                        sectionId = "my-section-id-2",
+                        text = "my-text-3",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            val verses = songDao.observeFirstSections().first()
+
+            // then
+            verses shouldContainExactly listOf(
+                FirstSectionVerseRow(songId = "my-song-id", text = "my-text-3"),
+                FirstSectionVerseRow(songId = "my-song-id", text = "my-text-2"),
+            )
+        }
+
+        @Test
+        fun `should give the verses of its source to a first section that repeats another`() = runTest {
+            // given
+            songDao.insertWithContent(
+                song = SongEntity(
+                    id = "my-song-id",
+                    title = "my-title",
+                    language = SongLanguage.FRENCH,
+                    status = SongStatus.IN_PROGRESS,
+                    createdAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                ),
+                sections = listOf(
+                    SectionEntity(
+                        id = "my-section-id-1",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 1,
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                    SectionEntity(
+                        id = "my-section-id-2",
+                        songId = "my-song-id",
+                        kind = SectionKind.CHORUS,
+                        position = 0,
+                        repeatOfSectionId = "my-section-id-1",
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                ),
+                verses = listOf(
+                    VerseEntity(
+                        id = "my-verse-id",
+                        sectionId = "my-section-id-1",
+                        text = "my-text",
+                        position = 0,
+                        updatedAt = Instant.parse("2026-11-16T10:00:00Z"),
+                    ),
+                ),
+            )
+
+            // when
+            val verses = songDao.observeFirstSections().first()
+
+            // then
+            verses shouldContainExactly listOf(FirstSectionVerseRow(songId = "my-song-id", text = "my-text"))
+        }
+    }
 }

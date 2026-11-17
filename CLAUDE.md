@@ -161,7 +161,8 @@ GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
   filters (automatic-language songs only under « Toutes » and « Brouillons »), song cards last changed first,
   « Nouvelle chanson » (`SongRepository.createSong`: draft, one verse section, one empty verse) opening
   `EditorRoute(songId)`. `SongDao.observeLibrary` reads each card in one query. `RelativeTime` in `:core:design`.
-  Still to add: the rhyme dots (GRI-21) and the sync pill (GRI-27). The editor must touch the song's `updatedAt`
+  The rhyme dots and scheme of each card's first section (`observeFirstSections`, `rhymeLetters` in
+  `:core:phonetics`, shared with the editor) came after. Still to add: the sync pill (GRI-27). The editor must touch the song's `updatedAt`
   on every change, as the library sorts on it.
 - [x] **GRI-13** — long press on a song: `SongActionsSheet` (rename, duplicate as « … (copie) », delete). Delete
   moves to the trash (`deleted` flag) with an `UndoBar` (`:core:design`, 5 s) in place of « Nouvelle chanson ».
