@@ -13,8 +13,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # The build reads the kit from ../Kit: the app and the kit are checked out side by side.
+    defaults:
+      run:
+        working-directory: griot
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: griot
+
+      - uses: actions/checkout@v4
+        with:
+          repository: Krawist/kit
+          path: Kit
 
       - uses: actions/setup-java@v4
         with:
@@ -39,5 +50,5 @@ jobs:
         if: always()
         with:
           name: reports
-          path: '**/build/reports/'
+          path: 'griot/**/build/reports/'
           if-no-files-found: ignore
