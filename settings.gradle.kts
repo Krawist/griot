@@ -1,5 +1,5 @@
 pluginManagement {
-    includeBuild("build-logic")
+    includeBuild("../Kit/build-logic")
     repositories {
         google {
             content {
@@ -22,11 +22,21 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    // Versions shared by all the apps, in the kit checked out next to this repository.
+    versionCatalogs {
+        create("libs") {
+            from(files("../Kit/gradle/libs.versions.toml"))
+        }
+    }
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "griot"
+
+// Shared modules of the kit, such as its detekt rules.
+includeBuild("../Kit")
+
 
 include(":app")
 include(":feature:onboarding")
@@ -39,4 +49,3 @@ include(":core:data")
 include(":core:phonetics")
 include(":core:sync")
 include(":core:ai")
-include(":detekt-rules")

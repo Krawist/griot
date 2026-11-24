@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.griot.jvm.library)
+    alias(libs.plugins.krawist.jvm.library)
 }
 
 dependencies {

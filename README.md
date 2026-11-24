@@ -8,6 +8,8 @@ The context for Claude Code is in [`CLAUDE.md`](CLAUDE.md), which also links the
 
 - A recent Android Studio (the same version that builds Cauri), JDK 17
 - An Android 10+ phone
+- The kit checked out next to this repository (`../Kit`): it holds the version catalog, the convention plugins and
+  the detekt rules. See its README.
 
 ## Getting started
 
@@ -52,7 +54,6 @@ core/data               DataStore preferences, Room database
 core/phonetics          syllables, rhymes and paste splitting, French and English (pure Kotlin)
 core/sync               sync repository and Google Drive
 core/ai                 AI providers, on-device and online
-build-logic/            Gradle convention plugins
 config/                 detekt rules
 docs/                   MVP tickets
 .github/workflows/      CI workflow

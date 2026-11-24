@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.griot.android.library)
-    alias(libs.plugins.griot.android.hilt)
-    alias(libs.plugins.griot.android.room)
+    alias(libs.plugins.krawist.android.library)
+    alias(libs.plugins.krawist.android.hilt)
+    alias(libs.plugins.krawist.android.room)
     alias(libs.plugins.kotlin.serialization)
 }
 

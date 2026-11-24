@@ -34,8 +34,8 @@ detekt {
 }
 
 dependencies {
-    // Griot's own rules, such as HardcodedUiText.
-    detektPlugins(projects.detektRules)
+    // Shared rules of the kit, such as HardcodedUiText.
+    detektPlugins("io.github.krawist:detekt-rules")
 }
 
 // detekt 1.23.x ships its own Kotlin 2.0.21 compiler: keep Gradle from aligning it, or the rules it runs, with the

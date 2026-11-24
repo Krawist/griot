@@ -55,16 +55,17 @@ Before implementing a screen, look at its mockup. Song titles, verses and names 
 - Navigation: each feature exposes its graph object (`LibraryGraph`, `EditorGraph`…) and a
   `NavGraphBuilder.xxxGraph(...)` extension; `:app` (`GriotApp.kt`) wires them. Features never navigate to each
   other directly: they take callbacks.
-- Gradle Kotlin DSL, `gradle/libs.versions.toml` catalog, convention plugins in `build-logic/`:
-  `griot.android.application`, `griot.android.library`, `griot.android.compose`, `griot.android.feature` (library +
-  compose + Hilt + navigation + `:core:design`), `griot.android.hilt`, `griot.android.room` (schemas in `schemas/`),
-  `griot.jvm.library` (pure Kotlin).
+- Gradle Kotlin DSL. The version catalog and the convention plugins come from the kit, checked out next to this
+  repository (`../Kit`, see its README): `io.github.krawist.android.application`, `…android.library`,
+  `…android.compose`, `…android.feature` (library + compose + Hilt + navigation + `:core:design`), `…android.hilt`,
+  `…android.room` (schemas in `schemas/`), `io.github.krawist.jvm.library` (pure Kotlin). A new library goes in the
+  catalog of the kit.
 - Kotlin sources in `src/main/kotlin` and `src/test/kotlin`. Type-safe module accessors:
   `implementation(projects.core.design)`.
 - Pure logic (phonetic engines, paste splitter, rhyme letters, conflict merge) in Kotlin without Android
   dependencies whenever possible, covered by JVM tests.
 - User-facing texts: `strings.xml` in French (default) **and** English (`values-en`). Never hard-coded text in a
-  composable (detekt `HardcodedUiText` checks it).
+  composable (detekt `HardcodedUiText`, from the kit, checks it).
 - Colours come from `GriotTheme.palette`, never raw values in screens. Magenta is the brand and main actions, orange
   is reserved for AI, turquoise for sync and states. Rhyme colours are their own set.
 - Motion: every screen and state change is animated with the shared motion tokens of `:core:design` (GRI-44), from
