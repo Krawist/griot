@@ -1187,7 +1187,9 @@ internal class EditorViewModelTest {
             viewModel.onVerseSelected(null)
 
             // then
-            viewModel.uiState.first { !it.loading }.selection.shouldBeNull()
+            // The state is computed on Dispatchers.Default: wait for the change instead of reading the current state,
+            // which may still hold the selection.
+            viewModel.uiState.first { it.selection == null }.selection.shouldBeNull()
         }
 
         @Test
