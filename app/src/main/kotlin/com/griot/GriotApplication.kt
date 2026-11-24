@@ -1,8 +1,8 @@
 package com.griot
 
 import android.app.Application
-import com.griot.core.design.glass.supportsGlassBlur
 import dagger.hilt.android.HiltAndroidApp
+import io.github.krawist.design.glass.supportsGlassBlur
 
 @HiltAndroidApp
 internal class GriotApplication : Application() {

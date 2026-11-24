@@ -34,7 +34,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "griot"
 
-// Shared modules of the kit, such as its detekt rules.
+// Shared modules of the kit: its glass surfaces and detekt rules.
 includeBuild("../Kit")
 
 

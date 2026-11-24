@@ -29,7 +29,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.DashedAddButton
 import com.griot.core.design.component.JumpToTopButton
 import com.griot.core.design.component.ScrollControls
@@ -37,6 +36,7 @@ import com.griot.core.design.component.TopControls
 import com.griot.core.design.component.rememberScrollControls
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.component.AnimatedPresence
 import kotlinx.coroutines.launch
 
 /**

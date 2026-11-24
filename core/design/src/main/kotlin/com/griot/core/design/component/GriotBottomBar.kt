@@ -25,10 +25,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.R
-import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.glass.GlassSurface
 
 private val BarHeight = 68.dp
 private val BarBottom = 24.dp

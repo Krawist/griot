@@ -44,11 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.griot.core.design.R as DesignR
-import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.UndoBar
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.component.AnimatedPresence
 
 // The undo bar floats above the bottom bar, and the list scrolls clear of both.
 private val UndoBottom = 112.dp

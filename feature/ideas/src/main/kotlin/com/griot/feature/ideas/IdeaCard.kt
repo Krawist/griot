@@ -18,10 +18,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.format.text
-import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.glass.GlassSurface
 
 // The sun yellow behind the « Libre » chip of a free idea.
 private const val FREE_ALPHA = 0.22f

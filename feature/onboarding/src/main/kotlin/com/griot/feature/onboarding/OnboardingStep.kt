@@ -28,10 +28,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.component.BackButton
-import com.griot.core.design.component.BackdropShape
-import com.griot.core.design.component.backdrop
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.component.BackdropShape
+import io.github.krawist.design.component.backdrop
 
 /** Number of steps after the welcome screen: name, language, sync and import. */
 internal const val ONBOARDING_STEPS = 4

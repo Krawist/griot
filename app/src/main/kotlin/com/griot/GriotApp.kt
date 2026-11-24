@@ -26,13 +26,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.griot.core.design.R as DesignR
-import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.BottomBarTab
 import com.griot.core.design.component.BottomControls
 import com.griot.core.design.component.GriotBottomBar
-import com.griot.core.design.component.backdrop
 import com.griot.core.design.component.screenBackdropShapes
-import com.griot.core.design.glass.GlassScreen
 import com.griot.core.design.theme.GriotMotion
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.editor.SongLanguageSheet
@@ -49,6 +46,9 @@ import com.griot.feature.onboarding.navigateToImport
 import com.griot.feature.onboarding.onboardingGraph
 import com.griot.feature.settings.SettingsGraph
 import com.griot.feature.settings.settingsGraph
+import io.github.krawist.design.component.AnimatedPresence
+import io.github.krawist.design.component.backdrop
+import io.github.krawist.design.glass.GlassScreen
 import kotlinx.coroutines.delay
 
 /** Root of the app: the launch screen, then the onboarding on first launch or the library. */

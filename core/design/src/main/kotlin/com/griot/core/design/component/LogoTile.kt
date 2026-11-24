@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.R
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.component.BackdropShape
+import io.github.krawist.design.component.backdrop
 
 // Corner radius and shadow, as fractions of the tile size, from the logo mockup (240 px tile, 54 px radius).
 private const val RADIUS_RATIO = 0.234f

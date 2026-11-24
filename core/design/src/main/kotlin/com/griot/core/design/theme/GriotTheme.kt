@@ -11,7 +11,8 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
-import com.griot.core.design.glass.LocalGlassBlur
+import io.github.krawist.design.glass.GlassColors
+import io.github.krawist.design.glass.GlassTheme
 
 /**
  * Griot theme. Follows the phone's dark mode; screens read the full palette through [GriotTheme.palette].
@@ -57,6 +58,15 @@ fun GriotTheme(
             outline = palette.line,
         )
     }
+    val glassColors = remember(palette) {
+        GlassColors(
+            background = palette.background,
+            fill = palette.glass,
+            strongFill = palette.glassBar,
+            border = palette.line,
+            shadow = palette.shadow,
+        )
+    }
     val context = LocalContext.current
     // « Supprimer les animations » sets the animator scale to 0: Griot then moves nothing.
     val motion = remember(context) {
@@ -69,9 +79,10 @@ fun GriotTheme(
         LocalGriotPalette provides palette,
         LocalGriotMotion provides motion,
         LocalRhymeColors provides rhymeColors,
-        LocalGlassBlur provides glassBlur,
     ) {
-        MaterialTheme(colorScheme = colorScheme, typography = GriotMaterialTypography, content = content)
+        GlassTheme(colors = glassColors, blur = glassBlur) {
+            MaterialTheme(colorScheme = colorScheme, typography = GriotMaterialTypography, content = content)
+        }
     }
 }
 

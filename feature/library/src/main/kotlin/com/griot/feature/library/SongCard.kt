@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import com.griot.core.data.model.SongLanguage
 import com.griot.core.design.R as DesignR
 import com.griot.core.design.format.text
-import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.glass.GlassSurface
 
 private val DotSize = 8.dp
 private val FavoriteSize = 16.dp

@@ -115,6 +115,10 @@ iOS-inspired, modern look: translucent "glass" surfaces with a background blur (
 opaque tinted fallback on the others (GRI-04). Outfit for titles and lyrics, Inter for the interface (to embed,
 GRI-02). Cards 18 to 24 radius, touch targets ≥ 44 dp.
 
+The glass layer (`GlassTheme`, `GlassScreen`, `GlassSurface`, `supportsGlassBlur()`), the `backdrop` modifier and
+`AnimatedPresence` come from the kit (`io.github.krawist:design`, LIB-02): `GriotTheme` gives the glass its colours
+from the palette, and `screenBackdropShapes()` (the shapes of Griot) stays in `:core:design`.
+
 ## Progress
 
 - [x] **GRI-01** — multi-module project, convention plugins, Hilt, type-safe navigation with placeholder screens

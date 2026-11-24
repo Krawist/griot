@@ -12,8 +12,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.griot.core.design.R
-import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.glass.GlassSurface
 
 private val ButtonSize = 48.dp
 private val ButtonElevation = 10.dp

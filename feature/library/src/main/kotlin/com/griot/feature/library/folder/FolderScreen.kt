@@ -27,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.GriotButton
 import com.griot.core.design.component.UndoBar
 import com.griot.core.design.theme.GriotRadius
@@ -40,6 +39,7 @@ import com.griot.feature.library.SongCard
 import com.griot.feature.library.SongExportHost
 import com.griot.feature.library.filing.FilingSheet
 import com.griot.feature.library.meta
+import io.github.krawist.design.component.AnimatedPresence
 
 private val SelectionLine = 2.dp
 private val ListBottom = 120.dp

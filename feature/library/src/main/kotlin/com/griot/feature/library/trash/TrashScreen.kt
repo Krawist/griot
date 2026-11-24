@@ -37,11 +37,11 @@ import com.griot.core.design.R as DesignR
 import com.griot.core.design.component.BackButton
 import com.griot.core.design.format.RelativeTime
 import com.griot.core.design.format.text
-import com.griot.core.design.glass.GlassSurface
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
 import com.griot.feature.library.R
+import io.github.krawist.design.glass.GlassSurface
 import java.time.Instant
 
 /** The trash: the songs deleted in the last 30 days, which can be restored. */

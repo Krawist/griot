@@ -23,12 +23,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.griot.core.design.component.BackdropShape
 import com.griot.core.design.component.GriotButton
 import com.griot.core.design.component.LogoTile
-import com.griot.core.design.component.backdrop
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.component.BackdropShape
+import io.github.krawist.design.component.backdrop
 
 private val LogoSize = 112.dp
 private val WordmarkGap = 20.dp

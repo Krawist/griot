@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.griot.core.design.theme.GriotRadius
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.component.AnimatedPresence
 
 private val FieldHeight = 56.dp
 private val BorderWidth = 1.5.dp

@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
-import com.griot.core.design.component.AnimatedPresence
 import com.griot.core.design.component.UndoBar
 import com.griot.core.design.theme.GriotSpacing
 import com.griot.core.design.theme.GriotTheme
+import io.github.krawist.design.component.AnimatedPresence
 
 /** « 4 sections créées · Annuler » at the bottom of the editor, for a few seconds after a paste split into sections. */
 @Composable
